@@ -1,0 +1,157 @@
+@tailwind base;
+@tailwind utilities;
+@tailwind components;
+
+@layer base {
+    :root {
+        --primary-100: 245, 196, 0, 0.125;
+        --primary-300: 254, 248, 223;
+        --primary-500: 252, 240, 191;
+        --primary-700: 250, 225, 128;
+        --primary-900: 247, 211, 64;
+
+        --blue-50: 248, 248, 252;
+        --blue-100: 224, 225, 241;
+        --blue-300: 193, 195, 226;
+        --blue-500: 131, 135, 197;
+        --blue-700: 69, 74, 169;
+        --blue-900: 7, 14, 140;
+
+        --accent-300: 198, 197, 197;
+        --accent-500: 141, 140, 139;
+        --accent-700: 85, 85, 85;
+        --accent-900: 28, 25, 23;
+
+        --bg-light: 250, 250, 253;
+        --bg-gray: 238, 238, 247;
+
+        --gray-main: 204, 204, 204;
+
+        --error-main: 219, 85, 77;
+
+        --shadow-main: 0px 0px 5px 0px #4f639840;
+    }
+
+    html,
+    body,
+    #root {
+        @apply h-full;
+        background-color: rgba(--primary-900);
+    }
+}
+
+.ant-btn-default:not(.ant-btn-background-ghost) {
+    @apply w-fit h-auto py-4 px-14 rounded-md font-semibold text-[16px] uppercase !text-white bg-blue-700 hover:!bg-blue-900 disabled:!bg-blue-500;
+}
+
+.ant-btn-default.ant-btn-lg:not(.ant-btn-background-ghost) {
+    @apply px-24;
+}
+
+.ant-select {
+    @apply w-fit h-auto min-w-[300px];
+}
+
+.ant-select svg path {
+    @apply stroke-blue-500;
+}
+
+.ant-select-arrow {
+    @apply !right-4;
+}
+
+.ant-select-selector {
+    @apply w-full !py-3 !px-4 !rounded-xl !border-blue-500;
+}
+
+.ant-select-open .ant-select-selector {
+    @apply !rounded-b-none;
+}
+
+.ant-select-selection-item,
+.ant-select-selection-placeholder {
+    @apply font-semibold text-[16px] !text-blue-500;
+}
+
+.ant-select-dropdown {
+    @apply !rounded-xl !p-0 !rounded-t-none border !border-blue-500;
+}
+
+.ant-select-item-option {
+    @apply !py-3 !px-4 !font-semibold;
+}
+
+.ant-select-selection-item-active {
+    @apply !bg-blue-100;
+}
+
+.lang-select {
+    @apply w-fit h-auto !border-none;
+}
+
+.lang-select svg path {
+    @apply stroke-blue-500;
+}
+
+.lang-select-arrow {
+    @apply !right-4;
+}
+
+.lang-select-selector {
+    @apply w-full !py-3 !px-4 !rounded-xl !border-blue-500;
+}
+
+.lang-select-open .lang-select-selector {
+    @apply !rounded-b-none;
+}
+
+.lang-select-selection-item,
+.lang-select-selection-placeholder {
+    @apply font-semibold text-[16px] !text-blue-500;
+}
+
+.lang-select-dropdown {
+    @apply !rounded-xl !p-0 !rounded-t-none border !border-blue-500;
+}
+
+.lang-select-item-option {
+    @apply !py-3 !px-4 !font-semibold;
+}
+
+.lang-select-selection-item-active {
+    @apply !bg-blue-100;
+}
+
+.ant-modal-body,
+.ant-modal-content {
+    @apply !w-fit !p-0 !bg-transparent !shadow-none;
+}
+
+.ant-modal-close,
+.ant-modal-footer {
+    @apply hidden;
+}
+
+.ant-notification-notice-wrapper {
+    @apply !rounded-none !-mr-6 !mt-40;
+}
+
+.ant-notification-notice {
+    @apply flex items-center;
+}
+
+.ant-notification-notice-with-icon {
+    @apply flex items-center;
+}
+
+.ant-notification-notice-message {
+    @apply !m-0 !ml-10 !font-semibold !text-[16px] !text-blue-700;
+}
+
+.ant-form-item {
+    @apply !h-auto;
+}
+
+.ant-form-item-label label::after {
+    @apply hidden;
+}
