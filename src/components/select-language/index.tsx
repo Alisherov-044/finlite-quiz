@@ -21,6 +21,7 @@ export function SelectLanguage() {
 
     return (
         <Select
+            dropdownAlign={{ points: ["br"] }}
             suffixIcon={null}
             prefixCls="lang-select"
             defaultValue={defaultLang}

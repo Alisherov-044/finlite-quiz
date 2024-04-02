@@ -2,7 +2,6 @@ import * as antd from "antd";
 // import { useState } from "react";
 // import { useTranslate } from "@/hooks";
 import { Outlet } from "react-router-dom";
-import { SelectLanguage } from "..";
 // import { Confirmation, Icons } from "@/components";
 
 export function Layout() {
@@ -20,12 +19,9 @@ export function Layout() {
 
     return (
         <antd.Layout className="w-full h-full bg-transparent">
-            {/* {contextHolder}
-            <antd.Button size="large" onClick={() => openNotification()}>
-                BOSHLASH
-            </antd.Button>
-            <antd.Select
+            {/* <antd.Select
                 placeholder="Bo'lim tanlash"
+                dropdownAlign={{ overflow: { adjustY: 2 }, points: ["bc"] }}
                 options={[
                     { value: "value", label: "1C Buxgalteriya prinsiplari" },
                     { value: "value1", label: "1C Buxgalteriya prinsiplari" },
@@ -35,7 +31,12 @@ export function Layout() {
                     { value: "value5", label: "1C Buxgalteriya prinsiplari" },
                 ]}
                 suffixIcon={<Icons.arrow.select />}
-            />
+            /> */}
+            {/* {contextHolder}
+            <antd.Button size="large" onClick={() => openNotification()}>
+                BOSHLASH
+            </antd.Button>
+            
             <Confirmation
                 isOpen={isOpne}
                 title={t("logout")}
@@ -63,7 +64,6 @@ export function Layout() {
                 onCancel={() => setIsOpne(false)}
                 onConfirm={() => {}}
             /> */}
-            <SelectLanguage />
             <Outlet />
         </antd.Layout>
     );

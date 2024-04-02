@@ -1,3 +1,4 @@
+import { LoginPageSkeleton } from "@/components";
 import {
     LoginPage,
     MaterialsPage,
@@ -10,6 +11,7 @@ export type TRoute = {
     id: number;
     path: string;
     element: ReactNode;
+    fallback?: ReactNode;
 };
 
 export type TPublicRoute = TRoute;
@@ -28,6 +30,7 @@ export const routes: TRoutes = {
             id: 1,
             path: "/login",
             element: <LoginPage />,
+            fallback: <LoginPageSkeleton />,
         },
         {
             id: 2,

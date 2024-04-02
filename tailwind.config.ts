@@ -38,6 +38,7 @@ export default {
             },
             boxShadow: {
                 main: "var(--shadow-main)",
+                login: "var(--shadow-login)",
             },
         },
     },

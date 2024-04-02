@@ -1,11 +1,15 @@
 import gsap from "gsap";
 import { clsx } from "clsx";
 import { Flex } from "antd";
-import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { PageSkeleton } from "@/components";
+import { type ReactNode, useRef } from "react";
 
-export function Loading() {
+export type LoadingProps = {
+    fallback?: ReactNode;
+};
+
+export function Loading({ fallback = <PageSkeleton /> }: LoadingProps) {
     const container = useRef<HTMLElement | null>(null);
 
     useGSAP(
@@ -66,7 +70,7 @@ export function Loading() {
             ref={container}
             className="w-full h-full items-center justify-center"
         >
-            <PageSkeleton />
+            {fallback}
             <Flex className="fixed top-0 left-0 w-full h-full z-50 items-center justify-center gap-x-6 backdrop-blur">
                 {[...Array(3).keys()].map((key) => (
                     <div

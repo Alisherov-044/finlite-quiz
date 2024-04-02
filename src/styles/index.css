@@ -30,6 +30,7 @@
         --error-main: 219, 85, 77;
 
         --shadow-main: 0px 0px 5px 0px #4f639840;
+        --shadow-login: 0px 0px 25px 0px #0000000f;
     }
 
     html,
@@ -98,11 +99,11 @@
 }
 
 .lang-select-selector {
-    @apply w-full !py-3 !px-4 !rounded-xl !border-blue-500;
+    @apply w-full !py-3 !px-4 !rounded-xl !border-none !shadow-none;
 }
 
-.lang-select-open .lang-select-selector {
-    @apply !rounded-b-none;
+.lang-select-selector .ant-typography {
+    @apply !hidden;
 }
 
 .lang-select-selection-item,
@@ -111,7 +112,7 @@
 }
 
 .lang-select-dropdown {
-    @apply !rounded-xl !p-0 !rounded-t-none border !border-blue-500;
+    @apply !w-auto !rounded-xl !p-0 border;
 }
 
 .lang-select-item-option {
