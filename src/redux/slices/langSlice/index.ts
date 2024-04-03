@@ -14,7 +14,6 @@ export const langSlice = createSlice({
     reducers: {
         setLang: (state, { payload }) => {
             state.currentLang = payload;
-            localStorage.setItem("lang", JSON.stringify(payload));
         },
     },
 });

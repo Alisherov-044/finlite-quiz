@@ -8,7 +8,7 @@ export type AuthState = {
 
 const initialState: AuthState = {
     roles: [],
-    isAuthenticated: true,
+    isAuthenticated: false,
 };
 
 export const authSlice = createSlice({
@@ -16,8 +16,9 @@ export const authSlice = createSlice({
     initialState,
     reducers: {
         setAuth: (state, { payload }: PayloadAction<AuthState>) => {
-            state = { ...state, ...payload };
-            localStorage.setItem("user", JSON.stringify(state));
+            state.isAuthenticated = payload.isAuthenticated;
+            state.roles = payload.roles;
+            state.name = payload?.name;
         },
     },
 });
