@@ -11,7 +11,7 @@ export default function NotFoundPage() {
     const goBack = () => navigate(-1);
 
     return (
-        <Layout.Content className="flex w-full h-full items-center justify-center">
+        <Layout.Content className="fixed top-0 left-0 z-50 flex w-screen h-screen items-center justify-center bg-white">
             <Logo className="absolute top-12 left-12" />
             <Flex className="items-center gap-x-[100px]">
                 <LazyLoadImage

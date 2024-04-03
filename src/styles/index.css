@@ -3,6 +3,28 @@
 @tailwind components;
 
 @layer base {
+    @font-face {
+        font-family: "SF-Pro-Text";
+        src: url("./sf-pro/SF-Pro-Text-UltraLight.otf"),
+            url("./sf-pro/SF-Pro-Text-UltraLightItalic.otf"),
+            url("./sf-pro/SF-Pro-Text-Light.otf"),
+            url("./sf-pro/SF-Pro-Text-LightItalic.otf"),
+            url("./sf-pro/SF-Pro-Text-Thin.otf"),
+            url("./sf-pro/SF-Pro-Text-ThinItalic.otf"),
+            url("./sf-pro/SF-Pro-Text-Medium.otf"),
+            url("./sf-pro/SF-Pro-Text-MediumItalic.otf"),
+            url("./sf-pro/SF-Pro-Text-Regular.otf"),
+            url("./sf-pro/SF-Pro-Text-RegularItalic.otf"),
+            url("./sf-pro/SF-Pro-Text-Heavy.otf"),
+            url("./sf-pro/SF-Pro-Text-HeavyItalic.otf"),
+            url("./sf-pro/SF-Pro-Text-SemiBold.otf"),
+            url("./sf-pro/SF-Pro-Text-SemiBoldItalic.otf"),
+            url("./sf-pro/SF-Pro-Text-Bold.otf"),
+            url("./sf-pro/SF-Pro-Text-BoldItalic.otf"),
+            url("./sf-pro/SF-Pro-Text-Black.otf"),
+            url("./sf-pro/SF-Pro-Text-BlackItalic.otf");
+    }
+
     :root {
         --primary-100: 245, 196, 0, 0.125;
         --primary-300: 254, 248, 223;
@@ -33,12 +55,23 @@
         --shadow-login: 0px 0px 25px 0px #0000000f;
     }
 
+    *::-webkit-scrollbar {
+        @apply w-1.5 h-1.5 bg-transparent;
+    }
+
+    *::-webkit-scrollbar-thumb {
+        @apply w-1.5 h-1.5 rounded-md bg-blue-300;
+    }
+
     html,
     body,
     #root {
-        @apply h-full;
-        background-color: rgba(--primary-900);
+        @apply h-full !font-['SF-Pro-Text'];
     }
+}
+
+.ant-typography {
+    @apply !font-['SF-Pro-Text'];
 }
 
 .ant-btn-default:not(.ant-btn-background-ghost) {
@@ -99,7 +132,7 @@
 }
 
 .lang-select-selector {
-    @apply w-full !py-3 !px-4 !rounded-xl !border-none !shadow-none;
+    @apply flex items-center justify-center !w-10 !h-10 hover:!bg-gray-200 !rounded-full !border-none !shadow-none;
 }
 
 .lang-select-selector .ant-typography {
@@ -155,4 +188,8 @@
 
 .ant-form-item-label label::after {
     @apply hidden;
+}
+
+.ant-input::placeholder {
+    @apply !capitalize;
 }

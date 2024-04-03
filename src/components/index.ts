@@ -6,3 +6,8 @@ export { Loading } from "./loading";
 export { Logo } from "./logo";
 export { PageSkeleton, LoginPageSkeleton } from "./skeletons";
 export { SelectLanguage } from "./select-language";
+export { Logout } from "./logout";
+export { IconButton } from "./icon-button";
+export { Notifications } from "./notifications";
+export { Sidebar } from "./sidebar";
+export { Header } from "./header";
