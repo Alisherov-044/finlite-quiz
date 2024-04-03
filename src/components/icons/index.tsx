@@ -250,13 +250,13 @@ export const Icons = {
                 cy="29.5"
                 r="19.6667"
                 stroke="#8387C5"
-                stroke-width="3.35"
+                strokeWidth="3.35"
             />
             <path
                 d="M29.5 41.3002V29.5002"
                 stroke="#8387C5"
-                stroke-width="3.35"
-                stroke-linecap="round"
+                strokeWidth="3.35"
+                strokeLinecap="round"
             />
             <circle
                 cx="1.96667"

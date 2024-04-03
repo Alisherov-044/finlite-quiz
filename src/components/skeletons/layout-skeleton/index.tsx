@@ -1,6 +1,6 @@
 import { Flex, Skeleton } from "antd";
 
-export function PageSkeleton() {
+export function LayoutSkeleton() {
     return (
         <Flex className="fixed top-0 left-0 w-full h-full z-40 bg-white">
             <Flex className="relative flex flex-shrink-0 flex-col gap-y-5 border-r px-5 py-10">

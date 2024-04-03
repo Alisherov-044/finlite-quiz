@@ -133,9 +133,17 @@
     @apply !right-4;
 }
 
+.sort-select-arrow {
+    @apply !right-0;
+}
+
 .sort-select-selector,
 .lang-select-selector {
     @apply flex items-center justify-center !w-10 !h-10 hover:!bg-gray-200 !rounded-full !border-none !shadow-none;
+}
+
+.sort-select-selector {
+    @apply !w-auto !h-auto hover:!bg-transparent;
 }
 
 .sort-select-selector .ant-typography,
@@ -152,7 +160,11 @@
 
 .sort-select-dropdown,
 .lang-select-dropdown {
-    @apply !w-auto !rounded-xl !p-0 border;
+    @apply !w-auto !rounded-md !p-0 border;
+}
+
+.sort-select-dropdown {
+    @apply !min-w-40;
 }
 
 .sort-select-item-option,

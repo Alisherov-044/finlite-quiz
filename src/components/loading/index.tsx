@@ -2,14 +2,14 @@ import gsap from "gsap";
 import { clsx } from "clsx";
 import { Flex } from "antd";
 import { useGSAP } from "@gsap/react";
-import { PageSkeleton } from "@/components";
+import { LayoutSkeleton } from "@/components";
 import { type ReactNode, useRef } from "react";
 
 export type LoadingProps = {
     fallback?: ReactNode;
 };
 
-export function Loading({ fallback = <PageSkeleton /> }: LoadingProps) {
+export function Loading({ fallback = <LayoutSkeleton /> }: LoadingProps) {
     const container = useRef<HTMLElement | null>(null);
 
     useGSAP(

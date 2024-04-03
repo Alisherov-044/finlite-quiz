@@ -1,15 +1,15 @@
 import { z } from "zod";
 import { Logo } from "@/components";
-import { useDispatch, useTranslate } from "@/hooks";
+import { useDispatch, useSelector, useTranslate } from "@/hooks";
 import { Button, Flex, Form, Input } from "antd";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Checkbox, FormCheckbox, FormItem } from "./styles";
-// import { useMutation } from "react-query";
-// import { axiosPublic } from "@/lib";
-// import { LOGIN_URL } from "@/utils/urls";
+import { useMutation } from "react-query";
+import { axiosPublic } from "@/lib";
+import { LOGIN_URL } from "@/utils/urls";
 import { setAuth } from "@/redux/slices/authSlice";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 export const LoginFormScheme = z.object({
     email: z.string({ required_error: "this field is required" }),
@@ -18,6 +18,14 @@ export const LoginFormScheme = z.object({
 });
 
 export default function LoginPage() {
+    const { isAuthenticated } = useSelector((state) => state.auth);
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    if (isAuthenticated) {
+        return <Navigate to="/" state={{ from: location }} replace />;
+    }
+
     const { t } = useTranslate();
     const {
         control,
@@ -27,13 +35,12 @@ export default function LoginPage() {
     } = useForm<z.infer<typeof LoginFormScheme>>({
         resolver: zodResolver(LoginFormScheme),
     });
-    // const { mutate } = useMutation({
-    //     mutationFn: (userData: z.infer<typeof LoginFormScheme>) =>
-    //         axiosPublic.post(LOGIN_URL, userData),
-    // });
+    const { mutate } = useMutation({
+        mutationFn: (userData: z.infer<typeof LoginFormScheme>) =>
+            axiosPublic.post(LOGIN_URL, userData),
+    });
 
     // fake login call
-    const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const onSubmit = (values: z.infer<typeof LoginFormScheme>) => {
@@ -59,7 +66,7 @@ export default function LoginPage() {
         if (roles.length !== 0) {
             return navigate("/");
         }
-        // mutate(values);
+        mutate(values);
         reset();
     };
 
