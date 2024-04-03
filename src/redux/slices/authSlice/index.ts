@@ -3,10 +3,11 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 export type AuthState = {
     roles: number[];
     isAuthenticated: boolean;
+    name?: string;
 };
 
 const initialState: AuthState = {
-    roles: [1312],
+    roles: [],
     isAuthenticated: true,
 };
 
@@ -16,6 +17,7 @@ export const authSlice = createSlice({
     reducers: {
         setAuth: (state, { payload }: PayloadAction<AuthState>) => {
             state = { ...state, ...payload };
+            localStorage.setItem("user", JSON.stringify(state));
         },
     },
 });

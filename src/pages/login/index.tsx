@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Logo } from "@/components";
-import { useTranslate } from "@/hooks";
+import { useDispatch, useTranslate } from "@/hooks";
 import { Button, Flex, Form, Input } from "antd";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,6 +8,8 @@ import { Checkbox, FormCheckbox, FormItem } from "./styles";
 import { useMutation } from "react-query";
 import { axiosPublic } from "@/lib";
 import { LOGIN_URL } from "@/utils/urls";
+import { setAuth } from "@/redux/slices/authSlice";
+import { useNavigate } from "react-router-dom";
 
 export const LoginFormScheme = z.object({
     email: z.string({ required_error: "this field is required" }),
@@ -30,8 +32,33 @@ export default function LoginPage() {
             axiosPublic.post(LOGIN_URL, userData),
     });
 
+    // fake login call
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
     const onSubmit = (values: z.infer<typeof LoginFormScheme>) => {
         console.log(values);
+
+        let roles = [];
+        if (values.email === "admin" && values.password === "admin") {
+            roles.push(1312);
+        } else if (
+            values.email === "teacher" &&
+            values.password === "teacher"
+        ) {
+            roles.push(1028);
+        } else if (
+            values.email === "student" &&
+            values.password === "student"
+        ) {
+            roles.push(3216);
+        }
+
+        dispatch(setAuth({ isAuthenticated: true, roles, name: "Sa'dulla" }));
+
+        if (roles.length !== 0) {
+            return navigate("/");
+        }
         mutate(values);
         reset();
     };

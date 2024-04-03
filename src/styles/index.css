@@ -118,40 +118,49 @@
 .ant-select-selection-item-active {
     @apply !bg-blue-100;
 }
-
+.sort-select,
 .lang-select {
     @apply w-fit h-auto !border-none;
 }
 
+.sort-select svg path,
 .lang-select svg path {
     @apply stroke-blue-500;
 }
 
+.sort-select-arrow,
 .lang-select-arrow {
     @apply !right-4;
 }
 
+.sort-select-selector,
 .lang-select-selector {
     @apply flex items-center justify-center !w-10 !h-10 hover:!bg-gray-200 !rounded-full !border-none !shadow-none;
 }
 
+.sort-select-selector .ant-typography,
 .lang-select-selector .ant-typography {
     @apply !hidden;
 }
 
+.sort-select-selection-item,
+.sort-select-selection-placeholder,
 .lang-select-selection-item,
 .lang-select-selection-placeholder {
     @apply font-semibold text-[16px] !text-blue-500;
 }
 
+.sort-select-dropdown,
 .lang-select-dropdown {
     @apply !w-auto !rounded-xl !p-0 border;
 }
 
+.sort-select-item-option,
 .lang-select-item-option {
     @apply !py-3 !px-4 !font-semibold;
 }
 
+.sort-select-selection-item-active,
 .lang-select-selection-item-active {
     @apply !bg-blue-100;
 }
