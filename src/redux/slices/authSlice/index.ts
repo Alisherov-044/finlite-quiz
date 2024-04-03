@@ -6,7 +6,7 @@ export type AuthState = {
 };
 
 const initialState: AuthState = {
-    roles: [],
+    roles: [1312],
     isAuthenticated: true,
 };
 
