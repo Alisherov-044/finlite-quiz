@@ -1,3 +1,22 @@
+import { ExamCard, ExamCardSkeleton } from "@/components";
+
 export default function ExamsPage() {
-    return <main>Exams page</main>;
+    const exam = {
+        starting_date: new Date("2024-04-05"),
+        starting_time: "11:00",
+        questions_qty: 30,
+        duration: 150,
+    };
+
+    return (
+        <main>
+            <ExamCard
+                exam={exam}
+                onEdit={() => {}}
+                onDelete={() => {}}
+                role="admin"
+            />
+            <ExamCardSkeleton role="admin" />
+        </main>
+    );
 }

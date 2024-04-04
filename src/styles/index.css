@@ -52,6 +52,7 @@
         --error-main: 219, 85, 77;
 
         --shadow-main: 0px 0px 5px 0px #4f639840;
+        --shadow-main-lg: 0px 0px 20px 0px #4f639880;
         --shadow-login: 0px 0px 25px 0px #0000000f;
     }
 
@@ -71,7 +72,7 @@
 }
 
 .ant-typography {
-    @apply !font-['SF-Pro-Text'];
+    @apply !font-['SF-Pro-Text'] !text-[16px];
 }
 
 .ant-btn-default:not(.ant-btn-background-ghost) {
@@ -213,4 +214,24 @@
 
 .ant-input::placeholder {
     @apply !capitalize;
+}
+
+.search-input-affix-wrapper {
+    @apply !p-2 rounded-md border-blue-300;
+}
+
+.search-input-prefix {
+    @apply !mr-4;
+}
+
+.search-input {
+    @apply !text-[16px];
+}
+
+.CircularProgressbar {
+    @apply !w-20 !h-20;
+}
+
+.CircularProgressbar-text {
+    @apply font-extrabold !fill-black;
 }

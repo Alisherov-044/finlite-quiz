@@ -5,7 +5,7 @@ import styled from "styled-components";
 export const Content = styled(Flex)`
     & > main {
         ${twi`
-            flex-auto
+            flex-auto px-28 pt-10
         `}
     }
 `;

@@ -27,7 +27,7 @@ export const sidebarLinks: TSidebarLinks = {
         },
         {
             id: 3,
-            link: "/exam",
+            link: "/exams",
             title: "exam",
             Icon: Icons.diploma,
         },

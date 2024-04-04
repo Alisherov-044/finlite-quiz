@@ -1,6 +1,5 @@
 import { LoginPageSkeleton } from "@/components";
 import {
-    ExamPage,
     ExamsPage,
     GroupsPage,
     LoginPage,
@@ -13,6 +12,7 @@ import {
     TestsPage,
     UnAuthorizedPage,
 } from "@/pages";
+import { Role } from "@/types";
 import type { ReactNode } from "react";
 
 export type TRoute = {
@@ -33,9 +33,9 @@ export type TRoutes = {
 };
 
 const userRoles = {
-    admin: [Number(import.meta.env.VITE_ADMIN_ROLE_ID)],
-    teacher: [Number(import.meta.env.VITE_TEACHER_ROLE_ID)],
-    student: [Number(import.meta.env.VITE_STUDENT_ROLE_ID)],
+    admin: [Role.admin],
+    teacher: [Role.teacher],
+    student: [Role.student],
 };
 
 export const routes: TRoutes = {
@@ -76,16 +76,14 @@ export const routes: TRoutes = {
             roles: userRoles.student,
         },
         {
-            id: 6,
-            path: "/exam",
-            element: <ExamPage />,
-            roles: userRoles.student,
-        },
-        {
             id: 7,
             path: "/exams",
             element: <ExamsPage />,
-            roles: [...userRoles.admin, ...userRoles.teacher],
+            roles: [
+                ...userRoles.admin,
+                ...userRoles.teacher,
+                ...userRoles.student,
+            ],
         },
         {
             id: 8,

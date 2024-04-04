@@ -1,9 +1,9 @@
-import type { TRole } from "@/types";
+import { Role, type TRole } from "@/types";
 
 const userRoles = {
-    [import.meta.env.VITE_ADMIN_ROLE_ID]: "admin",
-    [import.meta.env.VITE_TEACHER_ROLE_ID]: "teacher",
-    [import.meta.env.VITE_STUDENT_ROLE_ID]: "student",
+    [Role.admin]: "admin",
+    [Role.teacher]: "teacher",
+    [Role.student]: "student",
 };
 
 export function getCurrentRole(roles: number[]): TRole | null {
