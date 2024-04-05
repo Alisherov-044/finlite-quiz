@@ -80,6 +80,11 @@ export default function TeachersPage() {
         });
     }
 
+    function onCancel() {
+        close();
+        reset();
+    }
+
     return (
         <main className="flex flex-col">
             <PageHeaderAction
@@ -143,8 +148,8 @@ export default function TeachersPage() {
             <FormDrawer
                 open={isOpen}
                 width={600}
-                onClose={close}
-                onCancel={close}
+                onClose={onCancel}
+                onCancel={onCancel}
                 title={t("add ${something}", t("teacher"))}
                 footer={
                     <Button
