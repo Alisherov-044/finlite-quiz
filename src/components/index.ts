@@ -9,6 +9,8 @@ export {
     LoginPageSkeleton,
     ExamCardSkeleton,
     PracticeCardSkeleton,
+    UserCardSkeleton,
+    UserResultsCardSkeleton,
 } from "./skeletons";
 export { SelectLanguage } from "./select-language";
 export { Logout } from "./logout";
@@ -17,5 +19,5 @@ export { Notifications } from "./notifications";
 export { Sidebar } from "./sidebar";
 export { Header } from "./header";
 export { SelectPracticeMode } from "./select-practice-mode";
-export { UserCard, ExamCard, PracticeCard } from "./cards";
+export { UserCard, ExamCard, PracticeCard, UserResultsCard } from "./cards";
 export { CountDown } from "./count-down";

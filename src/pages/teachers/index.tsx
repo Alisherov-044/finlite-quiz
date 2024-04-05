@@ -1,5 +1,5 @@
-import { Icons, UserCard } from "@/components";
 import { Input } from "antd";
+import { Icons, UserCard, UserCardSkeleton } from "@/components";
 
 export default function TeachersPage() {
     const user = {
@@ -18,6 +18,7 @@ export default function TeachersPage() {
                 prefixCls="search-input"
             />
             <UserCard user={user} onEdit={() => {}} onDelete={() => {}} />
+            <UserCardSkeleton role="teacher" />
         </main>
     );
 }

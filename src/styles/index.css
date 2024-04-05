@@ -50,6 +50,7 @@
         --gray-main: 204, 204, 204;
 
         --error-main: 219, 85, 77;
+        --success-main: 64, 183, 90;
 
         --shadow-main: 0px 0px 5px 0px #4f639840;
         --shadow-main-lg: 0px 0px 20px 0px #4f639880;
@@ -72,7 +73,11 @@
 }
 
 .ant-typography {
-    @apply !font-['SF-Pro-Text'] !text-[16px];
+    @apply !font-['SF-Pro-Text'] !text-[16px] text-inherit;
+}
+
+.ant-btn.text-black span {
+    @apply !text-black;
 }
 
 .ant-btn-default:not(.ant-btn-background-ghost) {

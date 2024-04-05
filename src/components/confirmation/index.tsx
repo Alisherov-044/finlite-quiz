@@ -1,12 +1,11 @@
 import { clsx } from "clsx";
 import { Icons } from "@/components";
-import ReactHtmlParser from "react-html-parser";
 import { Button, Flex, Modal, Typography } from "antd";
 import type { ReactNode } from "react";
 
 export type ConfirmationProps = {
     title: string;
-    description: string;
+    description: ReactNode;
     btnText: string;
     isOpen: boolean;
     onCancel: () => void;
@@ -37,7 +36,7 @@ export function Confirmation({
                 <Flex className="items-center gap-x-3 mt-8">
                     {prefixIcon}
                     <Typography className="!text-blue-700 font-normal">
-                        {ReactHtmlParser(description)}
+                        {description}
                     </Typography>
                 </Flex>
                 <Button

@@ -24,7 +24,7 @@ export function Sidebar() {
                 <Typography className="font-bold uppercase text-blue-500">
                     {t("departments")}
                 </Typography>
-                <Flex className="flex-col  gap-y-6">
+                <Flex className="flex-col  gap-y-6 !text-blue-700">
                     {sidebarLinks[currentRole].map(
                         ({ id, link, title, Icon }) => (
                             <Link
@@ -36,7 +36,7 @@ export function Sidebar() {
                                 )}
                             >
                                 <Icon />
-                                <Typography className="font-bold text-blue-700 first-letter:capitalize">
+                                <Typography className="font-bold first-letter:capitalize">
                                     {t(title)}
                                 </Typography>
                             </Link>

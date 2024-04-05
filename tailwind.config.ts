@@ -35,6 +35,9 @@ export default {
                 error: {
                     main: "rgba(var(--error-main))",
                 },
+                success: {
+                    main: "rgba(var(--success-main))",
+                },
             },
             boxShadow: {
                 main: "var(--shadow-main)",

@@ -61,9 +61,10 @@ export default function LoginPage() {
             roles.push(3216);
         }
 
-        dispatch(setAuth({ isAuthenticated: true, roles, name: "Sa'dulla" }));
-
         if (roles.length !== 0) {
+            dispatch(
+                setAuth({ isAuthenticated: true, roles, name: "Sa'dulla" })
+            );
             return navigate("/");
         }
         mutate(values);

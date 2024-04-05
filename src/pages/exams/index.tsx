@@ -10,13 +10,8 @@ export default function ExamsPage() {
 
     return (
         <main>
-            <ExamCard
-                exam={exam}
-                onEdit={() => {}}
-                onDelete={() => {}}
-                role="admin"
-            />
-            <ExamCardSkeleton role="admin" />
+            <ExamCard exam={exam} onEdit={() => {}} onDelete={() => {}} />
+            <ExamCardSkeleton />
         </main>
     );
 }
