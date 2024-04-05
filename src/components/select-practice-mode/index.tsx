@@ -57,6 +57,7 @@ export function SelectPracticeMode({
                                     placeholder={t("select department")}
                                     options={departments}
                                     suffixIcon={<Icons.arrow.select />}
+                                    placement="bottomRight"
                                     {...field}
                                 />
                             )}

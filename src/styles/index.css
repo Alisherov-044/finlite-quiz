@@ -74,7 +74,7 @@
 }
 
 .ant-typography {
-    @apply !font-['SF-Pro-Text'] !text-[16px] text-inherit;
+    @apply !font-['SF-Pro-Text'] text-[16px] text-inherit;
 }
 
 .ant-btn.text-black span {
@@ -82,7 +82,7 @@
 }
 
 .ant-btn-default:not(.ant-btn-background-ghost) {
-    @apply w-fit h-auto py-4 px-14 rounded-md font-semibold text-[16px] uppercase !text-white bg-blue-700 hover:!bg-blue-900 disabled:!bg-blue-500;
+    @apply w-fit h-auto py-3 px-14 rounded-md font-semibold text-[16px] uppercase !text-white bg-blue-700 hover:!bg-blue-900 disabled:!bg-blue-500;
 }
 
 .ant-btn-default.ant-btn-lg:not(.ant-btn-background-ghost) {
@@ -232,6 +232,10 @@
 
 .search-input {
     @apply !text-[16px];
+}
+
+.search-input::placeholder {
+    @apply !capitalize;
 }
 
 .CircularProgressbar {

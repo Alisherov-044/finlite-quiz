@@ -59,6 +59,7 @@ export const resources = {
             logout: "chiqish",
             remove: "remove",
             notifications: "bildirishnomalar",
+            "teachers list": "o'qituvchilar ro'yhati",
             "page not found": "siz izlayotgan sahifa mavjud emas!",
             "go back": "orqaga",
             "you don't have permission go this page":
@@ -98,6 +99,7 @@ export const resources = {
             "questions qty": "savollar soni",
             "exam created": "imtihon yaratildi",
             "test created": "test yaratildi",
+            "teacher created": "o'qituvchi qo'shildi",
             "${x} answer": (answer: "A" | "B" | "C" | "D") => `${answer} javob`,
             "add ${something}": (something: string) => `${something} qo'shish`,
             "${something} added": (something: string) =>
@@ -166,6 +168,7 @@ export const resources = {
             logout: "выйти",
             remove: "удалять",
             notifications: "уведомления",
+            "teachers list": "список учителей",
             "page not found": "страница не найдена!",
             "go back": "возвращаться",
             "you don't have permission go this page":
@@ -206,6 +209,7 @@ export const resources = {
             "questions qty": "количество вопросов",
             "exam created": "экзамен создан",
             "test created": "тест создан",
+            "teacher created": "учитель создан",
             "${x} answer": (answer: string) => `${answer} ответ`,
             "add ${something}": (something: string) => `добавить ${something}`,
             "${something} added": (something: string) => `${something} добавил`,
