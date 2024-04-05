@@ -48,6 +48,7 @@
         --bg-gray: 238, 238, 247;
 
         --gray-main: 204, 204, 204;
+        --gray-text: 85, 85, 85;
 
         --error-main: 219, 85, 77;
         --success-main: 64, 183, 90;
@@ -68,7 +69,7 @@
     html,
     body,
     #root {
-        @apply h-full !font-['SF-Pro-Text'];
+        @apply h-full !font-['SF-Pro-Text'] scroll-smooth;
     }
 }
 

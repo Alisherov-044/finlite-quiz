@@ -176,6 +176,7 @@ export const resources = {
             "remember me": "запомнить меня",
             "practice history": "история практики",
             "correct answers": "правильные ответы",
+            "incorrect answers": "неправильные ответы",
             "test qty": "количество тестов",
             "there is no time limit in this mode":
                 "в этом режиме нет ограничения по времени",

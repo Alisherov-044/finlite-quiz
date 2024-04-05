@@ -12,9 +12,9 @@ export function Layout() {
     }
 
     return (
-        <Flex className="w-full h-full">
+        <Flex className="w-full h-screen overflow-hidden">
             <Sidebar />
-            <Content className="flex-auto flex-col h-full">
+            <Content className="flex-auto flex-col h-full overflow-scroll">
                 <Header />
                 <Outlet />
             </Content>

@@ -11,6 +11,7 @@ export {
     PracticeCardSkeleton,
     UserCardSkeleton,
     UserResultsCardSkeleton,
+    QuizSkeleton,
 } from "./skeletons";
 export { SelectLanguage } from "./select-language";
 export { Logout } from "./logout";
@@ -21,3 +22,4 @@ export { Header } from "./header";
 export { SelectPracticeMode } from "./select-practice-mode";
 export { UserCard, ExamCard, PracticeCard, UserResultsCard } from "./cards";
 export { CountDown } from "./count-down";
+export { Quiz } from "./quiz";

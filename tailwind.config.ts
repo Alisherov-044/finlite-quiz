@@ -31,6 +31,7 @@ export default {
                 },
                 gray: {
                     main: "rgba(var(--gray-main))",
+                    text: "rgba(var(--gray-text))",
                 },
                 error: {
                     main: "rgba(var(--error-main))",

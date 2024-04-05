@@ -15,7 +15,7 @@ export function Header() {
     }
 
     return (
-        <header className="flex items-center justify-end gap-x-5 p-7">
+        <header className="flex items-center justify-end gap-x-5 p-7 shadow-sm z-20">
             <SelectLanguage />
             <Notifications />
             <Flex className="items-center justify-between gap-x-2 p-1.5 rounded-[32px] border border-blue-900">
