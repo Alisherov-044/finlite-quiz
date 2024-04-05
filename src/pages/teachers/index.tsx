@@ -35,7 +35,7 @@ export const TeacherFormScheme = z.object({
 });
 
 export default function TeachersPage() {
-    const { t } = useTranslate();
+    const { t, currentLng } = useTranslate();
     const { isOpen, open, close } = useOpen();
     const { data: teachers, isLoading } = useQuery<TUser[]>("teachers", {
         queryFn: async () => await [],
@@ -89,15 +89,21 @@ export default function TeachersPage() {
             />
             <Flex className="flex-col gap-y-4 mt-10">
                 <Flex className="items-center justify-between">
-                    <Typography className="font-bold uppercase !text-blue-900">
+                    <Typography className="!text-sm font-bold !text-blue-900">
                         {t("teachers list")}
                     </Typography>
                     <Select
-                        placeholder="Saralash"
+                        placeholder={t("sort")}
                         suffixIcon={<Icons.arrow.select />}
                         prefixCls="sort-select"
                         placement="bottomRight"
-                        options={options}
+                        options={options.map((option) => ({
+                            ...options,
+                            label:
+                                currentLng === "ru"
+                                    ? option.label.ru
+                                    : option.label.uz,
+                        }))}
                         onChange={(value) => setFilter(value)}
                     />
                 </Flex>

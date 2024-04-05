@@ -165,6 +165,11 @@
     @apply font-semibold text-[16px] !text-blue-500;
 }
 
+.sort-select-selection-search-input,
+.sort-select-selection-search-input::placeholder {
+    @apply !capitalize;
+}
+
 .sort-select-dropdown,
 .lang-select-dropdown {
     @apply !w-auto !rounded-md !p-0 border;
