@@ -9,7 +9,7 @@ export type TAnswer = {
     isCorrect: boolean;
 };
 
-export type QuizProps = {
+export type TQuiz = {
     question: {
         id: number;
         uz: string;
@@ -19,14 +19,19 @@ export type QuizProps = {
     selected?: number;
 };
 
-const answerPrefixLetter: Record<number, "A" | "B" | "C" | "D"> = {
+export type QuizProps = {
+    quiz: TQuiz;
+};
+
+export const answerPrefixLetter: Record<number, "A" | "B" | "C" | "D"> = {
     0: "A",
     1: "B",
     2: "C",
     3: "D",
 };
 
-export function Quiz({ question, answers, selected }: QuizProps) {
+export function Quiz({ quiz }: QuizProps) {
+    const { question, answers, selected } = quiz;
     const { t, currentLng } = useTranslate();
     const { active, setActive } = useActive(selected);
 

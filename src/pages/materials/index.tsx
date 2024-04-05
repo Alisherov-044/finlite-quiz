@@ -54,6 +54,12 @@ export default function MaterialsPage() {
         },
     ];
 
+    const quiz = {
+        question,
+        answers,
+        selected: 2,
+    };
+
     return (
         <main>
             <Select
@@ -63,7 +69,7 @@ export default function MaterialsPage() {
                 prefixCls="sort-select"
                 options={options}
             />
-            <Quiz question={question} answers={answers} selected={2} />
+            <Quiz quiz={quiz} />
             <QuizSkeleton />
         </main>
     );
