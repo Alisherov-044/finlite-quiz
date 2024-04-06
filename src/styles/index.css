@@ -93,7 +93,7 @@
     @apply !rounded-none !border-blue-300;
 }
 
-.form-select-open .form-select-selector {
+.ant-select-open .ant-select-selector {
     @apply !rounded-b-none;
 }
 

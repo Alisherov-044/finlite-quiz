@@ -43,7 +43,7 @@ export function QuizResult({ quizzes }: QuizResultProps) {
                     <ContentCol span={8}>
                         <Typography
                             className={clsx(
-                                "font-semibold",
+                                "font-medium",
                                 answers.some(
                                     (answer) =>
                                         answer.id === selected &&
