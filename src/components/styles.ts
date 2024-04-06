@@ -4,7 +4,7 @@ import { twi } from "tw-to-css";
 
 export const FormItem = styled(antd.Form.Item)`
     ${twi`
-        !min-h-20 !mb-16
+        !min-h-20 !mb-14
     `}
 
     .ant-form-item {

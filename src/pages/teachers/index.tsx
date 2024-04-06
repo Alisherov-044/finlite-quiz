@@ -1,8 +1,9 @@
 import { z } from "zod";
 import { useQuery } from "react-query";
-import { useOpen, useTranslate } from "@/hooks";
-import { options } from "./data";
+import { useActive, useOpen, useTranslate } from "@/hooks";
+import { options } from "@/components/data";
 import {
+    Confirmation,
     FormDrawer,
     Icons,
     PageHeaderAction,
@@ -25,8 +26,10 @@ import {
     Typography,
     notification,
 } from "antd";
-import type { TUser } from "@/components/cards/user-card";
+import { fillValues } from "@/utils";
 import { FormItem } from "@/components/styles";
+import type { TSetValue } from "@/utils/fill-values";
+import type { TUser } from "@/components/cards/user-card";
 
 export const TeacherFormScheme = z.object({
     full_name: z.string({ required_error: "this field is required" }),
@@ -37,13 +40,28 @@ export const TeacherFormScheme = z.object({
 export default function TeachersPage() {
     const { t, currentLng } = useTranslate();
     const { isOpen, open, close } = useOpen();
+    const { active: deleteTeacher, setActive: setDeleteTeacher } =
+        useActive(null);
+    const { active: editTeacher, setActive: setEditTeacher } = useActive(null);
     const { data: teachers, isLoading } = useQuery<TUser[]>("teachers", {
-        queryFn: async () => await [],
+        queryFn: async () =>
+            await [
+                {
+                    id: 1,
+                    full_name: "Bekchanov Javlonbek",
+                    email: "Javlonbek",
+                    group: 1,
+                    image: "https://mdbcdn.b-cdn.net/img/new/avatars/2.webp",
+                    role: "teacher",
+                    password: "password",
+                },
+            ],
     });
     const {
         handleSubmit,
         control,
         reset,
+        setValue,
         formState: { isLoading: isFormLoading },
     } = useForm<z.infer<typeof TeacherFormScheme>>({
         resolver: zodResolver(TeacherFormScheme),
@@ -69,21 +87,37 @@ export default function TeachersPage() {
 
     console.log(filter);
 
-    function onSubmit(values: z.infer<typeof TeacherFormScheme>) {
-        console.log(values);
-        reset();
-        close();
-        notification.success({
-            message: t("teacher created"),
-            icon: <Icons.checkCircle />,
-            closeIcon: false,
-        });
-    }
-
     function onCancel() {
         close();
         reset();
+        setEditTeacher(null);
     }
+
+    function onSubmit(values: z.infer<typeof TeacherFormScheme>) {
+        console.log(values);
+        notification.success({
+            message: t(editTeacher ? "edited" : "teacher created"),
+            icon: <Icons.checkCircle />,
+            closeIcon: false,
+        });
+        onCancel();
+    }
+
+    useEffect(() => {
+        if (editTeacher) {
+            let teacher = teachers?.find(
+                (teacher) => teacher.id === editTeacher
+            );
+
+            if (teacher) {
+                fillValues<TUser>(setValue as TSetValue, teacher, [
+                    "full_name",
+                    "email",
+                    "password",
+                ]);
+            }
+        }
+    }, [editTeacher]);
 
     return (
         <main className="flex flex-col">
@@ -126,16 +160,19 @@ export default function TeachersPage() {
                     ))
                 ) : teachers && teachers.length ? (
                     teachers
-                        .filter(
-                            (teacher) =>
-                                search.length &&
-                                [teacher.full_name].includes(search)
+                        .filter((teacher) =>
+                            search.length
+                                ? teacher.full_name
+                                      .toLocaleLowerCase()
+                                      .includes(search.toLocaleLowerCase())
+                                : true
                         )
                         .map((teacher) => (
                             <UserCard
+                                key={teacher.id}
                                 user={teacher}
-                                onEdit={() => {}}
-                                onDelete={() => {}}
+                                onEdit={() => setEditTeacher(teacher.id)}
+                                onDelete={() => setDeleteTeacher(teacher.id)}
                             />
                         ))
                 ) : (
@@ -146,11 +183,15 @@ export default function TeachersPage() {
             </Flex>
 
             <FormDrawer
-                open={isOpen}
+                open={isOpen || !!editTeacher}
                 width={600}
                 onClose={onCancel}
                 onCancel={onCancel}
-                title={t("add ${something}", t("teacher"))}
+                title={
+                    editTeacher
+                        ? t("edit")
+                        : t("add ${something}", t("teacher"))
+                }
                 footer={
                     <Button
                         form="teacher-form"
@@ -159,7 +200,7 @@ export default function TeachersPage() {
                         disabled={isFormLoading}
                         className="!w-full"
                     >
-                        {t("create")}
+                        {t(editTeacher ? "edit" : "create")}
                     </Button>
                 }
             >
@@ -199,6 +240,18 @@ export default function TeachersPage() {
                     </Row>
                 </Form>
             </FormDrawer>
+
+            <Confirmation
+                isOpen={!!deleteTeacher}
+                onCancel={() => setDeleteTeacher(null)}
+                onConfirm={() => {}}
+                btnText={t("delete")}
+                title={t("delete")}
+                description={t(
+                    "do you wanna delete ${something}",
+                    t("teacher")
+                )}
+            />
         </main>
     );
 }

@@ -35,7 +35,7 @@ export function PracticeCard({ practice }: PracticeCardProps) {
                 </Typography>
             </Flex>
             <Flex className="gap-x-0.5">
-                <Typography className="text-2xl font-extrabold text-blue-700 text-nowrap uppercase">
+                <Typography className="text-2xl font-extrabold !text-blue-700 text-nowrap uppercase">
                     {t("correct answers")}
                 </Typography>
                 <AnimatedProgressProvider

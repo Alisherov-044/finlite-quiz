@@ -19,7 +19,7 @@ export function Header() {
             <SelectLanguage />
             <Notifications />
             <Flex className="items-center justify-between gap-x-2 p-1.5 rounded-[32px] border border-blue-900">
-                <Typography className="ml-1 font-bold text-blue-700">
+                <Typography className="ml-1 font-bold !text-blue-700">
                     {formatGreeting(currentRole, t, name)}
                 </Typography>
                 <div className="w-7 h-7 rounded-full bg-blue-900" />

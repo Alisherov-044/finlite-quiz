@@ -4,11 +4,13 @@ import { IconButton, Icons } from "@/components";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 
 export type TUser = {
+    id: number;
     image: string;
     full_name: string;
     group: number;
     email: string;
     role: string;
+    password: string;
 };
 
 export type UserCardProps = {
@@ -39,17 +41,17 @@ export function UserCard({ user, onEdit, onDelete }: UserCardProps) {
                             {full_name}
                         </Typography>
                         {role === "student" && (
-                            <Typography className="font-bold">
+                            <Typography className="font-semibold">
                                 {t("group")}: {group}
                             </Typography>
                         )}
                     </Flex>
                     {role === "student" ? (
-                        <Typography className="font-bold">
+                        <Typography className="font-semibold">
                             {t("email")}: {email}
                         </Typography>
                     ) : (
-                        <Typography className="font-bold">
+                        <Typography className="font-semibold">
                             {t("${n}th group", group)}
                         </Typography>
                     )}

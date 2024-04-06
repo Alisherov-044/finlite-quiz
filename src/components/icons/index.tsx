@@ -629,7 +629,7 @@ export const Icons = {
         ),
         down: (props: IconProps) => (
             <svg
-                width="16"
+                width="14"
                 height="8"
                 viewBox="0 0 16 8"
                 fill="none"

@@ -1,30 +1,10 @@
+@import url(https://fonts.googleapis.com/css?family=Inter:100,200,300,regular,500,600,700,800,900);
+
 @tailwind base;
 @tailwind utilities;
 @tailwind components;
 
 @layer base {
-    @font-face {
-        font-family: "SF-Pro-Text";
-        src: url("./sf-pro/SF-Pro-Text-UltraLight.otf"),
-            url("./sf-pro/SF-Pro-Text-UltraLightItalic.otf"),
-            url("./sf-pro/SF-Pro-Text-Light.otf"),
-            url("./sf-pro/SF-Pro-Text-LightItalic.otf"),
-            url("./sf-pro/SF-Pro-Text-Thin.otf"),
-            url("./sf-pro/SF-Pro-Text-ThinItalic.otf"),
-            url("./sf-pro/SF-Pro-Text-Medium.otf"),
-            url("./sf-pro/SF-Pro-Text-MediumItalic.otf"),
-            url("./sf-pro/SF-Pro-Text-Regular.otf"),
-            url("./sf-pro/SF-Pro-Text-RegularItalic.otf"),
-            url("./sf-pro/SF-Pro-Text-Heavy.otf"),
-            url("./sf-pro/SF-Pro-Text-HeavyItalic.otf"),
-            url("./sf-pro/SF-Pro-Text-SemiBold.otf"),
-            url("./sf-pro/SF-Pro-Text-SemiBoldItalic.otf"),
-            url("./sf-pro/SF-Pro-Text-Bold.otf"),
-            url("./sf-pro/SF-Pro-Text-BoldItalic.otf"),
-            url("./sf-pro/SF-Pro-Text-Black.otf"),
-            url("./sf-pro/SF-Pro-Text-BlackItalic.otf");
-    }
-
     :root {
         --primary-100: 245, 196, 0, 0.125;
         --primary-300: 254, 248, 223;
@@ -69,12 +49,12 @@
     html,
     body,
     #root {
-        @apply h-full !font-['SF-Pro-Text'] scroll-smooth;
+        @apply h-full !font-inter scroll-smooth;
     }
 }
 
 .ant-typography {
-    @apply !font-['SF-Pro-Text'] text-[16px] text-inherit;
+    @apply !font-inter text-[16px] text-inherit;
 }
 
 .ant-btn.text-black span {
@@ -89,42 +69,60 @@
     @apply px-24;
 }
 
-.ant-select {
+.ant-select,
+.form-select {
     @apply w-fit h-auto min-w-[300px];
 }
 
-.ant-select svg path {
+.ant-select svg path,
+.form-select svg path {
     @apply stroke-blue-500;
 }
 
-.ant-select-arrow {
+.ant-select-arrow,
+.form-select-arrow {
     @apply !right-4;
 }
 
-.ant-select-selector {
+.ant-select-selector,
+.form-select-selector {
     @apply w-full !py-3 !px-4 !rounded-xl !border-blue-500;
 }
 
-.ant-select-open .ant-select-selector {
+.form-select-selector {
+    @apply !rounded-none !border-blue-300;
+}
+
+.form-select-open .form-select-selector {
     @apply !rounded-b-none;
 }
 
 .ant-select-selection-item,
-.ant-select-selection-placeholder {
+.ant-select-selection-placeholder,
+.form-select-selection-item,
+.form-select-selection-placeholder {
     @apply font-semibold text-[16px] !text-blue-500;
 }
 
-.ant-select-dropdown {
+.ant-select-dropdown,
+.form-select-dropdown {
     @apply !rounded-xl !p-0 !rounded-t-none border !border-blue-500;
 }
 
-.ant-select-item-option {
+.form-select-dropdown {
+    @apply !rounded-none !border-blue-300;
+}
+
+.ant-select-item-option,
+.form-select-item-option {
     @apply !py-3 !px-4 !font-semibold;
 }
 
-.ant-select-selection-item-active {
+.ant-select-selection-item-active,
+.form-select-selection-item-active {
     @apply !bg-blue-100;
 }
+
 .sort-select,
 .lang-select {
     @apply w-fit h-auto !border-none;
@@ -200,7 +198,7 @@
 }
 
 .ant-notification-notice-wrapper {
-    @apply !rounded-none !-mr-6 !mt-40;
+    @apply !rounded-none !-mr-6 !mt-14;
 }
 
 .ant-notification-notice {
@@ -249,4 +247,32 @@
 
 .CircularProgressbar-text {
     @apply font-extrabold !fill-black;
+}
+
+.ant-collapse {
+    @apply !border-blue-300 !bg-transparent;
+}
+
+.ant-collapse-item {
+    @apply !rounded-md !border-blue-300;
+}
+
+.ant-collapse-header {
+    @apply !p-4;
+}
+
+.ant-collapse-header svg {
+    @apply transition-all !duration-300;
+}
+
+.ant-collapse-content {
+    @apply !border-none;
+}
+
+.ant-collapse-content-box {
+    @apply !pt-0 ml-4;
+}
+
+.ant-collapse-header[aria-expanded="true"] svg {
+    @apply rotate-180;
 }

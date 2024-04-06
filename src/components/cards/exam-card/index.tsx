@@ -57,7 +57,7 @@ export function ExamCard({ exam, onEdit, onDelete }: ExamCardProps) {
 
     return (
         <Flex className="relative items-end justify-between p-6 border shadow-main rounded-2xl">
-            <Flex className="flex-col gap-y-2 font-bold">
+            <Flex className="flex-col gap-y-2">
                 <Typography>
                     {t("starting date")}: {formatDate(starting_date)}
                 </Typography>

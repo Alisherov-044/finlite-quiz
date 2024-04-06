@@ -19,9 +19,8 @@ export function Sidebar() {
     return (
         <aside className="sticky top-0 left-0 h-full flex flex-col gap-y-10 w-fit bg-white shadow-main px-5 py-9">
             <Logo />
-
             <Flex className="flex-col gap-y-4">
-                <Typography className="font-bold uppercase text-blue-500">
+                <Typography className="font-bold uppercase !text-blue-500">
                     {t("departments")}
                 </Typography>
                 <Flex className="flex-col  gap-y-6 !text-blue-700">

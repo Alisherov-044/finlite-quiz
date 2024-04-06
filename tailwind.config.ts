@@ -45,6 +45,9 @@ export default {
                 "main-lg": "var(--shadow-main-lg)",
                 login: "var(--shadow-login)",
             },
+            fontFamily: {
+                inter: ["Inter", "sans-serif"],
+            },
         },
     },
     plugins: [],
