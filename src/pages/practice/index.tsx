@@ -2,6 +2,7 @@ import {
     PracticeCard,
     PracticeCardSkeleton,
     SelectPracticeMode,
+    TestLink,
 } from "@/components";
 import { useOpen } from "@/hooks";
 import { Button } from "antd";
@@ -19,10 +20,17 @@ export default function PracticePage() {
     return (
         <main>
             <Button onClick={open}>open</Button>
-            <SelectPracticeMode
+            {/* <SelectPracticeMode
                 isOpen={isOpen}
                 onSubmit={(values) => console.log(values)}
                 onCancel={close}
+            /> */}
+
+            <TestLink
+                isOpen={isOpen}
+                link="https://www.finlite.uz/registration"
+                onPreview={() => {}}
+                onClose={close}
             />
 
             <PracticeCard practice={practice} />

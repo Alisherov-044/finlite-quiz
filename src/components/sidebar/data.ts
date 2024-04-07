@@ -1,11 +1,10 @@
 import type { FC } from "react";
-import type { TTtranslation } from "@/i18n";
 import { Icons, type IconProps } from "@/components/icons";
 
 export type TSidebarLink = {
     id: number;
     link: string;
-    title: TTtranslation;
+    title: string;
     Icon: FC<IconProps>;
 };
 
@@ -16,19 +15,19 @@ export const sidebarLinks: TSidebarLinks = {
         {
             id: 1,
             link: "/materials",
-            title: "materials",
+            title: "Materiallar",
             Icon: Icons.document,
         },
         {
             id: 2,
             link: "/practice",
-            title: "practice",
+            title: "Amaliyot",
             Icon: Icons.case,
         },
         {
             id: 3,
             link: "/exams",
-            title: "exam",
+            title: "Imtihon",
             Icon: Icons.diploma,
         },
     ],
@@ -36,39 +35,33 @@ export const sidebarLinks: TSidebarLinks = {
         {
             id: 1,
             link: "/exams",
-            title: "exams",
-            Icon: Icons.plusCircle,
-        },
-        {
-            id: 2,
-            link: "/tests",
-            title: "tests",
-            Icon: Icons.plusCircleCut,
+            title: "Imtihon natijalari",
+            Icon: Icons.list,
         },
     ],
     admin: [
         {
             id: 1,
             link: "/teachers",
-            title: "teachers",
+            title: "O'qituvchilar",
             Icon: Icons.user.plus,
         },
         {
             id: 2,
             link: "/students",
-            title: "students",
+            title: "O'quvchilar",
             Icon: Icons.user.check,
         },
         {
             id: 3,
             link: "/groups",
-            title: "groups",
+            title: "Guruhlar",
             Icon: Icons.user.group,
         },
         {
             id: 4,
             link: "/exams",
-            title: "exams",
+            title: "Imtihonlar",
             Icon: Icons.plusCircle,
         },
         {

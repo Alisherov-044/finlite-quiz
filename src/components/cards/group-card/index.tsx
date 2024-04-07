@@ -26,10 +26,10 @@ export function GroupCard({ group }: GroupCardProps) {
                 header={
                     <Flex className="items-center gap-x-4">
                         <Typography className="font-bold !text-gray-text">
-                            {t("${n}th group", number)} {name}
+                            {t(`${number}-guruh`)} {name}
                         </Typography>
                         <Typography>
-                            ( {t("${x} student", students.length)} )
+                            ( {t(`${students.length} o'quvchi`)} )
                         </Typography>
                     </Flex>
                 }

@@ -276,3 +276,49 @@
 .ant-collapse-header[aria-expanded="true"] svg {
     @apply rotate-180;
 }
+
+.ant-table-wrapper {
+    @apply mt-8;
+}
+
+.ant-table {
+    @apply border !font-semibold;
+}
+
+.ant-table thead {
+    @apply !hidden;
+}
+
+.ant-table td {
+    @apply border-r last-of-type:border-none;
+}
+
+.ant-table td.id {
+    @apply !w-10 text-center;
+}
+
+.ant-pagination {
+    @apply !justify-center;
+}
+
+.ant-pagination-item {
+    @apply !border-none;
+}
+
+.ant-pagination-item a {
+    @apply border rounded-md !text-black border-gray-300;
+}
+
+.ant-pagination-item-active a {
+    @apply !border-blue-900 bg-blue-900 !text-white;
+}
+
+.ant-pagination-next,
+.ant-pagination-prev {
+    @apply flex items-center justify-center border rounded-md border-gray-300;
+}
+
+.ant-pagination-next svg path,
+.ant-pagination-prev svg path {
+    @apply !fill-black;
+}

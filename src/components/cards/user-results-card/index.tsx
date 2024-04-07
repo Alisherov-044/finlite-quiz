@@ -45,21 +45,21 @@ export function UserResultsCard({ user, result }: UserResultsCardProps) {
                         </Typography>
                     </Flex>
                     <Typography className="font-bold">
-                        {t("${n}th group", group)}
+                        {t(`${group}-guruch`)}
                     </Typography>
                 </Flex>
             </Flex>
             <Flex className="items-center gap-x-10 capitalize">
                 <Flex className="flex-col items-center gap-y-2 !text-success-main">
-                    <Typography>{t("correct answers")}</Typography>
+                    <Typography>{t(`To'g'ri javoblar`)}</Typography>
                     <Typography>{correct_answers}</Typography>
                 </Flex>
                 <Flex className="flex-col items-center gap-y-2 !text-error-main">
-                    <Typography>{t("incorrect answers")}</Typography>
+                    <Typography>{t(`Noto'g'ri javoblar`)}</Typography>
                     <Typography>{incorrect_answers}</Typography>
                 </Flex>
                 <Flex className="flex-col items-center gap-y-2">
-                    <Typography>{t("time")}</Typography>
+                    <Typography>{t("Vaqt")}</Typography>
                     <Typography>
                         {minutes}:{Math.round(seconds)}
                     </Typography>
@@ -69,7 +69,7 @@ export function UserResultsCard({ user, result }: UserResultsCardProps) {
                 type="text"
                 className="!h-auto !px-4 !py-1.5 !bg-gray-200 text-black !capitalize !font-normal hover:!bg-gray-300 hover:text-black"
             >
-                {t("in detail")}
+                {t("Batafsil")}
             </Button>
         </Flex>
     );

@@ -25,18 +25,18 @@ export function PracticeCard({ practice }: PracticeCardProps) {
         <Flex className="justify-between rounded-2xl p-4 border transition-all duration-300 shadow-main hover:shadow-main-lg">
             <Flex className="flex-col gap-y-2">
                 <Typography>
-                    {t("date")}: {formatDate(date)}
+                    {t("Sana")}: {formatDate(date)}
                 </Typography>
                 <Typography>
-                    {t("department")}: {department}
+                    {t("Bo'lim")}: {department}
                 </Typography>
                 <Typography>
-                    {t("test qty")}: {test_qty}
+                    {t("Test soni")}: {test_qty}
                 </Typography>
             </Flex>
             <Flex className="gap-x-0.5">
                 <Typography className="text-2xl font-extrabold !text-blue-700 text-nowrap uppercase">
-                    {t("correct answers")}
+                    {t("To'g'ri javoblar")}
                 </Typography>
                 <AnimatedProgressProvider
                     valueStart={0}

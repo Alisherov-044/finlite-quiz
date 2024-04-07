@@ -9,19 +9,19 @@ export type QuizResultProps = {
 };
 
 export function QuizResult({ quizzes }: QuizResultProps) {
-    const { t, currentLng } = useTranslate();
+    const { t } = useTranslate();
 
     return (
         <Flex className="flex-col border border-blue-300 rounded-md shadow-main">
             <Row>
                 <HeaderCol span={8}>
-                    <Title level={2}>{t("question")}</Title>
+                    <Title level={2}>{t("Savol")}</Title>
                 </HeaderCol>
                 <HeaderCol span={8}>
-                    <Title level={2}>{t("given answer")}</Title>
+                    <Title level={2}>{t("Berilgan javob")}</Title>
                 </HeaderCol>
                 <HeaderCol span={8}>
-                    <Title level={2}>{t("correct answer")}</Title>
+                    <Title level={2}>{t("To'g'ri javob")}</Title>
                 </HeaderCol>
             </Row>
             {quizzes.map(({ question, answers, selected }, index) => (
@@ -36,9 +36,7 @@ export function QuizResult({ quizzes }: QuizResultProps) {
                         <Typography className="text-nowrap">
                             {index + 1}.
                         </Typography>
-                        <Typography>
-                            {currentLng === "ru" ? question.ru : question.uz}
-                        </Typography>
+                        <Typography>{t(question.content)}</Typography>
                     </ContentCol>
                     <ContentCol span={8}>
                         <Typography
@@ -56,11 +54,9 @@ export function QuizResult({ quizzes }: QuizResultProps) {
                             {answers.map(
                                 (answer, index) =>
                                     answer.id === selected &&
-                                    `${t(answerPrefixLetter[index])}) ${
-                                        currentLng === "ru"
-                                            ? answer.ru
-                                            : answer.uz
-                                    }`
+                                    `${t(answerPrefixLetter[index])}) ${t(
+                                        answer.content
+                                    )}`
                             )}
                         </Typography>
                     </ContentCol>
@@ -75,11 +71,7 @@ export function QuizResult({ quizzes }: QuizResultProps) {
                                         <Typography className="!text-gray-text">
                                             {`${t(
                                                 answerPrefixLetter[index]
-                                            )}) ${
-                                                currentLng === "ru"
-                                                    ? answer.ru
-                                                    : answer.uz
-                                            }`}
+                                            )}) ${t(answer.content)}`}
                                         </Typography>
                                     )
                             )}

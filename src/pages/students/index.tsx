@@ -105,7 +105,7 @@ export default function StudentsPage() {
     function onSubmit(values: z.infer<typeof StudentFormScheme>) {
         console.log(values);
         notification.success({
-            message: t("student created"),
+            message: t("Student Yaratildi"),
             icon: <Icons.checkCircle />,
             closeIcon: false,
         });
@@ -133,33 +133,27 @@ export default function StudentsPage() {
     return (
         <main className="flex flex-col">
             <PageHeaderAction
-                title={t("add ${something}", t("student"))}
-                btnText={t("add")}
+                title={t("O'quvchi qo'shish")}
+                btnText={t("Qo'shish")}
                 onAction={open}
             />
             <Flex className="flex-col gap-y-4 mt-10">
                 <Flex className="items-center justify-between">
                     <Typography className="!text-sm font-bold !text-blue-900">
-                        {t("students list")}
+                        {t("O'quvchilar ro'yxati")}
                     </Typography>
                     <Select
-                        placeholder={t("sort")}
+                        placeholder={t("Saralash")}
                         suffixIcon={<Icons.arrow.select />}
                         prefixCls="sort-select"
                         placement="bottomRight"
-                        options={options.map((option) => ({
-                            ...options,
-                            label:
-                                currentLng === "ru"
-                                    ? option.label.ru
-                                    : option.label.uz,
-                        }))}
+                        options={options}
                         onChange={(value) => setFilter(value)}
                     />
                 </Flex>
                 <Input
                     prefix={<Icons.search />}
-                    placeholder={t("search")}
+                    placeholder={t("Qidirish...")}
                     prefixCls="search-input"
                     onChange={debouncedSearch}
                 />
@@ -198,11 +192,7 @@ export default function StudentsPage() {
                 width={600}
                 onClose={onCancel}
                 onCancel={onCancel}
-                title={
-                    editStudent
-                        ? t("edit")
-                        : t("add ${something}", t("student"))
-                }
+                title={editStudent ? t("Tahrirlash") : t("O'quvchi Qo'shish")}
                 footer={
                     <Button
                         form="student-form"
@@ -211,7 +201,7 @@ export default function StudentsPage() {
                         disabled={isFormLoading}
                         className="!w-full"
                     >
-                        {t(editStudent ? "edit" : "create")}
+                        {t(editStudent ? "Tahrirlash" : "Qo'shish")}
                     </Button>
                 }
             >
@@ -222,7 +212,7 @@ export default function StudentsPage() {
                 >
                     <Row>
                         <Col span={24}>
-                            <FormItem label={t("full name")}>
+                            <FormItem label={t("F.I.SH")}>
                                 <Controller
                                     name="full_name"
                                     control={control}
@@ -233,7 +223,7 @@ export default function StudentsPage() {
                     </Row>
                     <Row gutter={24}>
                         <Col span={12}>
-                            <FormItem label={t("email")}>
+                            <FormItem label={t("Login")}>
                                 <Controller
                                     name="email"
                                     control={control}
@@ -242,7 +232,7 @@ export default function StudentsPage() {
                             </FormItem>
                         </Col>
                         <Col span={12}>
-                            <FormItem label={t("password")}>
+                            <FormItem label={t("Parol")}>
                                 <Controller
                                     name="password"
                                     control={control}
@@ -255,7 +245,7 @@ export default function StudentsPage() {
                     </Row>
                     <Row>
                         <Col span={24}>
-                            <FormItem label={t("group")}>
+                            <FormItem label={t("Guruh")}>
                                 <Controller
                                     name="group"
                                     control={control}
@@ -296,12 +286,9 @@ export default function StudentsPage() {
                 isOpen={!!deleteStudent}
                 onCancel={() => setDeleteStudent(null)}
                 onConfirm={() => {}}
-                btnText={t("delete")}
-                title={t("delete")}
-                description={t(
-                    "do you wanna delete ${something}",
-                    t("student")
-                )}
+                btnText={t("O'chirish")}
+                title={t("O'chirish")}
+                description={t("O'quvchini o'chirmoqchimisiz?")}
             />
         </main>
     );

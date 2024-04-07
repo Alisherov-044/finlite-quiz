@@ -4,16 +4,14 @@ import { Flex, Typography } from "antd";
 
 export type TAnswer = {
     id: number;
-    uz: string;
-    ru: string;
+    content: string;
     isCorrect: boolean;
 };
 
 export type TQuiz = {
     question: {
         id: number;
-        uz: string;
-        ru: string;
+        content: string;
     };
     answers: TAnswer[];
     selected?: number;
@@ -32,7 +30,7 @@ export const answerPrefixLetter: Record<number, "A" | "B" | "C" | "D"> = {
 
 export function Quiz({ quiz }: QuizProps) {
     const { question, answers, selected } = quiz;
-    const { t, currentLng } = useTranslate();
+    const { t } = useTranslate();
     const { active, setActive } = useActive(selected);
 
     return (
@@ -42,10 +40,10 @@ export function Quiz({ quiz }: QuizProps) {
                     level={2}
                     className="text-lg font-semibold !text-blue-700 capitalize"
                 >
-                    {t("question")}
+                    {t("Savol")}
                 </Typography.Title>
                 <Typography className="font-semibold !text-gray-text">
-                    {currentLng === "ru" ? question.ru : question.uz}
+                    {t(question.content)}
                 </Typography>
             </Flex>
             <Flex className="w-1/2 flex-col gap-y-6 p-9">
@@ -53,10 +51,10 @@ export function Quiz({ quiz }: QuizProps) {
                     level={2}
                     className="text-lg font-semibold !text-blue-700 capitalize"
                 >
-                    {t("answer")}
+                    {t("Javob")}
                 </Typography.Title>
                 <Flex className="flex-col gap-y-4">
-                    {answers.map(({ id, uz, ru }, index) => (
+                    {answers.map(({ id, content }, index) => (
                         <Flex
                             key={id}
                             onClick={() => setActive(id)}
@@ -68,9 +66,7 @@ export function Quiz({ quiz }: QuizProps) {
                             <Typography className="text-nowrap">
                                 {t(answerPrefixLetter[index])}&#41;
                             </Typography>
-                            <Typography>
-                                {currentLng === "ru" ? ru : uz}
-                            </Typography>
+                            <Typography>{t(content)}</Typography>
                         </Flex>
                     ))}
                 </Flex>

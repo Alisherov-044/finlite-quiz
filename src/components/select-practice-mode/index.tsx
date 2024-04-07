@@ -39,7 +39,7 @@ export function SelectPracticeMode({
                     level={4}
                     className="font-bold uppercase text-xl !text-blue-500"
                 >
-                    {t("practice mode")}
+                    {t("Amaliyot rejimi")}
                 </Typography.Title>
                 <Form
                     className="mt-8"
@@ -54,7 +54,7 @@ export function SelectPracticeMode({
                             control={control}
                             render={({ field }) => (
                                 <Select
-                                    placeholder={t("select department")}
+                                    placeholder={t("Bo'lim tanlash")}
                                     options={departments}
                                     suffixIcon={<Icons.arrow.select />}
                                     placement="bottomRight"
@@ -69,7 +69,7 @@ export function SelectPracticeMode({
                             control={control}
                             render={({ field }) => (
                                 <Select
-                                    placeholder={t("test qty")}
+                                    placeholder={t("Test soni")}
                                     options={tests}
                                     suffixIcon={<Icons.arrow.select />}
                                     {...field}
@@ -80,7 +80,7 @@ export function SelectPracticeMode({
                     <Flex className="items-center gap-x-3 my-7">
                         <Icons.infoCircle />
                         <Typography className="!text-blue-700 font-normal">
-                            {t("there is no time limit in this mode")}
+                            {t("Bu rejimda vaqt chegaralanmagan")}
                         </Typography>
                     </Flex>
                     <Button
@@ -90,7 +90,7 @@ export function SelectPracticeMode({
                         disabled={isLoading}
                         className="!w-full"
                     >
-                        {t("start")}
+                        {t("Boshlash")}
                     </Button>
                 </Form>
             </Flex>

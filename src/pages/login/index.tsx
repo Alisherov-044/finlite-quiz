@@ -76,14 +76,14 @@ export default function LoginPage() {
             <Flex className="flex-col px-9 py-12 bg-white rounded-[32px] z-10 shadow-login">
                 <Logo className="mb-4 self-center" />
                 <Form onFinish={handleSubmit(onSubmit)}>
-                    <FormItem label={t("email")}>
+                    <FormItem label={t("Login")}>
                         <Controller
                             name="email"
                             control={control}
                             render={({ field }) => <Input {...field} />}
                         />
                     </FormItem>
-                    <FormItem label={t("password")}>
+                    <FormItem label={t("Parol")}>
                         <Controller
                             name="password"
                             control={control}
@@ -92,7 +92,7 @@ export default function LoginPage() {
                             )}
                         />
                     </FormItem>
-                    <FormCheckbox label={t("remember me")}>
+                    <FormCheckbox label={t("Meni eslab qolish")}>
                         <Controller
                             name="remember"
                             control={control}
@@ -107,7 +107,7 @@ export default function LoginPage() {
                         disabled={!isDirty || isLoading}
                         className="mt-8 !py-[10px] !w-full !rounded-xl !capitalize"
                     >
-                        {t("login")}
+                        {t("Kirish")}
                     </Button>
                 </Form>
             </Flex>

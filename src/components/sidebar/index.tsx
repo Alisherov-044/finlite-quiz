@@ -21,7 +21,7 @@ export function Sidebar() {
             <Logo />
             <Flex className="flex-col gap-y-4">
                 <Typography className="font-bold uppercase !text-blue-500">
-                    {t("departments")}
+                    {t("Bo'limlar")}
                 </Typography>
                 <Flex className="flex-col  gap-y-6 !text-blue-700">
                     {sidebarLinks[currentRole].map(

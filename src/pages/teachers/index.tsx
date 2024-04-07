@@ -38,7 +38,7 @@ export const TeacherFormScheme = z.object({
 });
 
 export default function TeachersPage() {
-    const { t, currentLng } = useTranslate();
+    const { t } = useTranslate();
     const { isOpen, open, close } = useOpen();
     const { active: deleteTeacher, setActive: setDeleteTeacher } =
         useActive(null);
@@ -96,7 +96,9 @@ export default function TeachersPage() {
     function onSubmit(values: z.infer<typeof TeacherFormScheme>) {
         console.log(values);
         notification.success({
-            message: t(editTeacher ? "edited" : "teacher created"),
+            message: t(
+                editTeacher ? "O'qituvchi tahrirlandi" : "O'qituvchi yaratildi"
+            ),
             icon: <Icons.checkCircle />,
             closeIcon: false,
         });
@@ -122,33 +124,27 @@ export default function TeachersPage() {
     return (
         <main className="flex flex-col">
             <PageHeaderAction
-                title={t("add ${something}", t("teacher"))}
-                btnText={t("add")}
+                title={t("O'qituvchi yaratildi")}
+                btnText={t("Qo'shish")}
                 onAction={open}
             />
             <Flex className="flex-col gap-y-4 mt-10">
                 <Flex className="items-center justify-between">
                     <Typography className="!text-sm font-bold !text-blue-900">
-                        {t("teachers list")}
+                        {t("O'qituvchilar ro'yxati")}
                     </Typography>
                     <Select
-                        placeholder={t("sort")}
+                        placeholder={t("Saralash")}
                         suffixIcon={<Icons.arrow.select />}
                         prefixCls="sort-select"
                         placement="bottomRight"
-                        options={options.map((option) => ({
-                            ...options,
-                            label:
-                                currentLng === "ru"
-                                    ? option.label.ru
-                                    : option.label.uz,
-                        }))}
+                        options={options}
                         onChange={(value) => setFilter(value)}
                     />
                 </Flex>
                 <Input
                     prefix={<Icons.search />}
-                    placeholder={t("search")}
+                    placeholder={t("Qidirish...")}
                     prefixCls="search-input"
                     onChange={debouncedSearch}
                 />
@@ -187,11 +183,7 @@ export default function TeachersPage() {
                 width={600}
                 onClose={onCancel}
                 onCancel={onCancel}
-                title={
-                    editTeacher
-                        ? t("edit")
-                        : t("add ${something}", t("teacher"))
-                }
+                title={editTeacher ? t("Tahrirlash") : t("O'qituvchi Qo'shish")}
                 footer={
                     <Button
                         form="teacher-form"
@@ -200,14 +192,14 @@ export default function TeachersPage() {
                         disabled={isFormLoading}
                         className="!w-full"
                     >
-                        {t(editTeacher ? "edit" : "create")}
+                        {t(editTeacher ? "Tahrirlash" : "Qo'shish")}
                     </Button>
                 }
             >
                 <Form id="teacher-form" onFinish={handleSubmit(onSubmit)}>
                     <Row>
                         <Col span={24}>
-                            <FormItem label={t("full name")}>
+                            <FormItem label={t("F.I.SH")}>
                                 <Controller
                                     name="full_name"
                                     control={control}
@@ -218,7 +210,7 @@ export default function TeachersPage() {
                     </Row>
                     <Row gutter={24}>
                         <Col span={12}>
-                            <FormItem label={t("email")}>
+                            <FormItem label={t("Login")}>
                                 <Controller
                                     name="email"
                                     control={control}
@@ -227,7 +219,7 @@ export default function TeachersPage() {
                             </FormItem>
                         </Col>
                         <Col span={12}>
-                            <FormItem label={t("password")}>
+                            <FormItem label={t("Parol")}>
                                 <Controller
                                     name="password"
                                     control={control}
@@ -245,12 +237,9 @@ export default function TeachersPage() {
                 isOpen={!!deleteTeacher}
                 onCancel={() => setDeleteTeacher(null)}
                 onConfirm={() => {}}
-                btnText={t("delete")}
-                title={t("delete")}
-                description={t(
-                    "do you wanna delete ${something}",
-                    t("teacher")
-                )}
+                btnText={t("O'chirish")}
+                title={t("O'chirish")}
+                description={t("O'qituvchini o'chirmoqchimisiz?")}
             />
         </main>
     );

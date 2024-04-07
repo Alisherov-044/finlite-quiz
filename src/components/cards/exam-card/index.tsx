@@ -7,6 +7,7 @@ import { useCountDown, useOpen, useSelector, useTranslate } from "@/hooks";
 import { convertTime, formatDate, formatTime, getCurrentRole } from "@/utils";
 
 export type TExam = {
+    id: number;
     starting_date: Date;
     starting_time: string;
     questions_qty: number;
@@ -59,33 +60,33 @@ export function ExamCard({ exam, onEdit, onDelete }: ExamCardProps) {
         <Flex className="relative items-end justify-between p-6 border shadow-main rounded-2xl">
             <Flex className="flex-col gap-y-2">
                 <Typography>
-                    {t("starting date")}: {formatDate(starting_date)}
+                    {t("Boshlanish vaqti")}: {formatDate(starting_date)}
                 </Typography>
                 <Typography>
-                    {t("hour")}: {starting_time}
+                    {t("Soat")}: {starting_time}
                 </Typography>
                 <Typography>
-                    {t("questions qty")}: {questions_qty}
+                    {t("Savollar soni")}: {questions_qty}
                 </Typography>
                 {duration ? (
                     time === 0 ? (
                         <Flex className="items-center gap-x-1 !text-blue-500 !text-sm">
                             <Icons.infoCircle />
                             <Typography>
-                                {t("there is time limit in this mode")}
+                                {t("Bu rejimda vaqt chegaralangan")}
                             </Typography>
                         </Flex>
                     ) : (
                         <Typography>
-                            {t("time")}: {hours} {t("hour")} {minutes}{" "}
-                            {t("minute")}
+                            {t("Vaqt")}: {hours} {t("Soat")} {minutes}{" "}
+                            {t("Daqiqa")}
                         </Typography>
                     )
                 ) : (
                     <Flex className="items-center gap-x-1 !text-blue-500 !text-sm">
                         <Icons.infoCircle />
                         <Typography>
-                            {t("there is no time limit in this mode")}
+                            {t("Bu rejimda vaqt chegaralanmagan")}
                         </Typography>
                     </Flex>
                 )}
@@ -93,16 +94,16 @@ export function ExamCard({ exam, onEdit, onDelete }: ExamCardProps) {
             <Flex className="items-end gap-x-6">
                 {currentRole === "admin" && (
                     <button className="underline" onClick={onDelete}>
-                        {t("delete")}
+                        {t("O'chirish")}
                     </button>
                 )}
                 {time === 0 ? (
                     <Button className="!py-3" onClick={open}>
-                        {t("start")}
+                        {t("Boshlash")}
                     </Button>
                 ) : (
                     <Flex className="flex-col items-end gap-y-1">
-                        <Typography>{t("time left")}</Typography>
+                        <Typography>{t("Qolgan vaqt")}</Typography>
                         <CountDown
                             days={leftDays}
                             hours={leftHours}
@@ -117,27 +118,26 @@ export function ExamCard({ exam, onEdit, onDelete }: ExamCardProps) {
                     onClick={onEdit}
                     className="flex items-center gap-x-1.5 absolute top-3 right-6"
                 >
-                    <Icons.edit /> {t("edit")}
+                    <Icons.edit /> {t("Tahrirlash")}
                 </button>
             )}
 
             <Confirmation
                 primaryBtn
-                btnText={t("start")}
+                btnText={t("Boshlash")}
                 description={
                     <Flex className="flex-col">
                         <span>
                             {t(
                                 duration
-                                    ? "there is time limit in this mode"
-                                    : "there is no time limit in this mode"
+                                    ? "Bu rejimda vaqt chegaralangan"
+                                    : "Bu rejimda vaqt chegaralanmagan"
                             )}
                         </span>
                         {duration && (
                             <span>
                                 {t(
-                                    "${x} hours are allotted for the exam",
-                                    `${hours}:${minutes}`
+                                    `Imtihon uchun ${hours}:${minutes} soat vaqt ajratilgan`
                                 )}
                             </span>
                         )}
@@ -146,7 +146,7 @@ export function ExamCard({ exam, onEdit, onDelete }: ExamCardProps) {
                 isOpen={isOpen}
                 onCancel={close}
                 onConfirm={() => {}}
-                title={t("exam")}
+                title={t("Imtihon")}
             />
         </Flex>
     );

@@ -24,9 +24,9 @@ export default function NotFoundPage() {
                 />
                 <Flex className="flex-col items-center gap-y-9">
                     <Typography className="text-2xl max-w-[340px] text-center first-letter:capitalize">
-                        {t("page not found")}
+                        {t("Siz izlayotgan Sahifa topilmadi")}
                     </Typography>
-                    <Button onClick={goBack}>{t("go back")}</Button>
+                    <Button onClick={goBack}>{t("Ortga qaytish")}</Button>
                 </Flex>
             </Flex>
         </Layout.Content>

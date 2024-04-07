@@ -27,9 +27,9 @@ export function Logout() {
                 isOpen={isOpen}
                 onCancel={close}
                 onConfirm={onConfirm}
-                btnText={t("logout")}
-                title={t("logout")}
-                description={t("do you wanna logout")}
+                btnText={t("Chiqish")}
+                title={t("Chiqish")}
+                description={t("Tizimdan chiqishni istaysizmi?")}
             />
         </>
     );

@@ -42,28 +42,28 @@ export function UserCard({ user, onEdit, onDelete }: UserCardProps) {
                         </Typography>
                         {role === "student" && (
                             <Typography className="font-semibold">
-                                {t("group")}: {group}
+                                {t("guruh")}: {group}
                             </Typography>
                         )}
                     </Flex>
                     {role === "student" ? (
                         <Typography className="font-semibold">
-                            {t("email")}: {email}
+                            {t("login")}: {email}
                         </Typography>
                     ) : (
                         <Typography className="font-semibold">
-                            {t("${n}th group", group)}
+                            {t(`${group}-guruh`)}
                         </Typography>
                     )}
                 </Flex>
             </Flex>
             <Flex className="items-center gap-x-4">
-                <Tooltip title={t("edit")}>
+                <Tooltip title={t("Tahrirlash")}>
                     <IconButton onClick={onEdit}>
                         <Icons.edit />
                     </IconButton>
                 </Tooltip>
-                <Tooltip title={t("delete")}>
+                <Tooltip title={t("O'chirish")}>
                     <IconButton onClick={onDelete}>
                         <Icons.delete />
                     </IconButton>

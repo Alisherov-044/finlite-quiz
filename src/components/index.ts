@@ -35,3 +35,5 @@ export { QuizResult } from "./quiz-result";
 export { PageHeaderAction } from "./page-header-action";
 export { FormDrawer } from "./form-drawer";
 export { ImageUpload } from "./image-upload";
+export { TestLink } from "./test-link";
+export { FilterTab } from "./filter-tab";

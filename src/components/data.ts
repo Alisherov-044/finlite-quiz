@@ -1,30 +1,22 @@
 export const options = [
     {
-        label: {
-            uz: "A-B Bo'yicha",
-            ru: "от А-Б",
-        },
+        label: "A-B Bo'yicha",
         value: "a",
     },
     {
-        label: {
-            uz: "A-B Bo'yicha",
-            ru: "от А-Б",
-        },
+        label: "A-B Bo'yicha",
         value: "a",
     },
     {
-        label: {
-            uz: "A-B Bo'yicha",
-            ru: "от А-Б",
-        },
+        label: "A-B Bo'yicha",
         value: "a",
     },
     {
-        label: {
-            uz: "A-B Bo'yicha",
-            ru: "от А-Б",
-        },
+        label: "A-B Bo'yicha",
+        value: "a",
+    },
+    {
+        label: "A-B Bo'yicha",
         value: "a",
     },
 ];

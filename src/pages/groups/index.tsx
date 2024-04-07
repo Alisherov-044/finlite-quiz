@@ -37,7 +37,43 @@ export default function GroupsPage() {
     const { t, currentLng } = useTranslate();
     const { isOpen, open, close } = useOpen();
     const { data: groups, isLoading } = useQuery<TGroup[]>("groups", {
-        queryFn: async () => await [],
+        queryFn: async () =>
+            await [
+                {
+                    id: 1,
+                    name: "1C Buxgalteriya",
+                    number: 1,
+                    students: [
+                        {
+                            id: 1,
+                            full_name: "Bekchanov Javlonbek",
+                            email: "Javlonbek",
+                            group: 1,
+                            image: "https://mdbcdn.b-cdn.net/img/new/avatars/2.webp",
+                            role: "student",
+                            password: "password",
+                        },
+                        {
+                            id: 1,
+                            full_name: "Bekchanov Javlonbek",
+                            email: "Javlonbek",
+                            group: 1,
+                            image: "https://mdbcdn.b-cdn.net/img/new/avatars/2.webp",
+                            role: "student",
+                            password: "password",
+                        },
+                        {
+                            id: 1,
+                            full_name: "Bekchanov Javlonbek",
+                            email: "Javlonbek",
+                            group: 1,
+                            image: "https://mdbcdn.b-cdn.net/img/new/avatars/2.webp",
+                            role: "student",
+                            password: "password",
+                        },
+                    ],
+                },
+            ],
     });
     const {
         handleSubmit,
@@ -87,33 +123,27 @@ export default function GroupsPage() {
     return (
         <main className="flex flex-col">
             <PageHeaderAction
-                title={t("add ${something}", t("group"))}
-                btnText={t("create group")}
+                title={t("Guruh yaratish")}
+                btnText={t("Guruh yaratish")}
                 onAction={open}
             />
             <Flex className="flex-col gap-y-4 mt-10">
                 <Flex className="items-center justify-between">
                     <Typography className="!text-sm font-bold !text-blue-900">
-                        {t("groups list")}
+                        {t("Guruhlar ro'yhati")}
                     </Typography>
                     <Select
-                        placeholder={t("sort")}
+                        placeholder={t("Saralash")}
                         suffixIcon={<Icons.arrow.select />}
                         prefixCls="sort-select"
                         placement="bottomRight"
-                        options={options.map((option) => ({
-                            ...options,
-                            label:
-                                currentLng === "ru"
-                                    ? option.label.ru
-                                    : option.label.uz,
-                        }))}
+                        options={options}
                         onChange={(value) => setFilter(value)}
                     />
                 </Flex>
                 <Input
                     prefix={<Icons.search />}
-                    placeholder={t("search")}
+                    placeholder={t("Qidirish...")}
                     prefixCls="search-input"
                     onChange={debouncedSearch}
                 />
@@ -125,9 +155,12 @@ export default function GroupsPage() {
                     ))
                 ) : groups && groups.length ? (
                     groups
-                        .filter(
-                            (group) =>
-                                search.length && [group.name].includes(search)
+                        .filter((group) =>
+                            search.length
+                                ? group.name
+                                      .toLocaleLowerCase()
+                                      .includes(search.toLocaleLowerCase())
+                                : true
                         )
                         .map((group) => <GroupCard group={group} />)
                 ) : (
@@ -142,7 +175,7 @@ export default function GroupsPage() {
                 width={600}
                 onClose={onCancel}
                 onCancel={onCancel}
-                title={t("add ${something}", t("group"))}
+                title={t("Guruh Qo'shish")}
                 footer={
                     <Button
                         form="group-form"
@@ -151,14 +184,14 @@ export default function GroupsPage() {
                         disabled={isFormLoading}
                         className="!w-full"
                     >
-                        {t("create")}
+                        {t("Qo'shish")}
                     </Button>
                 }
             >
                 <Form id="group-form" onFinish={handleSubmit(onSubmit)}>
                     <Row>
                         <Col span={24}>
-                            <FormItem label={t("group name")}>
+                            <FormItem label={t("Guruh nomi")}>
                                 <Controller
                                     name="name"
                                     control={control}
@@ -169,7 +202,7 @@ export default function GroupsPage() {
                     </Row>
                     <Row>
                         <Col span={24}>
-                            <FormItem label={t("group number")}>
+                            <FormItem label={t("Guruh raqami")}>
                                 <Controller
                                     name="number"
                                     control={control}
