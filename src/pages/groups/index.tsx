@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { useQuery } from "react-query";
-import { useOpen, useTranslate } from "@/hooks";
+import { useOpen, useSelector, useTranslate } from "@/hooks";
 import { options } from "@/components/data";
 import {
     FormDrawer,
@@ -27,6 +27,8 @@ import {
 } from "antd";
 import { FormItem } from "@/components/styles";
 import type { TGroup } from "@/components/cards/group-card";
+import { Navigate, useLocation } from "react-router-dom";
+import { getCurrentRole } from "@/utils";
 
 export const GroupFormScheme = z.object({
     name: z.string({ required_error: "this field is required" }),
@@ -34,7 +36,15 @@ export const GroupFormScheme = z.object({
 });
 
 export default function GroupsPage() {
-    const { t, currentLng } = useTranslate();
+    const { t } = useTranslate();
+    const { roles } = useSelector((state) => state.auth);
+    const currentRole = getCurrentRole(roles);
+    const location = useLocation();
+
+    if (!currentRole) {
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+
     const { isOpen, open, close } = useOpen();
     const { data: groups, isLoading } = useQuery<TGroup[]>("groups", {
         queryFn: async () =>
@@ -122,11 +132,13 @@ export default function GroupsPage() {
 
     return (
         <main className="flex flex-col">
-            <PageHeaderAction
-                title={t("Guruh yaratish")}
-                btnText={t("Guruh yaratish")}
-                onAction={open}
-            />
+            {currentRole === "admin" ? (
+                <PageHeaderAction
+                    title={t("Guruh yaratish")}
+                    btnText={t("Guruh yaratish")}
+                    onAction={open}
+                />
+            ) : null}
             <Flex className="flex-col gap-y-4 mt-10">
                 <Flex className="items-center justify-between">
                     <Typography className="!text-sm font-bold !text-blue-900">

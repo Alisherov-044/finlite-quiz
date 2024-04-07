@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { useQuery } from "react-query";
-import { useActive, useOpen, useTranslate } from "@/hooks";
+import { useActive, useOpen, useSelector, useTranslate } from "@/hooks";
 import { options } from "@/components/data";
 import {
     Confirmation,
@@ -26,10 +26,11 @@ import {
     Typography,
     notification,
 } from "antd";
-import { fillValues } from "@/utils";
+import { fillValues, getCurrentRole } from "@/utils";
 import { FormItem } from "@/components/styles";
 import type { TSetValue } from "@/utils/fill-values";
 import type { TUser } from "@/components/cards/user-card";
+import { Navigate, useLocation } from "react-router-dom";
 
 export const TeacherFormScheme = z.object({
     full_name: z.string({ required_error: "this field is required" }),
@@ -39,6 +40,14 @@ export const TeacherFormScheme = z.object({
 
 export default function TeachersPage() {
     const { t } = useTranslate();
+    const { roles } = useSelector((state) => state.auth);
+    const currentRole = getCurrentRole(roles);
+    const location = useLocation();
+
+    if (!currentRole) {
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+
     const { isOpen, open, close } = useOpen();
     const { active: deleteTeacher, setActive: setDeleteTeacher } =
         useActive(null);
@@ -67,7 +76,7 @@ export default function TeachersPage() {
         resolver: zodResolver(TeacherFormScheme),
     });
     const [search, setSearch] = useState<string>("");
-    const [filter, setFilter] = useState<string>("");
+    const [_, setFilter] = useState<string>("");
 
     useEffect(() => {
         return () => {
@@ -84,8 +93,6 @@ export default function TeachersPage() {
             ),
         []
     );
-
-    console.log(filter);
 
     function onCancel() {
         close();
@@ -123,11 +130,13 @@ export default function TeachersPage() {
 
     return (
         <main className="flex flex-col">
-            <PageHeaderAction
-                title={t("O'qituvchi yaratildi")}
-                btnText={t("Qo'shish")}
-                onAction={open}
-            />
+            {currentRole === "admin" ? (
+                <PageHeaderAction
+                    title={t("O'qituvchi yaratildi")}
+                    btnText={t("Qo'shish")}
+                    onAction={open}
+                />
+            ) : null}
             <Flex className="flex-col gap-y-4 mt-10">
                 <Flex className="items-center justify-between">
                     <Typography className="!text-sm font-bold !text-blue-900">

@@ -6,6 +6,7 @@ import { AnimatedProgressProvider } from "@/providers";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 
 export type TPractice = {
+    id: number;
     date: Date;
     department: string;
     test_qty: number;
@@ -22,7 +23,7 @@ export function PracticeCard({ practice }: PracticeCardProps) {
     const { t } = useTranslate();
 
     return (
-        <Flex className="justify-between rounded-2xl p-4 border transition-all duration-300 shadow-main hover:shadow-main-lg">
+        <Flex className="h-fit justify-between rounded-2xl p-4 border transition-all duration-300 shadow-main hover:shadow-main-lg">
             <Flex className="flex-col gap-y-2">
                 <Typography>
                     {t("Sana")}: {formatDate(date)}

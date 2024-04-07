@@ -1,5 +1,4 @@
 import { Icons } from "@/components";
-import { latinToCyrillic } from "@/utils";
 import { useActive, useTranslate } from "@/hooks";
 import { Button, Flex, Modal, Tooltip, Typography } from "antd";
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -38,7 +37,7 @@ export function TestLink({ link, isOpen, onPreview, onClose }: TestLinkProps) {
                         }}
                     >
                         <Tooltip
-                            title={latinToCyrillic("Nusxalandi")}
+                            title={t("Nusxalandi")}
                             open={!!active}
                             trigger={["click"]}
                         >

@@ -2,7 +2,7 @@ import { Flex, Skeleton } from "antd";
 
 export function PracticeCardSkeleton() {
     return (
-        <Flex className="justify-between rounded-2xl p-4 border shadow-main">
+        <Flex className="h-fit justify-between rounded-2xl p-4 border shadow-main">
             <Flex className="flex-col gap-y-2 justify-between">
                 <Skeleton.Button active className="!w-32 !h-4" />
                 <Skeleton.Button active className="!w-48 !h-4" />

@@ -24,9 +24,11 @@ export default function UnAuthorizedPage() {
                 />
                 <Flex className="flex-col items-center gap-y-9">
                     <Typography className="text-2xl max-w-[340px] text-center first-letter:capitalize">
-                        {t("you don't have permission go this page")}
+                        {t(
+                            "Sizning bu sahifaga kirish huquqingiz mavjud emas!"
+                        )}
                     </Typography>
-                    <Button onClick={goBack}>{t("go back")}</Button>
+                    <Button onClick={goBack}>{t("Orqaga qaytish")}</Button>
                 </Flex>
             </Flex>
         </Layout.Content>

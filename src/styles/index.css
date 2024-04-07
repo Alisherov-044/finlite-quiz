@@ -277,12 +277,8 @@
     @apply rotate-180;
 }
 
-.ant-table-wrapper {
-    @apply mt-8;
-}
-
 .ant-table {
-    @apply border !font-semibold;
+    @apply border !font-semibold !rounded-md !border-t-0 !rounded-t-none;
 }
 
 .ant-table thead {

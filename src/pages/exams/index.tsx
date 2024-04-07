@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { useActive, useOpen, useTranslate } from "@/hooks";
+import { useActive, useOpen, useSelector, useTranslate } from "@/hooks";
 import {
     Confirmation,
     ExamCard,
@@ -16,6 +16,8 @@ import { FormItem } from "@/components/styles";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { getCurrentRole } from "@/utils";
+import { Navigate, useLocation } from "react-router-dom";
 
 export const ExamFormScheme = z.object({
     full_name: z.string({ required_error: "this field is required" }),
@@ -25,6 +27,14 @@ export const ExamFormScheme = z.object({
 
 export default function ExamsPage() {
     const { t } = useTranslate();
+    const { roles } = useSelector((state) => state.auth);
+    const currentRole = getCurrentRole(roles);
+    const location = useLocation();
+
+    if (!currentRole) {
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+
     const { isOpen, open, close } = useOpen();
     const { active, setActive } = useActive("incomming");
     const { active: editExam, setActive: setEditExam } = useActive(null);
@@ -52,7 +62,6 @@ export default function ExamsPage() {
         handleSubmit,
         control,
         reset,
-        setValue,
         formState: { isLoading: isFormLoading },
     } = useForm<z.infer<typeof ExamFormScheme>>({
         resolver: zodResolver(ExamFormScheme),
@@ -93,11 +102,13 @@ export default function ExamsPage() {
                 </button>
             </FilterTab>
             <main className="flex flex-col">
-                <PageHeaderAction
-                    title={t("Imtihon Yaratish")}
-                    btnText={t("Imtihon Yaratish")}
-                    onAction={open}
-                />
+                {currentRole === "admin" ? (
+                    <PageHeaderAction
+                        title={t("Imtihon Yaratish")}
+                        btnText={t("Imtihon Yaratish")}
+                        onAction={open}
+                    />
+                ) : null}
                 <Flex className="flex-auto flex-col gap-y-6 mt-6">
                     {isLoading ? (
                         [...Array(3).keys()].map((key) => (
