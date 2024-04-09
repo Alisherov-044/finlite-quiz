@@ -37,3 +37,4 @@ export { FormDrawer } from "./form-drawer";
 export { ImageUpload } from "./image-upload";
 export { TestLink } from "./test-link";
 export { FilterTab } from "./filter-tab";
+export { QuizHeader } from "./quiz-header";

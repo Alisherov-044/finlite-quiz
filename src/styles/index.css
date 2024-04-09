@@ -51,6 +51,10 @@
     #root {
         @apply h-full !font-inter scroll-smooth;
     }
+
+    .container {
+        @apply max-w-[950px] w-full px-4 mx-auto;
+    }
 }
 
 .ant-typography {

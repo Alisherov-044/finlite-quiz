@@ -1,6 +1,8 @@
 import { clsx } from "clsx";
-import { useActive, useTranslate } from "@/hooks";
+import { useActive, useDispatch, useSelector, useTranslate } from "@/hooks";
 import { Flex, Typography } from "antd";
+import { setQuiz } from "@/redux/slices/quizSlice";
+import { useEffect } from "react";
 
 export type TAnswer = {
     id: number;
@@ -19,6 +21,7 @@ export type TQuiz = {
 
 export type QuizProps = {
     quiz: TQuiz;
+    selectedAnswerId?: number;
 };
 
 export const answerPrefixLetter: Record<number, "A" | "B" | "C" | "D"> = {
@@ -28,10 +31,21 @@ export const answerPrefixLetter: Record<number, "A" | "B" | "C" | "D"> = {
     3: "D",
 };
 
-export function Quiz({ quiz }: QuizProps) {
-    const { question, answers, selected } = quiz;
+export function Quiz({ quiz, selectedAnswerId }: QuizProps) {
+    const { question, answers } = quiz;
     const { t } = useTranslate();
-    const { active, setActive } = useActive(selected);
+    const { finished } = useSelector((state) => state.quiz);
+    const dispatch = useDispatch();
+    const { active, setActive } = useActive<number>(selectedAnswerId);
+
+    useEffect(() => {
+        dispatch(
+            setQuiz({
+                questionId: question.id,
+                selectedAnswerId: active as number,
+            })
+        );
+    }, [active]);
 
     return (
         <Flex className="justify-between border border-blue-100 shadow-main rounded-md bg-white">
@@ -57,10 +71,12 @@ export function Quiz({ quiz }: QuizProps) {
                     {answers.map(({ id, content }, index) => (
                         <Flex
                             key={id}
-                            onClick={() => setActive(id)}
+                            onClick={() => !finished && setActive(id)}
                             className={clsx(
                                 "gap-x-3 p-3 border border-blue-500 rounded-md cursor-pointer select-none !text-blue-900",
-                                active === id && "bg-blue-500 !text-white"
+                                selectedAnswerId === id &&
+                                    "bg-blue-500 !text-white",
+                                finished && "cursor-not-allowed"
                             )}
                         >
                             <Typography className="text-nowrap">

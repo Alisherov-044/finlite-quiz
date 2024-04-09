@@ -14,3 +14,4 @@ export const StudentDetailsPage = lazy(() => import("./students/[slug]"));
 export const UnAuthorizedPage = lazy(() => import("./un-authorized"));
 export const NotFoundPage = lazy(() => import("./not-found"));
 export const RedirectionToRolePage = lazy(() => import("./redirect-to-role"));
+export const PracticeResultPage = lazy(() => import("./practice/[result]"));

@@ -49,9 +49,12 @@ export default function TeachersPage() {
     }
 
     const { isOpen, open, close } = useOpen();
-    const { active: deleteTeacher, setActive: setDeleteTeacher } =
-        useActive(null);
-    const { active: editTeacher, setActive: setEditTeacher } = useActive(null);
+    const { active: deleteTeacher, setActive: setDeleteTeacher } = useActive<
+        number | null
+    >(null);
+    const { active: editTeacher, setActive: setEditTeacher } = useActive<
+        number | null
+    >(null);
     const { data: teachers, isLoading } = useQuery<TUser[]>("teachers", {
         queryFn: async () =>
             await [

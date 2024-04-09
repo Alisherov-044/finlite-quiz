@@ -5,15 +5,16 @@ import { departments, tests } from "./data";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Flex, Form, Modal, Select, Typography } from "antd";
+import { PracticeState } from "@/redux/slices/practiceSlice";
 
 export const PracticeModeFormScheme = z.object({
-    department: z.string({ required_error: "This field is required" }),
-    test_qty: z.number({ required_error: "This field is required" }),
+    department: z.number({ required_error: "This field is required" }),
+    testQty: z.number({ required_error: "This field is required" }),
 });
 
 export type SelectPracticeModeProps = {
     isOpen: boolean;
-    onSubmit: (values: z.infer<typeof PracticeModeFormScheme>) => void;
+    onSubmit: (values: PracticeState) => void;
     onCancel: () => void;
 };
 
@@ -44,7 +45,15 @@ export function SelectPracticeMode({
                 <Form
                     className="mt-8"
                     onFinish={handleSubmit((values) => {
-                        onSubmit(values);
+                        const department = {
+                            id: Number(values.department),
+                            title: departments.find(
+                                (option) =>
+                                    Number(option.value) ===
+                                    Number(values.department)
+                            )?.label as string,
+                        };
+                        onSubmit({ ...values, department });
                         reset();
                     })}
                 >
@@ -65,7 +74,7 @@ export function SelectPracticeMode({
                     </Form.Item>
                     <Form.Item>
                         <Controller
-                            name="test_qty"
+                            name="testQty"
                             control={control}
                             render={({ field }) => (
                                 <Select

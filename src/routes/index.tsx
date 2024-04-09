@@ -5,7 +5,9 @@ import {
     LoginPage,
     MaterialsPage,
     NotFoundPage,
+    PracticeDetailsPage,
     PracticePage,
+    PracticeResultPage,
     RedirectionToRolePage,
     StudentsPage,
     TeachersPage,
@@ -89,7 +91,7 @@ export const routes: TRoutes = {
             id: 8,
             path: "/tests",
             element: <TestsPage />,
-            roles: [...userRoles.admin, ...userRoles.teacher],
+            roles: [...userRoles.admin],
         },
         {
             id: 9,
@@ -108,6 +110,18 @@ export const routes: TRoutes = {
             path: "/groups",
             element: <GroupsPage />,
             roles: userRoles.admin,
+        },
+        {
+            id: 12,
+            path: "/practice/quiz/:slug",
+            element: <PracticeDetailsPage />,
+            roles: userRoles.student,
+        },
+        {
+            id: 13,
+            path: "/practice/quiz/:slug/result",
+            element: <PracticeResultPage />,
+            roles: userRoles.student,
         },
     ],
 };

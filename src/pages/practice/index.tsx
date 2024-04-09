@@ -7,14 +7,18 @@ import {
     SelectPracticeMode,
 } from "@/components";
 import { options } from "@/components/data";
-import { useOpen, useTranslate } from "@/hooks";
+import { useDispatch, useOpen, useTranslate } from "@/hooks";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { Empty, Flex, Row, Select, Typography } from "antd";
+import { setPractice } from "@/redux/slices/practiceSlice";
+import { useNavigate } from "react-router-dom";
 import type { TPractice } from "@/components/cards/practice-card";
 
 export default function PracticePage() {
     const { t } = useTranslate();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { isOpen, open, close } = useOpen();
     const [_, setFilter] = useState<string>("");
     const { data: practices, isLoading } = useQuery<TPractice[]>("practices", {
@@ -81,7 +85,10 @@ export default function PracticePage() {
             </Flex>
             <SelectPracticeMode
                 isOpen={isOpen}
-                onSubmit={(values) => console.log(values)}
+                onSubmit={(values) => {
+                    dispatch(setPractice(values));
+                    navigate("/practice/quiz/1c-buxgalteriya");
+                }}
                 onCancel={close}
             />
             <Row

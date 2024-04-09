@@ -37,8 +37,12 @@ export default function ExamsPage() {
 
     const { isOpen, open, close } = useOpen();
     const { active, setActive } = useActive("incomming");
-    const { active: editExam, setActive: setEditExam } = useActive(null);
-    const { active: deleteExam, setActive: setDeleteExam } = useActive(null);
+    const { active: editExam, setActive: setEditExam } = useActive<
+        number | null
+    >(null);
+    const { active: deleteExam, setActive: setDeleteExam } = useActive<
+        number | null
+    >(null);
     const { data: exams, isLoading } = useQuery<TExam[]>("exams", {
         queryFn: async () =>
             await [
@@ -85,6 +89,12 @@ export default function ExamsPage() {
         setEditExam(null);
     }
 
+    const filteredExams = exams?.filter((exam) =>
+        active === "incomming"
+            ? exam.starting_date.getTime() - new Date().getTime() > 0
+            : exam.starting_date.getTime() - new Date().getTime() <= 0
+    );
+
     return (
         <>
             <FilterTab>
@@ -114,25 +124,15 @@ export default function ExamsPage() {
                         [...Array(3).keys()].map((key) => (
                             <ExamCardSkeleton key={key} />
                         ))
-                    ) : exams && exams.length ? (
-                        exams
-                            .filter((exam) =>
-                                active === "incomming"
-                                    ? exam.starting_date.getTime() -
-                                          new Date().getTime() >
-                                      0
-                                    : exam.starting_date.getTime() -
-                                          new Date().getTime() <=
-                                      0
-                            )
-                            .map((exam) => (
-                                <ExamCard
-                                    key={exam.id}
-                                    exam={exam}
-                                    onEdit={() => setEditExam(exam.id)}
-                                    onDelete={() => setDeleteExam(exam.id)}
-                                />
-                            ))
+                    ) : filteredExams && filteredExams.length ? (
+                        filteredExams.map((exam) => (
+                            <ExamCard
+                                key={exam.id}
+                                exam={exam}
+                                onEdit={() => setEditExam(exam.id)}
+                                onDelete={() => setDeleteExam(exam.id)}
+                            />
+                        ))
                     ) : (
                         <Flex className="flex-auto items-center justify-center">
                             <Empty description={false} />

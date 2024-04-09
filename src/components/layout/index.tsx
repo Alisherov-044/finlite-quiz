@@ -5,9 +5,18 @@ import { Outlet, useLocation } from "react-router-dom";
 
 export function Layout() {
     const { pathname } = useLocation();
-    const layoutLessPages = ["/login", "/un-authorized", "/not-found"];
+    const layoutLessPages = [
+        "/login",
+        "/un-authorized",
+        "/not-found",
+        "/practice/quiz/",
+        "/exam/quiz/",
+    ];
 
-    if (layoutLessPages.includes(pathname)) {
+    if (
+        layoutLessPages.includes(pathname) ||
+        layoutLessPages.some((item) => pathname.includes(item))
+    ) {
         return <Outlet />;
     }
 

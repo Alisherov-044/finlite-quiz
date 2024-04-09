@@ -52,9 +52,12 @@ export default function StudentsPage() {
     }
 
     const { isOpen, open, close } = useOpen();
-    const { active: deleteStudent, setActive: setDeleteStudent } =
-        useActive(null);
-    const { active: editStudent, setActive: setEditStudent } = useActive(null);
+    const { active: deleteStudent, setActive: setDeleteStudent } = useActive<
+        number | null
+    >(null);
+    const { active: editStudent, setActive: setEditStudent } = useActive<
+        number | null
+    >(null);
     const { data: students, isLoading: isStudentsLoading } = useQuery<TUser[]>(
         "students",
         {

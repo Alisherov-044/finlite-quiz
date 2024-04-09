@@ -1,9 +1,7 @@
 import { useState } from "react";
 
-export function useActive(defaultValue?: string | number | boolean | null) {
-    const [active, setActive] = useState<
-        string | number | boolean | undefined | null
-    >(defaultValue);
+export function useActive<T>(defaultValue?: T) {
+    const [active, setActive] = useState<T | undefined | null>(defaultValue);
 
     return { active, setActive };
 }

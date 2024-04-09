@@ -1,31 +1,15 @@
 export const departments = [
     {
         label: "Department 1",
-        value: "dep-1",
+        value: 1,
     },
     {
         label: "Department 2",
-        value: "dep-2",
+        value: 2,
     },
     {
         label: "Department 3",
-        value: "dep-3",
-    },
-    {
-        label: "Department 4",
-        value: "dep-4",
-    },
-    {
-        label: "Department 5",
-        value: "dep-5",
-    },
-    {
-        label: "Department 6",
-        value: "dep-6",
-    },
-    {
-        label: "Department 7",
-        value: "dep-7",
+        value: 3,
     },
 ];
 
