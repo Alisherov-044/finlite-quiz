@@ -110,7 +110,7 @@
 
 .ant-select-dropdown,
 .form-select-dropdown {
-    @apply !rounded-xl !p-0 !rounded-t-none border !border-blue-500;
+    @apply !p-0 !rounded-none border !border-blue-500;
 }
 
 .form-select-dropdown {
@@ -321,4 +321,20 @@
 .ant-pagination-next svg path,
 .ant-pagination-prev svg path {
     @apply !fill-black;
+}
+
+.ant-drawer .ant-select-selector {
+    @apply !rounded-none !py-0;
+}
+
+.ant-select-multiple .ant-select-selection-item {
+    @apply flex items-center !bg-blue-500 !text-white !px-2.5 !py-1 !h-auto !rounded-2xl;
+}
+
+.ant-select-multiple .ant-select-selection-item-remove {
+    @apply flex items-center justify-center w-3.5 h-3.5 rounded-full border border-white !text-white;
+}
+
+.ant-select-multiple .ant-select-selection-item-remove svg {
+    @apply !w-2 !h-2;
 }

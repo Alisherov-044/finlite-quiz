@@ -21,6 +21,8 @@ import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useQuery } from "react-query";
 import { Navigate, useLocation } from "react-router-dom";
+import { departments } from "@/components/select-practice-mode/data";
+import RichTextEditor from "react-rte";
 
 type ColumnsType<T> = TableProps<T>["columns"];
 
@@ -44,9 +46,12 @@ const columns: ColumnsType<TTest> = [
 ];
 
 export const TeacherFormScheme = z.object({
-    full_name: z.string({ required_error: "this field is required" }),
-    email: z.string({ required_error: "this field is require" }),
-    password: z.string({ required_error: "this field is require" }),
+    departments: z.string({ required_error: "this field is required" }),
+    question: z.string({ required_error: "this field is require" }),
+    answerA: z.string({ required_error: "this field is require" }),
+    answerB: z.string({ required_error: "this field is require" }),
+    answerC: z.string({ required_error: "this field is require" }),
+    answerD: z.string({ required_error: "this field is require" }),
 });
 
 export default function TestsPage() {
@@ -54,6 +59,48 @@ export default function TestsPage() {
     const { roles } = useSelector((state) => state.auth);
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
+    const [value, setValue] = useState<any>(RichTextEditor.createEmptyValue());
+
+    function onChange(e: any) {
+        setValue(e);
+        e.toString("html");
+    }
+
+    const toolbarConfig = {
+        display: [
+            "HISTORY_BUTTONS",
+            "BLOCK_TYPE_DROPDOWN",
+            "INLINE_STYLE_BUTTONS",
+            "BLOCK_TYPE_BUTTONS",
+            "LINK_BUTTONS",
+            "CUSTOM_BUTTONS",
+        ],
+        HISTORY_BUTTONS: [
+            { label: "Undo", style: "undo" },
+            { label: "Redo", style: "redo" },
+        ],
+        INLINE_STYLE_BUTTONS: [
+            { label: "Bold", style: "BOLD" },
+            { label: "Italic", style: "ITALIC" },
+            { label: "Underline", style: "UNDERLINE" },
+            { label: "Strikethrough", style: "STRIKETHROUGH" },
+        ],
+        BLOCK_TYPE_DROPDOWN: [
+            { label: "Normal", style: "unstyled" },
+            { label: "Heading Large", style: "header-one" },
+            { label: "Heading Medium", style: "header-two" },
+            { label: "Heading Small", style: "header-three" },
+        ],
+        BLOCK_TYPE_BUTTONS: [
+            { label: "UL", style: "unordered-list-item" },
+            { label: "OL", style: "ordered-list-item" },
+        ],
+        CUSTOM_BUTTONS: [
+            { label: "Image", style: "IMG" },
+            { label: "Blockquote", style: "BLOCKQUOTE" },
+            { label: "Dash", style: "DASH" },
+        ],
+    };
 
     if (!currentRole) {
         return <Navigate to="/login" state={{ from: location }} replace />;
@@ -220,33 +267,45 @@ export default function TestsPage() {
                 <Form id="teacher-form" onFinish={handleSubmit(onSubmit)}>
                     <Row>
                         <Col span={24}>
-                            <FormItem label={t("F.I.SH")}>
+                            <FormItem label={t("Bo'limlar")}>
                                 <Controller
-                                    name="full_name"
-                                    control={control}
-                                    render={({ field }) => <Input {...field} />}
-                                />
-                            </FormItem>
-                        </Col>
-                    </Row>
-                    <Row gutter={24}>
-                        <Col span={12}>
-                            <FormItem label={t("Login")}>
-                                <Controller
-                                    name="email"
-                                    control={control}
-                                    render={({ field }) => <Input {...field} />}
-                                />
-                            </FormItem>
-                        </Col>
-                        <Col span={12}>
-                            <FormItem label={t("Parol")}>
-                                <Controller
-                                    name="password"
+                                    name="departments"
                                     control={control}
                                     render={({ field }) => (
-                                        <Input.Password {...field} />
+                                        <Select
+                                            mode="multiple"
+                                            options={departments}
+                                            suffixIcon={<Icons.arrow.select />}
+                                            dropdownStyle={{ borderRadius: 0 }}
+                                            {...field}
+                                        />
                                     )}
+                                />
+                            </FormItem>
+                        </Col>
+                        <Col span={24}>
+                            <FormItem label={t("Savol")}>
+                                <Controller
+                                    name="question"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <RichTextEditor
+                                            {...field}
+                                            value={value}
+                                            onChange={onChange}
+                                            // @ts-ignore
+                                            toolbarConfig={toolbarConfig}
+                                        />
+                                    )}
+                                />
+                            </FormItem>
+                        </Col>
+                        <Col span={24}>
+                            <FormItem label={t("A Javob")}>
+                                <Controller
+                                    name="answerA"
+                                    control={control}
+                                    render={({ field }) => <Input {...field} />}
                                 />
                             </FormItem>
                         </Col>

@@ -47,4 +47,10 @@ export const FormItem = styled(antd.Form.Item)`
             !pl-0 !h-12
         `}
     }
+
+    .ant-select-selector {
+        ${twi`
+            !rounded-none !py-0
+        `}
+    }
 `;

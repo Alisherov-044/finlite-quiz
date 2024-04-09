@@ -5,18 +5,18 @@ export const options = [
     },
     {
         label: "A-B Bo'yicha",
-        value: "a",
+        value: "b",
     },
     {
         label: "A-B Bo'yicha",
-        value: "a",
+        value: "c",
     },
     {
         label: "A-B Bo'yicha",
-        value: "a",
+        value: "d",
     },
     {
         label: "A-B Bo'yicha",
-        value: "a",
+        value: "e",
     },
 ];
