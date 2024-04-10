@@ -6,7 +6,7 @@ export const Drawer = styled(antd.Drawer)`
     .ant-drawer {
         &-header {
             ${twi`
-                border-none mt-20 px-5 py-0
+                border-none mt-10 px-5 py-0
             `}
         }
 

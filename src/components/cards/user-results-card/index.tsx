@@ -2,12 +2,8 @@ import { formatTime } from "@/utils";
 import { useTranslate } from "@/hooks";
 import { Button, Flex, Typography } from "antd";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-
-export type TUser = {
-    image: string;
-    full_name: string;
-    group: number;
-};
+import type { TUser } from "@/components/cards/user-card";
+import { useMemo } from "react";
 
 export type TResult = {
     correct_answers: number;
@@ -22,9 +18,13 @@ export type UserResultsCardProps = {
 
 export function UserResultsCard({ user, result }: UserResultsCardProps) {
     const { t } = useTranslate();
-    const { image, full_name, group } = user;
+    const { image_url, first_name, last_name, group_id } = user;
     const { correct_answers, incorrect_answers, duration } = result;
     const { minutes, seconds } = formatTime(duration);
+    const full_name = useMemo(
+        () => `${first_name} ${last_name}`,
+        [first_name, last_name]
+    );
 
     return (
         <Flex className="items-center justify-between p-3 rounded-2xl shadow-main">
@@ -32,10 +32,10 @@ export function UserResultsCard({ user, result }: UserResultsCardProps) {
                 <LazyLoadImage
                     loading="lazy"
                     effect="blur"
-                    src={image}
+                    src={image_url}
                     width={56}
                     height={56}
-                    alt={full_name}
+                    alt={first_name}
                     className="rounded-full"
                 />
                 <Flex className="flex-col gap-y-2">
@@ -45,7 +45,7 @@ export function UserResultsCard({ user, result }: UserResultsCardProps) {
                         </Typography>
                     </Flex>
                     <Typography className="font-bold">
-                        {t(`${group}-guruch`)}
+                        {t(`${group_id}-guruch`)}
                     </Typography>
                 </Flex>
             </Flex>

@@ -7,8 +7,10 @@ export type FilterTabProps = {
 
 export function FilterTab({ children }: FilterTabProps) {
     return (
-        <Wrapper className="mt-10 px-28 items-center justify-between border-b-[2px] border-blue-900">
-            {children}
+        <Wrapper className="mt-10 border-b-[2px] border-blue-900">
+            <div className="flex items-center justify-between container">
+                {children}
+            </div>
         </Wrapper>
     );
 }

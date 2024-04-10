@@ -3,9 +3,31 @@ import styled from "styled-components";
 import { twi } from "tw-to-css";
 
 export const FormItem = styled(antd.Form.Item)`
-    ${twi`
-        !min-h-20 !mb-14
-    `}
+    &.rich-text-editor {
+        ${twi`
+            !h-40
+        `}
+    }
+
+    .rich-text-editor-wrapper {
+        ${twi`
+            border-blue-300 !max-w-full !w-full rounded-none
+        `}
+    }
+
+    .DraftEditor-root {
+        ${twi`
+            h-20
+        `}
+    }
+
+    .Dropdown__value___34Py9,
+    .IconButton__root___3tqZW,
+    .EditorToolbar__root___3_Aqz {
+        ${twi`
+            !border-blue-300
+        `}
+    }
 
     .ant-form-item {
         &-row {
@@ -51,6 +73,14 @@ export const FormItem = styled(antd.Form.Item)`
     .ant-select-selector {
         ${twi`
             !rounded-none !py-0
+        `}
+    }
+`;
+
+export const Col = styled(antd.Col)`
+    .ant-col {
+        ${twi`
+            !min-h-fit
         `}
     }
 `;

@@ -11,6 +11,8 @@ export type QuizState = {
     items: TSelectedQuiz[];
     finished?: boolean;
     currentTest: number;
+    isLeaving: boolean;
+    isQuizEnded: boolean;
 };
 
 const initialState: QuizState = {
@@ -18,6 +20,8 @@ const initialState: QuizState = {
     items: [],
     finished: false,
     currentTest: 1,
+    isLeaving: false,
+    isQuizEnded: false,
 };
 
 export const quizSlice = createSlice({
@@ -59,6 +63,12 @@ export const quizSlice = createSlice({
         setQuizData: (state, { payload }: PayloadAction<TQuiz[]>) => {
             state.data = payload;
         },
+        setLeaving: (state, { payload }: PayloadAction<boolean>) => {
+            state.isLeaving = payload;
+        },
+        endQuiz: (state, { payload }: PayloadAction<boolean>) => {
+            state.isQuizEnded = payload;
+        },
     },
 });
 
@@ -69,4 +79,6 @@ export const {
     finishQuiz,
     unfinishQuiz,
     setQuizData,
+    setLeaving,
+    endQuiz
 } = quizSlice.actions;

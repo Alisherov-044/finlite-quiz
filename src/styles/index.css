@@ -51,10 +51,10 @@
     #root {
         @apply h-full !font-inter scroll-smooth;
     }
+}
 
-    .container {
-        @apply max-w-[950px] w-full px-4 mx-auto;
-    }
+.container {
+    @apply max-w-[1280px] h-full w-full px-4 mx-auto;
 }
 
 .ant-typography {
@@ -324,7 +324,7 @@
 }
 
 .ant-drawer .ant-select-selector {
-    @apply !rounded-none !py-0;
+    @apply !rounded-none !py-2;
 }
 
 .ant-select-multiple .ant-select-selection-item {
@@ -337,4 +337,12 @@
 
 .ant-select-multiple .ant-select-selection-item-remove svg {
     @apply !w-2 !h-2;
+}
+
+.ant-col {
+    @apply min-h-0;
+}
+
+.ant-row {
+    @apply h-full;
 }

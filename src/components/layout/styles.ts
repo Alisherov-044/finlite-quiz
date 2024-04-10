@@ -5,7 +5,7 @@ import styled from "styled-components";
 export const Content = styled(Flex)`
     & > main {
         ${twi`
-            flex-auto px-28 pt-10 overflow-scroll
+            flex-auto pt-10 overflow-scroll
         `}
     }
 `;

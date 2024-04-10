@@ -1,8 +1,8 @@
 import { useEffect } from "react";
+import { TimeUnit } from "@/types";
 import { Button, Flex, Typography } from "antd";
 import { Confirmation, CountDown, Icons } from "@/components";
-import { TimeUnit } from "@/types";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useCountDown, useOpen, useSelector, useTranslate } from "@/hooks";
 import { convertTime, formatDate, formatTime, getCurrentRole } from "@/utils";
 
@@ -33,6 +33,7 @@ export function ExamCard({ exam, onEdit, onDelete }: ExamCardProps) {
 
     const { t } = useTranslate();
     const { isOpen, open, close } = useOpen();
+    const navigate = useNavigate();
     const timePeriod =
         new Date(
             `${starting_date.toLocaleDateString()} ${starting_time}`
@@ -98,8 +99,17 @@ export function ExamCard({ exam, onEdit, onDelete }: ExamCardProps) {
                     </button>
                 )}
                 {time === 0 ? (
-                    <Button className="!py-3" onClick={open}>
-                        {t("Boshlash")}
+                    <Button
+                        className="!py-3"
+                        onClick={() =>
+                            currentRole === "teacher"
+                                ? navigate("/exams/results")
+                                : open()
+                        }
+                    >
+                        {t(
+                            currentRole === "teacher" ? "Natijalar" : "Boshlash"
+                        )}
                     </Button>
                 ) : (
                     <Flex className="flex-col items-end gap-y-1">

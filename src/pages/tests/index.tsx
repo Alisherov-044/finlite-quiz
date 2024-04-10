@@ -1,12 +1,11 @@
 import { z } from "zod";
 import { FormDrawer, Icons, PageHeaderAction } from "@/components";
-import { FormItem } from "@/components/styles";
+import { FormItem, Col } from "@/components/styles";
 import { useOpen, useSelector, useTranslate } from "@/hooks";
 import { getCurrentRole } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
     Button,
-    Col,
     Flex,
     Form,
     Input,
@@ -23,6 +22,7 @@ import { useQuery } from "react-query";
 import { Navigate, useLocation } from "react-router-dom";
 import { departments } from "@/components/select-practice-mode/data";
 import RichTextEditor from "react-rte";
+import { variants } from "./data";
 
 type ColumnsType<T> = TableProps<T>["columns"];
 
@@ -213,105 +213,162 @@ export default function TestsPage() {
     }
 
     return (
-        <main className="flex flex-col">
-            {currentRole === "admin" ? (
-                <PageHeaderAction
-                    title={t("Test yaratish")}
-                    btnText={t("Test yaratish")}
-                    onAction={open}
-                />
-            ) : null}
-            <Flex className="flex-col">
-                <Flex className="items-center justify-center border rounded-md !rounded-b-none p-2.5 mt-8">
-                    <Input
-                        prefix={<Icons.search />}
-                        placeholder={t("Qidirish...")}
-                        prefixCls="search-input"
-                        onChange={debouncedSearch}
+        <main>
+            <div className="flex flex-col container">
+                {currentRole === "admin" ? (
+                    <PageHeaderAction
+                        title={t("Test yaratish")}
+                        btnText={t("Test yaratish")}
+                        onAction={open}
+                    />
+                ) : null}
+                <Flex className="flex-col">
+                    <Flex className="items-center justify-center border rounded-md !rounded-b-none p-2.5 mt-8">
+                        <Input
+                            prefix={<Icons.search />}
+                            placeholder={t("Qidirish...")}
+                            prefixCls="search-input"
+                            onChange={debouncedSearch}
+                        />
+                    </Flex>
+                    <Table
+                        columns={columns}
+                        loading={isLoading}
+                        dataSource={tests?.filter((item) =>
+                            search
+                                ? item.test
+                                      .toLocaleLowerCase()
+                                      .includes(search.toLocaleLowerCase())
+                                : true
+                        )}
+                        pagination={tableParams.pagination}
                     />
                 </Flex>
-                <Table
-                    columns={columns}
-                    loading={isLoading}
-                    dataSource={tests?.filter((item) =>
-                        search
-                            ? item.test
-                                  .toLocaleLowerCase()
-                                  .includes(search.toLocaleLowerCase())
-                            : true
-                    )}
-                    pagination={tableParams.pagination}
-                />
-            </Flex>
 
-            <FormDrawer
-                open={isOpen}
-                width={600}
-                onClose={onCancel}
-                onCancel={onCancel}
-                title={t("Test Yaratish")}
-                footer={
-                    <Flex className="w-full items-center justify-between">
-                        <Select />
-                        <Button
-                            form="teacher-form"
-                            htmlType="submit"
-                            loading={isFormLoading}
-                            disabled={isFormLoading}
-                        >
-                            {t("Yaratish")}
-                        </Button>
-                    </Flex>
-                }
-            >
-                <Form id="teacher-form" onFinish={handleSubmit(onSubmit)}>
-                    <Row>
-                        <Col span={24}>
-                            <FormItem label={t("Bo'limlar")}>
-                                <Controller
-                                    name="departments"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Select
-                                            mode="multiple"
-                                            options={departments}
-                                            suffixIcon={<Icons.arrow.select />}
-                                            dropdownStyle={{ borderRadius: 0 }}
-                                            {...field}
-                                        />
-                                    )}
-                                />
-                            </FormItem>
-                        </Col>
-                        <Col span={24}>
-                            <FormItem label={t("Savol")}>
-                                <Controller
-                                    name="question"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <RichTextEditor
-                                            {...field}
-                                            value={value}
-                                            onChange={onChange}
-                                            // @ts-ignore
-                                            toolbarConfig={toolbarConfig}
-                                        />
-                                    )}
-                                />
-                            </FormItem>
-                        </Col>
-                        <Col span={24}>
-                            <FormItem label={t("A Javob")}>
-                                <Controller
-                                    name="answerA"
-                                    control={control}
-                                    render={({ field }) => <Input {...field} />}
-                                />
-                            </FormItem>
-                        </Col>
-                    </Row>
-                </Form>
-            </FormDrawer>
+                <FormDrawer
+                    open={isOpen}
+                    width={600}
+                    onClose={onCancel}
+                    onCancel={onCancel}
+                    title={t("Test Yaratish")}
+                    footer={
+                        <Flex className="w-full items-center justify-between">
+                            <Select
+                                suffixIcon={<Icons.arrow.select />}
+                                options={variants.map((item) => ({
+                                    ...item,
+                                    label: t(item.label),
+                                }))}
+                                defaultValue={variants[0].value}
+                            />
+                            <Button
+                                form="teacher-form"
+                                htmlType="submit"
+                                loading={isFormLoading}
+                                disabled={isFormLoading}
+                            >
+                                {t("Yaratish")}
+                            </Button>
+                        </Flex>
+                    }
+                >
+                    <Form id="teacher-form" onFinish={handleSubmit(onSubmit)}>
+                        <Row>
+                            <Col span={24}>
+                                <FormItem label={t("Bo'limlar")}>
+                                    <Controller
+                                        name="departments"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Select
+                                                mode="multiple"
+                                                options={departments.map(
+                                                    (item) => ({
+                                                        ...item,
+                                                        label: t(item.label),
+                                                    })
+                                                )}
+                                                suffixIcon={
+                                                    <Icons.arrow.select />
+                                                }
+                                                dropdownStyle={{
+                                                    borderRadius: 0,
+                                                }}
+                                                {...field}
+                                            />
+                                        )}
+                                    />
+                                </FormItem>
+                            </Col>
+                            <Col span={24}>
+                                <FormItem
+                                    label={t("Savol")}
+                                    className="rich-text-editor"
+                                >
+                                    <Controller
+                                        name="question"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <RichTextEditor
+                                                {...field}
+                                                value={value}
+                                                onChange={onChange}
+                                                // @ts-ignore
+                                                toolbarConfig={toolbarConfig}
+                                                className="rich-text-editor-wrapper"
+                                            />
+                                        )}
+                                    />
+                                </FormItem>
+                            </Col>
+                            <Col span={24}>
+                                <FormItem label={t("A Javob")}>
+                                    <Controller
+                                        name="answerA"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input {...field} />
+                                        )}
+                                    />
+                                </FormItem>
+                            </Col>
+                            <Col span={24}>
+                                <FormItem label={t("B Javob")}>
+                                    <Controller
+                                        name="answerB"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input {...field} />
+                                        )}
+                                    />
+                                </FormItem>
+                            </Col>
+                            <Col span={24}>
+                                <FormItem label={t("C Javob")}>
+                                    <Controller
+                                        name="answerC"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input {...field} />
+                                        )}
+                                    />
+                                </FormItem>
+                            </Col>
+                            <Col span={24}>
+                                <FormItem label={t("D Javob")}>
+                                    <Controller
+                                        name="answerD"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input {...field} />
+                                        )}
+                                    />
+                                </FormItem>
+                            </Col>
+                        </Row>
+                    </Form>
+                </FormDrawer>
+            </div>
         </main>
     );
 }

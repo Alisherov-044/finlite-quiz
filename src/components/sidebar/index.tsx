@@ -31,7 +31,11 @@ export function Sidebar() {
                                 to={link}
                                 className={clsx(
                                     "min-w-52 flex items-center gap-x-3 p-1.5 rounded-md",
-                                    location.pathname === link && "bg-blue-100"
+                                    (location.pathname === link ||
+                                        (link === "/exams" &&
+                                            location.pathname ===
+                                                "/exams/results")) &&
+                                        "bg-blue-100"
                                 )}
                             >
                                 <Icon />

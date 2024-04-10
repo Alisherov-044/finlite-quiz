@@ -111,104 +111,111 @@ export default function ExamsPage() {
                     {t("Tugallangan imtihonlar")}
                 </button>
             </FilterTab>
-            <main className="flex flex-col">
-                {currentRole === "admin" ? (
-                    <PageHeaderAction
-                        title={t("Imtihon Yaratish")}
-                        btnText={t("Imtihon Yaratish")}
-                        onAction={open}
-                    />
-                ) : null}
-                <Flex className="flex-auto flex-col gap-y-6 mt-6">
-                    {isLoading ? (
-                        [...Array(3).keys()].map((key) => (
-                            <ExamCardSkeleton key={key} />
-                        ))
-                    ) : filteredExams && filteredExams.length ? (
-                        filteredExams.map((exam) => (
-                            <ExamCard
-                                key={exam.id}
-                                exam={exam}
-                                onEdit={() => setEditExam(exam.id)}
-                                onDelete={() => setDeleteExam(exam.id)}
-                            />
-                        ))
-                    ) : (
-                        <Flex className="flex-auto items-center justify-center">
-                            <Empty description={false} />
-                        </Flex>
-                    )}
-                </Flex>
+            <main>
+                <div className="flex flex-col container">
+                    {currentRole === "admin" ? (
+                        <PageHeaderAction
+                            title={t("Imtihon Yaratish")}
+                            btnText={t("Imtihon Yaratish")}
+                            onAction={open}
+                        />
+                    ) : null}
+                    <Flex className="flex-auto flex-col gap-y-6 mt-6">
+                        {isLoading ? (
+                            [...Array(3).keys()].map((key) => (
+                                <ExamCardSkeleton key={key} />
+                            ))
+                        ) : filteredExams && filteredExams.length ? (
+                            filteredExams.map((exam) => (
+                                <ExamCard
+                                    key={exam.id}
+                                    exam={exam}
+                                    onEdit={() => setEditExam(exam.id)}
+                                    onDelete={() => setDeleteExam(exam.id)}
+                                />
+                            ))
+                        ) : (
+                            <Flex className="flex-auto items-center justify-center">
+                                <Empty description={false} />
+                            </Flex>
+                        )}
+                    </Flex>
 
-                <FormDrawer
-                    open={isOpen || !!editExam}
-                    width={600}
-                    onClose={onCancel}
-                    onCancel={onCancel}
-                    title={
-                        editExam ? t("Tahrirlash") : t("O'qituvchi Qo'shish")
-                    }
-                    footer={
-                        <Button
-                            form="teacher-form"
-                            htmlType="submit"
-                            loading={isFormLoading}
-                            disabled={isFormLoading}
-                            className="!w-full"
+                    <FormDrawer
+                        open={isOpen || !!editExam}
+                        width={600}
+                        onClose={onCancel}
+                        onCancel={onCancel}
+                        title={
+                            editExam
+                                ? t("Tahrirlash")
+                                : t("O'qituvchi Qo'shish")
+                        }
+                        footer={
+                            <Button
+                                form="teacher-form"
+                                htmlType="submit"
+                                loading={isFormLoading}
+                                disabled={isFormLoading}
+                                className="!w-full"
+                            >
+                                {t(editExam ? "Tahrirlash" : "Qo'shish")}
+                            </Button>
+                        }
+                    >
+                        <Form
+                            id="teacher-form"
+                            onFinish={handleSubmit(onSubmit)}
                         >
-                            {t(editExam ? "Tahrirlash" : "Qo'shish")}
-                        </Button>
-                    }
-                >
-                    <Form id="teacher-form" onFinish={handleSubmit(onSubmit)}>
-                        <Row>
-                            <Col span={24}>
-                                <FormItem label={t("F.I.SH")}>
-                                    <Controller
-                                        name="full_name"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Input {...field} />
-                                        )}
-                                    />
-                                </FormItem>
-                            </Col>
-                        </Row>
-                        <Row gutter={24}>
-                            <Col span={12}>
-                                <FormItem label={t("Login")}>
-                                    <Controller
-                                        name="email"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Input {...field} />
-                                        )}
-                                    />
-                                </FormItem>
-                            </Col>
-                            <Col span={12}>
-                                <FormItem label={t("Parol")}>
-                                    <Controller
-                                        name="password"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Input.Password {...field} />
-                                        )}
-                                    />
-                                </FormItem>
-                            </Col>
-                        </Row>
-                    </Form>
-                </FormDrawer>
+                            <Row>
+                                <Col span={24}>
+                                    <FormItem label={t("F.I.SH")}>
+                                        <Controller
+                                            name="full_name"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Input {...field} />
+                                            )}
+                                        />
+                                    </FormItem>
+                                </Col>
+                            </Row>
+                            <Row gutter={24}>
+                                <Col span={12}>
+                                    <FormItem label={t("Login")}>
+                                        <Controller
+                                            name="email"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Input {...field} />
+                                            )}
+                                        />
+                                    </FormItem>
+                                </Col>
+                                <Col span={12}>
+                                    <FormItem label={t("Parol")}>
+                                        <Controller
+                                            name="password"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Input.Password {...field} />
+                                            )}
+                                        />
+                                    </FormItem>
+                                </Col>
+                            </Row>
+                        </Form>
+                    </FormDrawer>
 
-                <Confirmation
-                    isOpen={!!deleteExam}
-                    onCancel={() => setDeleteExam(null)}
-                    onConfirm={() => {}}
-                    btnText={t("O'chirish")}
-                    title={t("O'chirish")}
-                    description={t("Imtihonni o'chirmoqchimisiz?")}
-                />
+                    <Confirmation
+                        isOpen={!!deleteExam}
+                        onCancel={() => setDeleteExam(null)}
+                        onConfirm={() => {}}
+                        btnText={t("O'chirish")}
+                        title={t("O'chirish")}
+                        description={t("Imtihonni o'chirmoqchimisiz?")}
+                    />
+                </div>
             </main>
         </>
     );

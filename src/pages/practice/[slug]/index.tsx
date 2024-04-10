@@ -10,8 +10,10 @@ import { useDispatch, useOpen, useSelector, useTranslate } from "@/hooks";
 import { setPractice } from "@/redux/slices/practiceSlice";
 import {
     clearQuiz,
+    endQuiz,
     finishQuiz,
     setCurrentTest,
+    setLeaving,
     setQuizData,
     unfinishQuiz,
 } from "@/redux/slices/quizSlice";
@@ -32,8 +34,11 @@ export default function PracticeDetailsPage() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { isOpen, open, close } = useOpen();
-    const { items, currentTest } = useSelector((state) => state.quiz);
+    const { redirectUrl } = useSelector((state) => state.route);
     const { department, testQty } = useSelector((state) => state.practice);
+    const { items, currentTest, isLeaving } = useSelector(
+        (state) => state.quiz
+    );
     const { data: quizzes, isLoading } = useQuery<TQuiz[]>("practice-quiz", {
         queryFn: async () =>
             await [
@@ -272,7 +277,13 @@ export default function PracticeDetailsPage() {
     });
 
     if (!department || !testQty) {
-        return <Navigate to="/practice" state={{ from: location }} replace />;
+        return (
+            <Navigate
+                to={redirectUrl ?? "/practice"}
+                state={{ from: location }}
+                replace
+            />
+        );
     }
 
     function onFinish() {
@@ -283,38 +294,45 @@ export default function PracticeDetailsPage() {
         navigate(`/practice/quiz/${slug}/result`);
     }
 
+    function onCancelLeave() {
+        close();
+        dispatch(setLeaving(false));
+    }
+
     return (
         <Flex className="h-full flex-col justify-between">
-            <main className="flex-auto flex flex-col container">
-                <QuizHeader onExit={open} />
-                <Flex className="w-full items-end justify-between mt-14 mb-6">
-                    <Flex className="flex-col gap-y-2.5">
-                        <Typography className="uppercase !text-lg !text-blue-500">
-                            {t("Amaliyot")}
-                        </Typography>
-                        <Typography className="font-semibold !text-lg !text-blue-700">
-                            {t("Bo'lim: ")}
-                            {department.title}
+            <main className="flex-auto">
+                <div className="h-full flex flex-col container">
+                    <QuizHeader onExit={open} />
+                    <Flex className="w-full items-end justify-between mt-14 mb-6">
+                        <Flex className="flex-col gap-y-2.5">
+                            <Typography className="uppercase !text-lg !text-blue-500">
+                                {t("Amaliyot")}
+                            </Typography>
+                            <Typography className="font-semibold !text-lg !text-blue-700">
+                                {t("Bo'lim: ")}
+                                {department.title}
+                            </Typography>
+                        </Flex>
+                        <Typography className="font-semibold !text-blue-700">
+                            {currentTest} / {testQty}
                         </Typography>
                     </Flex>
-                    <Typography className="font-semibold !text-blue-700">
-                        {currentTest} / {testQty}
-                    </Typography>
-                </Flex>
-                {isLoading || !quizzes ? (
-                    <QuizSkeleton />
-                ) : (
-                    <Quiz
-                        quiz={quizzes[currentTest - 1]}
-                        selectedAnswerId={
-                            items.find(
-                                (item) =>
-                                    item.questionId ===
-                                    quizzes[currentTest - 1].question.id
-                            )?.selectedAnswerId as number
-                        }
-                    />
-                )}
+                    {isLoading || !quizzes ? (
+                        <QuizSkeleton />
+                    ) : (
+                        <Quiz
+                            quiz={quizzes[currentTest - 1]}
+                            selectedAnswerId={
+                                items.find(
+                                    (item) =>
+                                        item.questionId ===
+                                        quizzes[currentTest - 1].question.id
+                                )?.selectedAnswerId as number
+                            }
+                        />
+                    )}
+                </div>
             </main>
             <Flex className="border-t mt-4">
                 <Flex className="items-center justify-between container">
@@ -354,8 +372,8 @@ export default function PracticeDetailsPage() {
                 title={t("Chiqish")}
                 description={t("Amaliyotni tark etmoqchimisiz?")}
                 btnText={t("Chiqish")}
-                isOpen={isOpen}
-                onCancel={close}
+                isOpen={isOpen || isLeaving}
+                onCancel={onCancelLeave}
                 onConfirm={() => {
                     dispatch(
                         setPractice({
@@ -366,6 +384,8 @@ export default function PracticeDetailsPage() {
                     dispatch(clearQuiz());
                     dispatch(unfinishQuiz());
                     dispatch(setCurrentTest(1));
+                    dispatch(setLeaving(false));
+                    dispatch(endQuiz(true));
                 }}
             />
         </Flex>

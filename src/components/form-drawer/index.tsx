@@ -30,7 +30,9 @@ export function FormDrawer({
         >
             <Flex className="flex-auto flex-col justify-between">
                 {children}
-                <Flex className="items-center justify-between">{footer}</Flex>
+                <Flex className="items-center justify-between pb-5">
+                    {footer}
+                </Flex>
             </Flex>
         </Drawer>
     );

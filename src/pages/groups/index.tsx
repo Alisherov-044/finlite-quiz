@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { useOpen, useSelector, useTranslate } from "@/hooks";
 import { options } from "@/components/data";
 import {
@@ -26,14 +26,21 @@ import {
     notification,
 } from "antd";
 import { FormItem } from "@/components/styles";
-import type { TGroup } from "@/components/cards/group-card";
 import { Navigate, useLocation } from "react-router-dom";
 import { getCurrentRole } from "@/utils";
+import { axiosPrivate, axiosPublic } from "@/lib";
+import { GROUPS_URL } from "@/utils/urls";
+import type { TGroup } from "@/components/cards/group-card";
 
 export const GroupFormScheme = z.object({
     name: z.string({ required_error: "this field is required" }),
-    number: z.string({ required_error: "this field is require" }),
 });
+
+export type TGroupsResponse = {
+    data: {
+        data: TGroup[];
+    };
+};
 
 export default function GroupsPage() {
     const { t } = useTranslate();
@@ -46,44 +53,19 @@ export default function GroupsPage() {
     }
 
     const { isOpen, open, close } = useOpen();
-    const { data: groups, isLoading } = useQuery<TGroup[]>("groups", {
-        queryFn: async () =>
-            await [
-                {
-                    id: 1,
-                    name: "1C Buxgalteriya",
-                    number: 1,
-                    students: [
-                        {
-                            id: 1,
-                            full_name: "Bekchanov Javlonbek",
-                            email: "Javlonbek",
-                            group: 1,
-                            image: "https://mdbcdn.b-cdn.net/img/new/avatars/2.webp",
-                            role: "student",
-                            password: "password",
-                        },
-                        {
-                            id: 1,
-                            full_name: "Bekchanov Javlonbek",
-                            email: "Javlonbek",
-                            group: 1,
-                            image: "https://mdbcdn.b-cdn.net/img/new/avatars/2.webp",
-                            role: "student",
-                            password: "password",
-                        },
-                        {
-                            id: 1,
-                            full_name: "Bekchanov Javlonbek",
-                            email: "Javlonbek",
-                            group: 1,
-                            image: "https://mdbcdn.b-cdn.net/img/new/avatars/2.webp",
-                            role: "student",
-                            password: "password",
-                        },
-                    ],
-                },
-            ],
+    const {
+        data: groups,
+        isLoading,
+        refetch,
+    } = useQuery<TGroupsResponse>("groups", {
+        queryFn: async () => await axiosPublic.get(GROUPS_URL),
+    });
+    const { mutate, isLoading: isSubmitting } = useMutation<
+        TGroupsResponse,
+        Error,
+        z.infer<typeof GroupFormScheme>
+    >({
+        mutationFn: async (data) => await axiosPrivate.post(GROUPS_URL, data),
     });
     const {
         handleSubmit,
@@ -115,13 +97,23 @@ export default function GroupsPage() {
     console.log(filter);
 
     function onSubmit(values: z.infer<typeof GroupFormScheme>) {
-        console.log(values);
-        reset();
-        close();
-        notification.success({
-            message: t("group created"),
-            icon: <Icons.checkCircle />,
-            closeIcon: false,
+        mutate(values, {
+            onSuccess: () => {
+                notification.success({
+                    message: t("Guruh yaratildi"),
+                    icon: <Icons.checkCircle />,
+                    closeIcon: false,
+                });
+                refetch();
+                onCancel();
+            },
+            onError: (error) => {
+                notification.error({
+                    message: t(error.message),
+                    closeIcon: false,
+                });
+                onCancel();
+            },
         });
     }
 
@@ -131,102 +123,93 @@ export default function GroupsPage() {
     }
 
     return (
-        <main className="flex flex-col">
-            {currentRole === "admin" ? (
-                <PageHeaderAction
-                    title={t("Guruh yaratish")}
-                    btnText={t("Guruh yaratish")}
-                    onAction={open}
-                />
-            ) : null}
-            <Flex className="flex-col gap-y-4 mt-10">
-                <Flex className="items-center justify-between">
-                    <Typography className="!text-sm font-bold !text-blue-900">
-                        {t("Guruhlar ro'yhati")}
-                    </Typography>
-                    <Select
-                        placeholder={t("Saralash")}
-                        suffixIcon={<Icons.arrow.select />}
-                        prefixCls="sort-select"
-                        placement="bottomRight"
-                        options={options}
-                        onChange={(value) => setFilter(value)}
+        <main>
+            <div className="flex flex-col container">
+                {currentRole === "admin" ? (
+                    <PageHeaderAction
+                        title={t("Guruh yaratish")}
+                        btnText={t("Guruh yaratish")}
+                        onAction={open}
+                    />
+                ) : null}
+                <Flex className="flex-col gap-y-4 mt-10">
+                    <Flex className="items-center justify-between">
+                        <Typography className="!text-sm font-bold !text-blue-900">
+                            {t("Guruhlar ro'yhati")}
+                        </Typography>
+                        <Select
+                            placeholder={t("Saralash")}
+                            suffixIcon={<Icons.arrow.select />}
+                            prefixCls="sort-select"
+                            placement="bottomRight"
+                            options={options}
+                            onChange={(value) => setFilter(value)}
+                        />
+                    </Flex>
+                    <Input
+                        prefix={<Icons.search />}
+                        placeholder={t("Qidirish...")}
+                        prefixCls="search-input"
+                        onChange={debouncedSearch}
                     />
                 </Flex>
-                <Input
-                    prefix={<Icons.search />}
-                    placeholder={t("Qidirish...")}
-                    prefixCls="search-input"
-                    onChange={debouncedSearch}
-                />
-            </Flex>
-            <Flex className="flex-auto flex-col gap-y-3 mt-10">
-                {isLoading ? (
-                    [...Array(3).keys()].map((key) => (
-                        <GroupCardSkeleton key={key} />
-                    ))
-                ) : groups && groups.length ? (
-                    groups
-                        .filter((group) =>
-                            search.length
-                                ? group.name
-                                      .toLocaleLowerCase()
-                                      .includes(search.toLocaleLowerCase())
-                                : true
-                        )
-                        .map((group) => <GroupCard group={group} />)
-                ) : (
-                    <Flex className="flex-auto items-center justify-center">
-                        <Empty description={false} />
-                    </Flex>
-                )}
-            </Flex>
+                <Flex className="flex-auto flex-col gap-y-3 mt-10">
+                    {isLoading ? (
+                        [...Array(3).keys()].map((key) => (
+                            <GroupCardSkeleton key={key} />
+                        ))
+                    ) : groups?.data.data && groups.data.data.length ? (
+                        groups.data.data
+                            .filter((group) =>
+                                search.length
+                                    ? group.name
+                                          .toLocaleLowerCase()
+                                          .includes(search.toLocaleLowerCase())
+                                    : true
+                            )
+                            .map((group) => <GroupCard group={group} />)
+                    ) : (
+                        <Flex className="flex-auto items-center justify-center">
+                            <Empty description={false} />
+                        </Flex>
+                    )}
+                </Flex>
 
-            <FormDrawer
-                open={isOpen}
-                width={600}
-                onClose={onCancel}
-                onCancel={onCancel}
-                title={t("Guruh Qo'shish")}
-                footer={
-                    <Button
-                        form="group-form"
-                        htmlType="submit"
-                        loading={isFormLoading}
-                        disabled={isFormLoading}
-                        className="!w-full"
-                    >
-                        {t("Qo'shish")}
-                    </Button>
-                }
-            >
-                <Form id="group-form" onFinish={handleSubmit(onSubmit)}>
-                    <Row>
-                        <Col span={24}>
-                            <FormItem label={t("Guruh nomi")}>
-                                <Controller
-                                    name="name"
-                                    control={control}
-                                    render={({ field }) => <Input {...field} />}
-                                />
-                            </FormItem>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col span={24}>
-                            <FormItem label={t("Guruh raqami")}>
-                                <Controller
-                                    name="number"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Input type="number" {...field} />
-                                    )}
-                                />
-                            </FormItem>
-                        </Col>
-                    </Row>
-                </Form>
-            </FormDrawer>
+                <FormDrawer
+                    open={isOpen}
+                    width={600}
+                    onClose={onCancel}
+                    onCancel={onCancel}
+                    title={t("Guruh Qo'shish")}
+                    footer={
+                        <Button
+                            form="group-form"
+                            htmlType="submit"
+                            loading={isFormLoading || isSubmitting}
+                            disabled={isFormLoading || isSubmitting}
+                            className="!w-full"
+                        >
+                            {t("Qo'shish")}
+                        </Button>
+                    }
+                >
+                    <Form id="group-form" onFinish={handleSubmit(onSubmit)}>
+                        <Row>
+                            <Col span={24}>
+                                <FormItem label={t("Guruh nomi")}>
+                                    <Controller
+                                        name="name"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input {...field} />
+                                        )}
+                                    />
+                                </FormItem>
+                            </Col>
+                        </Row>
+                    </Form>
+                </FormDrawer>
+            </div>
         </main>
     );
 }
