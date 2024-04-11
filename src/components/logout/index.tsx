@@ -2,6 +2,7 @@ import { setAuth } from "@/redux/slices/authSlice";
 import { useDispatch, useOpen, useTranslate } from "@/hooks";
 import { Confirmation, IconButton, Icons } from "@/components";
 import { useLocation, useNavigate } from "react-router-dom";
+import { setPreviousLocation } from "@/redux/slices/routeSlice";
 
 export function Logout() {
     const { t } = useTranslate();
@@ -14,6 +15,7 @@ export function Logout() {
         dispatch(
             setAuth({ name: undefined, roles: [], isAuthenticated: false })
         );
+        dispatch(setPreviousLocation("/login"));
         return navigate("/login", { state: { from: location }, replace: true });
     };
 

@@ -34,7 +34,6 @@ export default function PracticeDetailsPage() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { isOpen, open, close } = useOpen();
-    const { redirectUrl } = useSelector((state) => state.route);
     const { department, testQty } = useSelector((state) => state.practice);
     const { items, currentTest, isLeaving } = useSelector(
         (state) => state.quiz
@@ -277,13 +276,7 @@ export default function PracticeDetailsPage() {
     });
 
     if (!department || !testQty) {
-        return (
-            <Navigate
-                to={redirectUrl ?? "/practice"}
-                state={{ from: location }}
-                replace
-            />
-        );
+        return <Navigate to="/practice" state={{ from: location }} replace />;
     }
 
     function onFinish() {
