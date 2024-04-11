@@ -13,6 +13,8 @@ import {
     TDeletionRequest,
     TDeletionResponse,
 } from "@/components/image-upload-uploaded";
+import ImgCrop from "antd-img-crop";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 export type ImageUploadProps = UploadProps & {
     setUrl: (url: string) => void;
@@ -88,27 +90,37 @@ export function ImageUpload({ setUrl, resetUrl }: ImageUploadProps) {
 
     return (
         <Flex className="w-full flex-col">
-            <Upload
-                accept=".jpeg,.png,.webp,.avif,.jpg"
-                listType="text"
-                fileList={[]}
-                customRequest={handleChange}
-            >
-                <button
-                    disabled={isLoading}
-                    className="relative flex items-center justify-center w-16 h-16 rounded-full bg-gray-200"
+            <ImgCrop modalClassName="image-editor" rotationSlider>
+                <Upload
+                    accept=".jpeg,.png,.webp,.avif,.jpg"
+                    listType="text"
+                    fileList={[]}
+                    customRequest={handleChange}
                 >
-                    {isLoading ? (
-                        <span className="w-6 h-6 border-[3px] border-gray-400 rounded-full border-b-transparent animate-spin" />
-                    ) : (
-                        <Icons.imgUpload />
-                    )}
+                    <button
+                        disabled={isLoading}
+                        className="relative flex items-center justify-center w-16 h-16 rounded-full bg-gray-200"
+                    >
+                        {isLoading ? (
+                            <span className="w-6 h-6 border-[3px] border-gray-400 rounded-full border-b-transparent animate-spin" />
+                        ) : currentUploadedImage ? (
+                            <LazyLoadImage
+                                loading="lazy"
+                                effect="blur"
+                                src={currentUploadedImage.url}
+                                alt={currentUploadedImage.key}
+                                className="rounded-full"
+                            />
+                        ) : (
+                            <Icons.imgUpload />
+                        )}
 
-                    <span className="flex items-center justify-center absolute bottom-0 right-0 w-5 h-5 rounded-full border-[3px] border-white text-white bg-gray-300 font-extrabold">
-                        +
-                    </span>
-                </button>
-            </Upload>
+                        <span className="flex items-center justify-center absolute bottom-0 right-0 w-5 h-5 rounded-full border-[3px] border-white text-white bg-gray-300 font-extrabold">
+                            +
+                        </span>
+                    </button>
+                </Upload>
+            </ImgCrop>
             {currentUploadedImage && (
                 <ImageUploadUploaded
                     uploadedImage={currentUploadedImage}

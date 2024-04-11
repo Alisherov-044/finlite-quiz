@@ -6,6 +6,7 @@ import {
     Confirmation,
     FormDrawer,
     Icons,
+    ImageUpload,
     PageHeaderAction,
     UserCard,
     UserCardSkeleton,
@@ -26,19 +27,31 @@ import {
     Typography,
     notification,
 } from "antd";
-import { fillValues, getCurrentRole } from "@/utils";
-import { FormItem } from "@/components/styles";
-import type { TSetValue } from "@/utils/fill-values";
-import type { TUser } from "@/components/cards/user-card";
-import { Navigate, useLocation } from "react-router-dom";
 import { axiosPublic } from "@/lib";
 import { TEACHERS_URL } from "@/utils/urls";
+import { FormItem } from "@/components/styles";
+import { fillValues, getCurrentRole } from "@/utils";
+import { Navigate, useLocation } from "react-router-dom";
+import type { TSetValue } from "@/utils/fill-values";
+import type { TUser } from "@/components/cards/user-card";
 
 export const TeacherFormScheme = z.object({
-    full_name: z.string({ required_error: "this field is required" }),
-    email: z.string({ required_error: "this field is require" }),
-    password: z.string({ required_error: "this field is require" }),
+    first_name: z.string(),
+    last_name: z.string(),
+    phone_number: z.string(),
+    password: z.string().optional(),
+    image_url: z.string().optional(),
 });
+
+export type TTeachersResponse = {
+    data: {
+        data: TUser[];
+    };
+};
+
+export type TTeachersRequest = z.infer<typeof TeacherFormScheme> & {
+    role: string;
+};
 
 export default function TeachersPage() {
     const { t } = useTranslate();
@@ -57,14 +70,19 @@ export default function TeachersPage() {
     const { active: editTeacher, setActive: setEditTeacher } = useActive<
         number | null
     >(null);
-    const { data: teachers, isLoading } = useQuery<TUser[]>("teachers", {
-        queryFn: async () => await axiosPublic.get(TEACHERS_URL),
-    });
+    const { data: teachers, isLoading } = useQuery<TTeachersResponse>(
+        "teachers",
+        {
+            queryFn: async () => await axiosPublic.get(TEACHERS_URL),
+        }
+    );
     const {
         handleSubmit,
         control,
         reset,
+        resetField,
         setValue,
+        getValues,
         formState: { isLoading: isFormLoading },
     } = useForm<z.infer<typeof TeacherFormScheme>>({
         resolver: zodResolver(TeacherFormScheme),
@@ -108,15 +126,15 @@ export default function TeachersPage() {
 
     useEffect(() => {
         if (editTeacher) {
-            let teacher = teachers?.find(
+            let teacher = teachers?.data.data.find(
                 (teacher) => teacher.id === editTeacher
             );
 
             if (teacher) {
                 fillValues<TUser>(setValue as TSetValue, teacher, [
-                    "full_name",
-                    "email",
-                    "password",
+                    "first_name",
+                    "last_name",
+                    "phone_number",
                 ]);
             }
         }
@@ -158,8 +176,8 @@ export default function TeachersPage() {
                         [...Array(3).keys()].map((key) => (
                             <UserCardSkeleton key={key} role="teacher" />
                         ))
-                    ) : teachers && teachers.length ? (
-                        teachers
+                    ) : teachers?.data.data && teachers.data.data.length ? (
+                        teachers.data.data
                             .filter((teacher) =>
                                 search.length
                                     ? `${teacher.first_name} ${teacher.last_name}`
@@ -205,11 +223,22 @@ export default function TeachersPage() {
                     }
                 >
                     <Form id="teacher-form" onFinish={handleSubmit(onSubmit)}>
-                        <Row>
-                            <Col span={24}>
-                                <FormItem label={t("F.I.SH")}>
+                        <Row gutter={24}>
+                            <Col span={12}>
+                                <FormItem label={t("Ism")}>
                                     <Controller
-                                        name="full_name"
+                                        name="first_name"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input {...field} />
+                                        )}
+                                    />
+                                </FormItem>
+                            </Col>
+                            <Col span={12}>
+                                <FormItem label={t("Familiya")}>
+                                    <Controller
+                                        name="last_name"
                                         control={control}
                                         render={({ field }) => (
                                             <Input {...field} />
@@ -220,12 +249,12 @@ export default function TeachersPage() {
                         </Row>
                         <Row gutter={24}>
                             <Col span={12}>
-                                <FormItem label={t("Login")}>
+                                <FormItem label={t("Telefon Raqam")}>
                                     <Controller
-                                        name="email"
+                                        name="phone_number"
                                         control={control}
                                         render={({ field }) => (
-                                            <Input {...field} />
+                                            <Input type="tel" {...field} />
                                         )}
                                     />
                                 </FormItem>
@@ -237,6 +266,27 @@ export default function TeachersPage() {
                                         control={control}
                                         render={({ field }) => (
                                             <Input.Password {...field} />
+                                        )}
+                                    />
+                                </FormItem>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={24}>
+                                <FormItem>
+                                    <Controller
+                                        name="image_url"
+                                        control={control}
+                                        render={() => (
+                                            <ImageUpload
+                                                setUrl={(url) => {
+                                                    setValue("image_url", url);
+                                                    console.log(getValues());
+                                                }}
+                                                resetUrl={() =>
+                                                    resetField("image_url")
+                                                }
+                                            />
                                         )}
                                     />
                                 </FormItem>

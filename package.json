@@ -18,6 +18,7 @@
         "@reduxjs/toolkit": "^2.2.2",
         "@types/d3-ease": "^3.0.2",
         "antd": "^5.15.4",
+        "antd-img-crop": "^4.21.0",
         "autoprefixer": "^10.4.19",
         "axios": "^1.6.8",
         "crypto-js": "^4.2.0",

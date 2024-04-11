@@ -12,6 +12,7 @@ export type ConfirmationProps = {
     onConfirm: () => void;
     prefixIcon?: ReactNode;
     primaryBtn?: boolean;
+    loading?: boolean;
 };
 
 export function Confirmation({
@@ -21,6 +22,7 @@ export function Confirmation({
     isOpen,
     onCancel,
     onConfirm,
+    loading = false,
     primaryBtn = false,
     prefixIcon = <Icons.infoCircleLg className="lex-shrink-0" />,
 }: ConfirmationProps) {
@@ -40,6 +42,8 @@ export function Confirmation({
                     </Typography>
                 </Flex>
                 <Button
+                    loading={loading}
+                    disabled={loading}
                     size="large"
                     onClick={onConfirm}
                     ghost={!primaryBtn}

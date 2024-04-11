@@ -1,6 +1,8 @@
 import { useTranslate } from "@/hooks";
 import { Icons } from "@/components/icons";
 import { Collapse, Flex, Typography } from "antd";
+import { Link } from "react-router-dom";
+import type { TUser } from "@/components/cards/user-card";
 
 export type TGroup = {
     id: number;
@@ -9,9 +11,10 @@ export type TGroup = {
 
 export type GroupCardProps = {
     group: TGroup;
+    students: TUser[];
 };
 
-export function GroupCard({ group }: GroupCardProps) {
+export function GroupCard({ group, students }: GroupCardProps) {
     const { id, name } = group;
     const { t } = useTranslate();
 
@@ -25,20 +28,19 @@ export function GroupCard({ group }: GroupCardProps) {
                             {t(`${id}-guruh`)} {name}
                         </Typography>
                         <Typography>
-                            {/* ( {t(`${students.length} o'quvchi`)} ) */}
+                            ( {t(`${students.length} o'quvchi`)} )
                         </Typography>
                     </Flex>
                 }
             >
                 <Flex className="flex-col gap-y-3">
-                    <span></span>
-                    {/* {students.map(({ id, full_name }) => (
+                    {students.map(({ id, first_name, last_name }) => (
                         <Link to="#" key={id}>
                             <Typography className="transition-all hover:!text-blue-500">
-                                {full_name}
+                                {`${first_name} ${last_name}`}
                             </Typography>
                         </Link>
-                    ))} */}
+                    ))}
                 </Flex>
             </Collapse.Panel>
         </Collapse>

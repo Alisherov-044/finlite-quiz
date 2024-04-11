@@ -29,7 +29,8 @@ import { FormItem } from "@/components/styles";
 import { Navigate, useLocation } from "react-router-dom";
 import { getCurrentRole } from "@/utils";
 import { axiosPrivate, axiosPublic } from "@/lib";
-import { GROUPS_URL } from "@/utils/urls";
+import { GROUPS_URL, STUDENTS_URL } from "@/utils/urls";
+import type { TStudentsResponse } from "@/pages/students";
 import type { TGroup } from "@/components/cards/group-card";
 
 export const GroupFormScheme = z.object({
@@ -60,6 +61,10 @@ export default function GroupsPage() {
     } = useQuery<TGroupsResponse>("groups", {
         queryFn: async () => await axiosPublic.get(GROUPS_URL),
     });
+    const { data: students, isLoading: isStudentsLoading } =
+        useQuery<TStudentsResponse>({
+            queryFn: async () => await axiosPublic.get(STUDENTS_URL),
+        });
     const { mutate, isLoading: isSubmitting } = useMutation<
         TGroupsResponse,
         Error,
@@ -154,7 +159,7 @@ export default function GroupsPage() {
                     />
                 </Flex>
                 <Flex className="flex-auto flex-col gap-y-3 mt-10">
-                    {isLoading ? (
+                    {isLoading || isStudentsLoading ? (
                         [...Array(3).keys()].map((key) => (
                             <GroupCardSkeleton key={key} />
                         ))
@@ -167,7 +172,17 @@ export default function GroupsPage() {
                                           .includes(search.toLocaleLowerCase())
                                     : true
                             )
-                            .map((group) => <GroupCard group={group} />)
+                            .map((group) => (
+                                <GroupCard
+                                    group={group}
+                                    students={
+                                        students?.data.data.filter(
+                                            (student) =>
+                                                student.group_id === group.id
+                                        ) ?? []
+                                    }
+                                />
+                            ))
                     ) : (
                         <Flex className="flex-auto items-center justify-center">
                             <Empty description={false} />

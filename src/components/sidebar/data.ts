@@ -67,7 +67,7 @@ export const sidebarLinks: TSidebarLinks = {
         {
             id: 5,
             link: "/tests",
-            title: "tests",
+            title: "Testlar",
             Icon: Icons.plusCircleCut,
         },
     ],

@@ -38,6 +38,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { axiosMedia, axiosPrivate, axiosPublic } from "@/lib";
 import {
     GROUPS_URL,
+    STUDENTS_DELETE_URL,
     STUDENTS_EDIT_URL,
     STUDENTS_URL,
     UPLOAD_DELETE_URL,
@@ -58,9 +59,9 @@ export const StudentFormScheme = z.object({
     first_name: z.string(),
     last_name: z.string(),
     phone_number: z.string(),
-    password: z.string(),
+    password: z.string().optional(),
     group_id: z.number(),
-    image_url: z.string(),
+    image_url: z.string().optional(),
 });
 
 export type TStudentsResponse = {
@@ -115,6 +116,14 @@ export default function StudentsPage() {
     >({
         mutationFn: async (data) =>
             await axiosPrivate.patch(STUDENTS_EDIT_URL(editStudent!), data),
+    });
+    const { mutate: deleteUser, isLoading: isDeleting } = useMutation<
+        TStudentsResponse,
+        Error,
+        number
+    >({
+        mutationFn: async (id) =>
+            await axiosPrivate.delete(STUDENTS_DELETE_URL(deleteStudent ?? id)),
     });
     const { mutate: deleteImg } = useMutation<
         TDeletionResponse,
@@ -188,16 +197,17 @@ export default function StudentsPage() {
                             closeIcon: false,
                         });
                         refetch();
+                        onCancel(true);
                     },
                     onError: (error) => {
                         notification.error({
                             message: t(error.message),
                             closeIcon: false,
                         });
+                        onCancel();
                     },
                 }
             );
-            onCancel();
         } else {
             mutate(
                 {
@@ -213,27 +223,61 @@ export default function StudentsPage() {
                             closeIcon: false,
                         });
                         refetch();
+                        onCancel(true);
                     },
                     onError: (error) => {
                         notification.error({
                             message: t(error.message),
                             closeIcon: false,
                         });
+                        onCancel();
                     },
                 }
             );
-            onCancel();
         }
     }
 
-    function onCancel() {
+    function onCancel(success: boolean = false) {
         if (isSubmitting) return;
         close();
         reset();
-        setEditStudent(null);
-        if (currentUploadedImage) {
-            deleteImg({ key: currentUploadedImage.key });
+        if (!success && !editStudent) {
+            if (currentUploadedImage) {
+                deleteImg({ key: currentUploadedImage.key });
+            }
         }
+        setEditStudent(null);
+        dispatch(setCurrentUploadedImage(null));
+        dispatch(setCurrentUploadedImageOrigin(null));
+    }
+
+    function onDelete() {
+        if (deleteStudent) {
+            deleteUser(deleteStudent, {
+                onSuccess: () => {
+                    notification.success({
+                        message: t("O'quvchi o'chirildi"),
+                        icon: <Icons.checkCircle />,
+                        closeIcon: null,
+                    });
+                    refetch();
+                },
+                onError: (error) => {
+                    notification.error({
+                        message: t(error.message),
+                        closeIcon: null,
+                    });
+                },
+            });
+            if (currentUploadedImage) {
+                deleteImg({ key: currentUploadedImage.key });
+            }
+        }
+        onDeleteCancel();
+    }
+
+    function onDeleteCancel() {
+        setDeleteStudent(null);
         dispatch(setCurrentUploadedImage(null));
         dispatch(setCurrentUploadedImageOrigin(null));
     }
@@ -266,6 +310,28 @@ export default function StudentsPage() {
             }
         }
     }, [editStudent]);
+
+    useEffect(() => {
+        if (deleteStudent) {
+            let student = students?.data.data.find(
+                (student) => student.id === deleteStudent
+            );
+
+            if (student) {
+                dispatch(
+                    setCurrentUploadedImage({
+                        url: student.image_url,
+                        key: `${import.meta.env.VITE_IMAGE_UPLOAD_CLIENT}/${
+                            student.image_url.split("/")[
+                                student.image_url.split("/").length - 1
+                            ]
+                        }`,
+                        project: import.meta.env.VITE_IMAGE_UPLOAD_CLIENT,
+                    })
+                );
+            }
+        }
+    }, [deleteStudent]);
 
     return (
         <main>
@@ -332,8 +398,8 @@ export default function StudentsPage() {
                 <FormDrawer
                     open={isOpen || !!editStudent}
                     width={600}
-                    onClose={onCancel}
-                    onCancel={onCancel}
+                    onClose={() => onCancel()}
+                    onCancel={() => onCancel()}
                     title={
                         editStudent ? t("Tahrirlash") : t("O'quvchi Qo'shish")
                     }
@@ -457,10 +523,11 @@ export default function StudentsPage() {
 
                 <Confirmation
                     isOpen={!!deleteStudent}
-                    onCancel={() => setDeleteStudent(null)}
-                    onConfirm={() => {}}
+                    onCancel={onDeleteCancel}
+                    onConfirm={onDelete}
                     btnText={t("O'chirish")}
                     title={t("O'chirish")}
+                    loading={isDeleting}
                     description={t("O'quvchini o'chirmoqchimisiz?")}
                 />
             </div>

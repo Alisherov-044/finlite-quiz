@@ -24,6 +24,42 @@ import { departments } from "@/components/select-practice-mode/data";
 import RichTextEditor from "react-rte";
 import { variants } from "./data";
 
+const toolbarConfig = {
+    display: [
+        "HISTORY_BUTTONS",
+        "BLOCK_TYPE_DROPDOWN",
+        "INLINE_STYLE_BUTTONS",
+        "BLOCK_TYPE_BUTTONS",
+        "LINK_BUTTONS",
+        "CUSTOM_BUTTONS",
+    ],
+    HISTORY_BUTTONS: [
+        { label: "Undo", style: "undo" },
+        { label: "Redo", style: "redo" },
+    ],
+    INLINE_STYLE_BUTTONS: [
+        { label: "Bold", style: "BOLD" },
+        { label: "Italic", style: "ITALIC" },
+        { label: "Underline", style: "UNDERLINE" },
+        { label: "Strikethrough", style: "STRIKETHROUGH" },
+    ],
+    BLOCK_TYPE_DROPDOWN: [
+        { label: "Normal", style: "unstyled" },
+        { label: "Heading Large", style: "header-one" },
+        { label: "Heading Medium", style: "header-two" },
+        { label: "Heading Small", style: "header-three" },
+    ],
+    BLOCK_TYPE_BUTTONS: [
+        { label: "UL", style: "unordered-list-item" },
+        { label: "OL", style: "ordered-list-item" },
+    ],
+    CUSTOM_BUTTONS: [
+        { label: "Image", style: "IMG" },
+        { label: "Blockquote", style: "BLOCKQUOTE" },
+        { label: "Dash", style: "DASH" },
+    ],
+};
+
 type ColumnsType<T> = TableProps<T>["columns"];
 
 export type TTest = {
@@ -46,12 +82,13 @@ const columns: ColumnsType<TTest> = [
 ];
 
 export const TeacherFormScheme = z.object({
-    departments: z.string({ required_error: "this field is required" }),
-    question: z.string({ required_error: "this field is require" }),
-    answerA: z.string({ required_error: "this field is require" }),
-    answerB: z.string({ required_error: "this field is require" }),
-    answerC: z.string({ required_error: "this field is require" }),
-    answerD: z.string({ required_error: "this field is require" }),
+    departments: z.array(z.number()),
+    question: z.string(),
+    answerA: z.string(),
+    answerB: z.string(),
+    answerC: z.string(),
+    answerD: z.string(),
+    correctAnswer: z.string(),
 });
 
 export default function TestsPage() {
@@ -59,48 +96,10 @@ export default function TestsPage() {
     const { roles } = useSelector((state) => state.auth);
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
-    const [value, setValue] = useState<any>(RichTextEditor.createEmptyValue());
-
-    function onChange(e: any) {
-        setValue(e);
-        e.toString("html");
-    }
-
-    const toolbarConfig = {
-        display: [
-            "HISTORY_BUTTONS",
-            "BLOCK_TYPE_DROPDOWN",
-            "INLINE_STYLE_BUTTONS",
-            "BLOCK_TYPE_BUTTONS",
-            "LINK_BUTTONS",
-            "CUSTOM_BUTTONS",
-        ],
-        HISTORY_BUTTONS: [
-            { label: "Undo", style: "undo" },
-            { label: "Redo", style: "redo" },
-        ],
-        INLINE_STYLE_BUTTONS: [
-            { label: "Bold", style: "BOLD" },
-            { label: "Italic", style: "ITALIC" },
-            { label: "Underline", style: "UNDERLINE" },
-            { label: "Strikethrough", style: "STRIKETHROUGH" },
-        ],
-        BLOCK_TYPE_DROPDOWN: [
-            { label: "Normal", style: "unstyled" },
-            { label: "Heading Large", style: "header-one" },
-            { label: "Heading Medium", style: "header-two" },
-            { label: "Heading Small", style: "header-three" },
-        ],
-        BLOCK_TYPE_BUTTONS: [
-            { label: "UL", style: "unordered-list-item" },
-            { label: "OL", style: "ordered-list-item" },
-        ],
-        CUSTOM_BUTTONS: [
-            { label: "Image", style: "IMG" },
-            { label: "Blockquote", style: "BLOCKQUOTE" },
-            { label: "Dash", style: "DASH" },
-        ],
-    };
+    const [currectAnswer, setCurrectAnswer] = useState<string | null>(null);
+    const [rteValue, setRteValue] = useState<any>(
+        RichTextEditor.createEmptyValue()
+    );
 
     if (!currentRole) {
         return <Navigate to="/login" state={{ from: location }} replace />;
@@ -168,6 +167,7 @@ export default function TestsPage() {
         handleSubmit,
         control,
         reset,
+        setValue,
         formState: { isLoading: isFormLoading },
     } = useForm<z.infer<typeof TeacherFormScheme>>({
         resolver: zodResolver(TeacherFormScheme),
@@ -200,6 +200,8 @@ export default function TestsPage() {
     function onCancel() {
         close();
         reset();
+        setCurrectAnswer(null);
+        setRteValue(RichTextEditor.createEmptyValue());
     }
 
     function onSubmit(values: z.infer<typeof TeacherFormScheme>) {
@@ -210,6 +212,11 @@ export default function TestsPage() {
             closeIcon: false,
         });
         onCancel();
+    }
+
+    function onChange(e: any) {
+        setRteValue(e);
+        setValue("question", e.toString("html"));
     }
 
     return (
@@ -259,7 +266,12 @@ export default function TestsPage() {
                                     ...item,
                                     label: t(item.label),
                                 }))}
-                                defaultValue={variants[0].value}
+                                placeholder={t("To'g'ri javob")}
+                                value={currectAnswer}
+                                onChange={(e) => {
+                                    e && setValue("correctAnswer", e);
+                                    setCurrectAnswer(e);
+                                }}
                             />
                             <Button
                                 form="teacher-form"
@@ -311,7 +323,7 @@ export default function TestsPage() {
                                         render={({ field }) => (
                                             <RichTextEditor
                                                 {...field}
-                                                value={value}
+                                                value={rteValue}
                                                 onChange={onChange}
                                                 // @ts-ignore
                                                 toolbarConfig={toolbarConfig}

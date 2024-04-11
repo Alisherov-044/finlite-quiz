@@ -191,13 +191,13 @@
     @apply !bg-blue-100;
 }
 
-.ant-modal-body,
-.ant-modal-content {
+.ant-modal-wrap:not(.image-editor) .ant-modal-body,
+.ant-modal-wrap:not(.image-editor) .ant-modal-content {
     @apply !w-fit !p-0 !bg-transparent !shadow-none;
 }
 
-.ant-modal-close,
-.ant-modal-footer {
+.ant-modal-wrap:not(.image-editor) .ant-modal-close,
+.ant-modal-wrap:not(.image-editor) .ant-modal-footer {
     @apply hidden;
 }
 

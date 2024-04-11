@@ -55,7 +55,7 @@ export function UserCard({ user, onEdit, onDelete }: UserCardProps) {
                     </Flex>
                     {role === "student" ? (
                         <Typography className="font-semibold">
-                            {t("login")}: {phone_number}
+                            {t("Telefon raqam")}: {phone_number}
                         </Typography>
                     ) : (
                         <Typography className="font-semibold">
