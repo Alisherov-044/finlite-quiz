@@ -1,8 +1,8 @@
 import axios from "axios";
 import { handleEncrypted } from "@/utils";
 
-const baseURL = import.meta.env.VITE_BASE_URL;
-const mediaBaseUrl = import.meta.env.VITE_MEDIA_BASE_URL;
+const baseURL = String(import.meta.env.VITE_BASE_URL);
+const mediaBaseUrl = String(import.meta.env.VITE_MEDIA_BASE_URL);
 
 export const axiosPublic = axios.create({
     baseURL,
