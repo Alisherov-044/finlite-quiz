@@ -1,8 +1,6 @@
 import axios from "axios";
 import { handleEncrypted } from "@/utils";
-
-const baseURL = String(import.meta.env.VITE_BASE_URL);
-const mediaBaseUrl = String(import.meta.env.VITE_MEDIA_BASE_URL);
+import { baseURL, mediaBaseURL } from "@/utils/urls";
 
 export const axiosPublic = axios.create({
     baseURL,
@@ -20,7 +18,7 @@ export const axiosPrivate = axios.create({
 });
 
 export const axiosMedia = axios.create({
-    baseURL: mediaBaseUrl,
+    baseURL: mediaBaseURL,
     headers: {
         "x-auth-key": handleEncrypted(),
     },

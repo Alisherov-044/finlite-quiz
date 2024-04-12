@@ -1,3 +1,6 @@
+export const baseURL = import.meta.env.VITE_BASE_URL;
+export const mediaBaseURL = import.meta.env.VITE_MEDIA_BASE_URL;
+
 export const LOGIN_URL = "/login";
 export const STUDENTS_URL = "/user?role=student";
 export const STUDENTS_EDIT_URL = (id: number) => `/user/${id}`;
