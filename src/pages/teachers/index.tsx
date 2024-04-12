@@ -1,12 +1,11 @@
 import { z } from "zod";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { useActive, useOpen, useSelector, useTranslate } from "@/hooks";
 import { options } from "@/components/data";
 import {
     Confirmation,
     FormDrawer,
     Icons,
-    ImageUpload,
     PageHeaderAction,
     UserCard,
     UserCardSkeleton,
@@ -27,8 +26,12 @@ import {
     Typography,
     notification,
 } from "antd";
-import { axiosPublic } from "@/lib";
-import { TEACHERS_URL } from "@/utils/urls";
+import { axiosPrivate, axiosPublic } from "@/lib";
+import {
+    TEACHERS_DELETE_URL,
+    TEACHERS_EDIT_URL,
+    TEACHERS_URL,
+} from "@/utils/urls";
 import { FormItem } from "@/components/styles";
 import { fillValues, getCurrentRole } from "@/utils";
 import { Navigate, useLocation } from "react-router-dom";
@@ -40,13 +43,10 @@ export const TeacherFormScheme = z.object({
     last_name: z.string(),
     phone_number: z.string(),
     password: z.string().optional(),
-    image_url: z.string().optional(),
 });
 
 export type TTeachersResponse = {
-    data: {
-        data: TUser[];
-    };
+    data: TUser[];
 };
 
 export type TTeachersRequest = z.infer<typeof TeacherFormScheme> & {
@@ -70,19 +70,47 @@ export default function TeachersPage() {
     const { active: editTeacher, setActive: setEditTeacher } = useActive<
         number | null
     >(null);
-    const { data: teachers, isLoading } = useQuery<TTeachersResponse>(
-        "teachers",
-        {
-            queryFn: async () => await axiosPublic.get(TEACHERS_URL),
-        }
-    );
+    const {
+        data: teachers,
+        isLoading,
+        refetch,
+    } = useQuery<TTeachersResponse>("teachers", {
+        queryFn: async () =>
+            await axiosPublic.get(TEACHERS_URL).then((res) => res.data),
+    });
+    const { mutate, isLoading: isSubmitting } = useMutation<
+        TTeachersResponse,
+        Error,
+        TTeachersRequest
+    >({
+        mutationFn: async (data) =>
+            await axiosPrivate.post(TEACHERS_URL, data).then((res) => res.data),
+    });
+    const { mutate: update, isLoading: isUpdating } = useMutation<
+        TTeachersResponse,
+        Error,
+        TTeachersRequest
+    >({
+        mutationFn: async (data) =>
+            await axiosPrivate
+                .patch(TEACHERS_EDIT_URL(editTeacher!), data)
+                .then((res) => res.data),
+    });
+    const { mutate: deleteUser, isLoading: isDeleting } = useMutation<
+        TTeachersResponse,
+        Error,
+        number
+    >({
+        mutationFn: async (id: number) =>
+            await axiosPrivate
+                .delete(TEACHERS_DELETE_URL(deleteTeacher ?? id))
+                .then((res) => res.data),
+    });
     const {
         handleSubmit,
         control,
         reset,
-        resetField,
         setValue,
-        getValues,
         formState: { isLoading: isFormLoading },
     } = useForm<z.infer<typeof TeacherFormScheme>>({
         resolver: zodResolver(TeacherFormScheme),
@@ -113,20 +141,94 @@ export default function TeachersPage() {
     }
 
     function onSubmit(values: z.infer<typeof TeacherFormScheme>) {
-        console.log(values);
-        notification.success({
-            message: t(
-                editTeacher ? "O'qituvchi tahrirlandi" : "O'qituvchi yaratildi"
-            ),
-            icon: <Icons.checkCircle />,
-            closeIcon: false,
-        });
+        if (editTeacher) {
+            const updatedValues: z.infer<typeof TeacherFormScheme> =
+                {} as z.infer<typeof TeacherFormScheme>;
+            const teacher = teachers?.data.find(
+                (item) => item.id === editTeacher
+            );
+
+            const objKeys = Object.keys(values);
+
+            for (let i = 0; i < objKeys.length; i++) {
+                // @ts-ignore
+                if (values[objKeys[i]] !== teacher[objKeys[i]]) {
+                    // @ts-ignore
+                    updatedValues[objKeys[i]] = values[objKeys[i]];
+                }
+            }
+
+            update(
+                { ...updatedValues, role: "teacher" },
+                {
+                    onSuccess: () => {
+                        notification.success({
+                            message: t("O'qituvchi yaratildi"),
+                            icon: <Icons.checkCircle />,
+                            closeIcon: false,
+                        });
+                        refetch();
+                    },
+                    onError: (error) => {
+                        notification.success({
+                            message: t(error.message),
+                            closeIcon: false,
+                        });
+                    },
+                }
+            );
+        } else {
+            mutate(
+                { ...values, role: "teacher" },
+                {
+                    onSuccess: () => {
+                        notification.success({
+                            message: t("O'qituvchi yaratildi"),
+                            icon: <Icons.checkCircle />,
+                            closeIcon: false,
+                        });
+                    },
+                    onError: (error) => {
+                        notification.success({
+                            message: t(error.message),
+                            closeIcon: false,
+                        });
+                    },
+                }
+            );
+        }
         onCancel();
+    }
+
+    function onDelete() {
+        if (deleteTeacher) {
+            deleteUser(deleteTeacher, {
+                onSuccess: () => {
+                    notification.success({
+                        message: t("O'quvchi o'chirildi"),
+                        icon: <Icons.checkCircle />,
+                        closeIcon: null,
+                    });
+                    refetch();
+                },
+                onError: (error) => {
+                    notification.error({
+                        message: t(error.message),
+                        closeIcon: null,
+                    });
+                },
+            });
+        }
+        onDeleteCancel();
+    }
+
+    function onDeleteCancel() {
+        setDeleteTeacher(null);
     }
 
     useEffect(() => {
         if (editTeacher) {
-            let teacher = teachers?.data.data.find(
+            let teacher = teachers?.data.find(
                 (teacher) => teacher.id === editTeacher
             );
 
@@ -176,8 +278,8 @@ export default function TeachersPage() {
                         [...Array(3).keys()].map((key) => (
                             <UserCardSkeleton key={key} role="teacher" />
                         ))
-                    ) : teachers?.data.data && teachers.data.data.length ? (
-                        teachers.data.data
+                    ) : teachers?.data && teachers.data.length ? (
+                        teachers.data
                             .filter((teacher) =>
                                 search.length
                                     ? `${teacher.first_name} ${teacher.last_name}`
@@ -213,8 +315,12 @@ export default function TeachersPage() {
                         <Button
                             form="teacher-form"
                             htmlType="submit"
-                            loading={isFormLoading}
-                            disabled={isFormLoading}
+                            loading={
+                                isFormLoading || isSubmitting || isUpdating
+                            }
+                            disabled={
+                                isFormLoading || isSubmitting || isUpdating
+                            }
                             className="!w-full"
                         >
                             {t(editTeacher ? "Tahrirlash" : "Qo'shish")}
@@ -270,34 +376,14 @@ export default function TeachersPage() {
                                 </FormItem>
                             </Col>
                         </Row>
-                        <Row>
-                            <Col span={24}>
-                                <FormItem>
-                                    <Controller
-                                        name="image_url"
-                                        control={control}
-                                        render={() => (
-                                            <ImageUpload
-                                                setUrl={(url) => {
-                                                    setValue("image_url", url);
-                                                    console.log(getValues());
-                                                }}
-                                                resetUrl={() =>
-                                                    resetField("image_url")
-                                                }
-                                            />
-                                        )}
-                                    />
-                                </FormItem>
-                            </Col>
-                        </Row>
                     </Form>
                 </FormDrawer>
 
                 <Confirmation
                     isOpen={!!deleteTeacher}
-                    onCancel={() => setDeleteTeacher(null)}
-                    onConfirm={() => {}}
+                    loading={isDeleting}
+                    onCancel={onDeleteCancel}
+                    onConfirm={onDelete}
                     btnText={t("O'chirish")}
                     title={t("O'chirish")}
                     description={t("O'qituvchini o'chirmoqchimisiz?")}

@@ -12,7 +12,6 @@ import {
     Confirmation,
     FormDrawer,
     Icons,
-    ImageUpload,
     PageHeaderAction,
     UserCard,
     UserCardSkeleton,
@@ -61,7 +60,6 @@ export const StudentFormScheme = z.object({
     phone_number: z.string(),
     password: z.string().optional(),
     group_id: z.number(),
-    image_url: z.string().optional(),
 });
 
 export type TStudentsResponse = {
@@ -145,8 +143,6 @@ export default function StudentsPage() {
         control,
         reset,
         setValue,
-        getValues,
-        resetField,
         formState: { isLoading: isFormLoading },
     } = useForm<z.infer<typeof StudentFormScheme>>({
         resolver: zodResolver(StudentFormScheme),
@@ -497,27 +493,6 @@ export default function StudentsPage() {
                                                     value: "id",
                                                 }}
                                                 {...field}
-                                            />
-                                        )}
-                                    />
-                                </FormItem>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col span={24}>
-                                <FormItem>
-                                    <Controller
-                                        name="image_url"
-                                        control={control}
-                                        render={() => (
-                                            <ImageUpload
-                                                setUrl={(url) => {
-                                                    setValue("image_url", url);
-                                                    console.log(getValues());
-                                                }}
-                                                resetUrl={() =>
-                                                    resetField("image_url")
-                                                }
                                             />
                                         )}
                                     />

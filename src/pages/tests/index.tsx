@@ -117,7 +117,11 @@ export default function TestsPage() {
     }
 
     const { isOpen, open, close } = useOpen();
-    const { data: tests, isLoading } = useQuery<TTestsResponse>("tests", {
+    const {
+        data: tests,
+        isLoading,
+        refetch,
+    } = useQuery<TTestsResponse>("tests", {
         queryFn: async () =>
             await axiosPublic.get(TESTS_URL).then((res) => res.data),
     });
@@ -203,6 +207,7 @@ export default function TestsPage() {
                     icon: <Icons.checkCircle />,
                     closeIcon: false,
                 });
+                refetch();
             },
             onError: (error) => {
                 notification.error({
