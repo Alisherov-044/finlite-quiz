@@ -6,9 +6,9 @@ export const Title = tw(antd.Typography.Title)`
 `;
 
 export const HeaderCol = tw(antd.Col)`
-    border-r border-blue-300 last-of-type:!border-none
+    min-w-72 border-r border-blue-300 last-of-type:!border-none
 `;
 
 export const ContentCol = tw(HeaderCol)`
-    px-5 py-8
+    px-5 py-8 min-w-72
 `;

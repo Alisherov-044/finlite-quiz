@@ -18,11 +18,13 @@ import {
 import { debounce } from "lodash";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { Navigate, useLocation } from "react-router-dom";
 import { departments } from "@/components/select-practice-mode/data";
 import RichTextEditor from "react-rte";
 import { variants } from "./data";
+import { axiosPrivate, axiosPublic } from "@/lib";
+import { TESTS_URL } from "@/utils/urls";
 
 const toolbarConfig = {
     display: [
@@ -64,7 +66,16 @@ type ColumnsType<T> = TableProps<T>["columns"];
 
 export type TTest = {
     id: number;
-    test: string;
+    description: string;
+    category_id: number;
+    variants: {
+        content: string;
+        is_right: boolean;
+    }[];
+};
+
+export type TTestsResponse = {
+    data: TTest[];
 };
 
 const columns: ColumnsType<TTest> = [
@@ -76,14 +87,14 @@ const columns: ColumnsType<TTest> = [
     },
     {
         title: null,
-        dataIndex: "test",
+        dataIndex: "description",
         width: "90%",
     },
 ];
 
 export const TeacherFormScheme = z.object({
-    departments: z.array(z.number()),
-    question: z.string(),
+    category_ids: z.array(z.number()),
+    description: z.string(),
     answerA: z.string(),
     answerB: z.string(),
     answerC: z.string(),
@@ -106,62 +117,17 @@ export default function TestsPage() {
     }
 
     const { isOpen, open, close } = useOpen();
-    const { data: tests, isLoading } = useQuery<TTest[]>("tests", {
+    const { data: tests, isLoading } = useQuery<TTestsResponse>("tests", {
         queryFn: async () =>
-            await [
-                {
-                    id: 1,
-                    test: "test",
-                },
-                {
-                    id: 1,
-                    test: "test",
-                },
-                {
-                    id: 1,
-                    test: "test",
-                },
-                {
-                    id: 1,
-                    test: "test",
-                },
-                {
-                    id: 1,
-                    test: "test",
-                },
-                {
-                    id: 1,
-                    test: "test",
-                },
-                {
-                    id: 1,
-                    test: "test",
-                },
-                {
-                    id: 1,
-                    test: "test",
-                },
-                {
-                    id: 1,
-                    test: "test",
-                },
-                {
-                    id: 1,
-                    test: "test",
-                },
-                {
-                    id: 1,
-                    test: "test",
-                },
-                {
-                    id: 1,
-                    test: "test",
-                },
-                {
-                    id: 1,
-                    test: "test",
-                },
-            ],
+            await axiosPublic.get(TESTS_URL).then((res) => res.data),
+    });
+    const { mutate, isLoading: isSubmitting } = useMutation<
+        TTestsResponse,
+        Error,
+        Omit<TTest, "id">
+    >({
+        mutationFn: async (data) =>
+            await axiosPrivate.post(TESTS_URL, data).then((res) => res.data),
     });
     const {
         handleSubmit,
@@ -205,18 +171,52 @@ export default function TestsPage() {
     }
 
     function onSubmit(values: z.infer<typeof TeacherFormScheme>) {
-        console.log(values);
-        notification.success({
-            message: t("Test yaratildi"),
-            icon: <Icons.checkCircle />,
-            closeIcon: false,
+        const variants = [
+            {
+                content: values.answerA,
+                is_right: values.correctAnswer === "a",
+            },
+            {
+                content: values.answerB,
+                is_right: values.correctAnswer === "b",
+            },
+            {
+                content: values.answerC,
+                is_right: values.correctAnswer === "c",
+            },
+            {
+                content: values.answerD,
+                is_right: values.correctAnswer === "d",
+            },
+        ];
+
+        const data = {
+            description: values.description,
+            category_id: Number(values.category_ids[0]),
+            variants,
+        };
+
+        mutate(data, {
+            onSuccess: () => {
+                notification.success({
+                    message: t("Test yaratildi"),
+                    icon: <Icons.checkCircle />,
+                    closeIcon: false,
+                });
+            },
+            onError: (error) => {
+                notification.error({
+                    message: t(error.message),
+                    closeIcon: false,
+                });
+            },
         });
         onCancel();
     }
 
     function onChange(e: any) {
         setRteValue(e);
-        setValue("question", e.toString("html"));
+        setValue("description", e.toString("html"));
     }
 
     return (
@@ -241,9 +241,9 @@ export default function TestsPage() {
                     <Table
                         columns={columns}
                         loading={isLoading}
-                        dataSource={tests?.filter((item) =>
+                        dataSource={tests?.data.filter((item) =>
                             search
-                                ? item.test
+                                ? item.description
                                       .toLocaleLowerCase()
                                       .includes(search.toLocaleLowerCase())
                                 : true
@@ -255,7 +255,6 @@ export default function TestsPage() {
                 <FormDrawer
                     open={isOpen}
                     width={600}
-                    onClose={onCancel}
                     onCancel={onCancel}
                     title={t("Test Yaratish")}
                     footer={
@@ -274,22 +273,22 @@ export default function TestsPage() {
                                 }}
                             />
                             <Button
-                                form="teacher-form"
+                                form="tests-form"
                                 htmlType="submit"
-                                loading={isFormLoading}
-                                disabled={isFormLoading}
+                                loading={isFormLoading || isSubmitting}
+                                disabled={isFormLoading || isSubmitting}
                             >
                                 {t("Yaratish")}
                             </Button>
                         </Flex>
                     }
                 >
-                    <Form id="teacher-form" onFinish={handleSubmit(onSubmit)}>
+                    <Form id="tests-form" onFinish={handleSubmit(onSubmit)}>
                         <Row>
                             <Col span={24}>
                                 <FormItem label={t("Bo'limlar")}>
                                     <Controller
-                                        name="departments"
+                                        name="category_ids"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
@@ -318,7 +317,7 @@ export default function TestsPage() {
                                     className="rich-text-editor"
                                 >
                                     <Controller
-                                        name="question"
+                                        name="description"
                                         control={control}
                                         render={({ field }) => (
                                             <RichTextEditor

@@ -5,6 +5,7 @@ import { Layout, Loading, RequireAuth } from "@/components";
 import { useDispatch, useSelector } from "@/hooks";
 import { setLeaving } from "@/redux/slices/quizSlice";
 import { setPreviousLocation } from "@/redux/slices/routeSlice";
+import { close as closeSidebar } from "@/redux/slices/sidebarSlice";
 
 export function App() {
     const location = useLocation();
@@ -39,6 +40,8 @@ export function App() {
 
             dispatch(setPreviousLocation(location.pathname));
         }
+
+        dispatch(closeSidebar());
     }, [location]);
 
     return (

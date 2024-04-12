@@ -144,7 +144,6 @@ export default function ExamsPage() {
                     <FormDrawer
                         open={isOpen || !!editExam}
                         width={600}
-                        onClose={onCancel}
                         onCancel={onCancel}
                         title={
                             editExam
@@ -153,7 +152,7 @@ export default function ExamsPage() {
                         }
                         footer={
                             <Button
-                                form="teacher-form"
+                                form="exams-form"
                                 htmlType="submit"
                                 loading={isFormLoading}
                                 disabled={isFormLoading}
@@ -163,10 +162,7 @@ export default function ExamsPage() {
                             </Button>
                         }
                     >
-                        <Form
-                            id="teacher-form"
-                            onFinish={handleSubmit(onSubmit)}
-                        >
+                        <Form id="exams-form" onFinish={handleSubmit(onSubmit)}>
                             <Row>
                                 <Col span={24}>
                                     <FormItem label={t("F.I.SH")}>

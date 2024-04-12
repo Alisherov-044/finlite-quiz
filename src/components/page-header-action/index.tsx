@@ -15,7 +15,7 @@ export function PageHeaderAction({
     onAction,
 }: PageHeaderActionProps) {
     return (
-        <Flex className="items-center justify-between p-5 border rounded-2xl shadow-main">
+        <Flex className="items-center justify-between gap-3 flex-wrap p-5 border rounded-2xl shadow-main">
             <Flex className="flex-col justify-center gap-y-1">
                 <Typography.Title
                     level={2}

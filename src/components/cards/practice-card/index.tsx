@@ -35,8 +35,8 @@ export function PracticeCard({ practice }: PracticeCardProps) {
                     {t("Test soni")}: {test_qty}
                 </Typography>
             </Flex>
-            <Flex className="gap-x-0.5">
-                <Typography className="text-2xl font-extrabold !text-blue-700 text-nowrap uppercase">
+            <Flex className="justify-end flex-wrap gap-0.5">
+                <Typography className="!text-sm lg:text-2xl font-extrabold !text-blue-700 text-nowrap uppercase">
                     {t("To'g'ri javoblar")}
                 </Typography>
                 <AnimatedProgressProvider

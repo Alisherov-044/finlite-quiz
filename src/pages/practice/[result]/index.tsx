@@ -62,7 +62,7 @@ export default function PracticeResultPage() {
                 <Flex className="justify-center mt-8 mb-20">
                     <Logo />
                 </Flex>
-                <Flex className="w-full items-end justify-between mt-14 mb-6">
+                <Flex className="w-full flex-wrap gap-3 items-end justify-between mt-14 mb-6">
                     <Flex className="flex-col gap-y-2.5">
                         <Typography className="uppercase !text-lg !text-blue-500">
                             {t("Amaliyot")}
@@ -72,7 +72,7 @@ export default function PracticeResultPage() {
                             {department.title}
                         </Typography>
                     </Flex>
-                    <Flex className="flex-col items-end gap-y-2.5">
+                    <Flex className="flex-col mt-5 lg:mt-0 lg:items-end gap-y-2.5">
                         <Typography className="!text-success-main">
                             {t("To'g'ri javoblar soni: ")}
                             {correctAnswers}
@@ -83,7 +83,11 @@ export default function PracticeResultPage() {
                         </Typography>
                     </Flex>
                 </Flex>
+            </div>
+            <div className="overflow-scroll pl-4">
                 <QuizResult quizzes={formattedData} />
+            </div>
+            <div className="container">
                 <Flex className="opacity-0 pointer-events-none w-full mt-4">
                     <Flex className="items-center justify-end container">
                         <Button className="my-5">{t("Yakunlash")}</Button>

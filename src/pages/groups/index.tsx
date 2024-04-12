@@ -38,9 +38,7 @@ export const GroupFormScheme = z.object({
 });
 
 export type TGroupsResponse = {
-    data: {
-        data: TGroup[];
-    };
+    data: TGroup[];
 };
 
 export default function GroupsPage() {
@@ -59,18 +57,21 @@ export default function GroupsPage() {
         isLoading,
         refetch,
     } = useQuery<TGroupsResponse>("groups", {
-        queryFn: async () => await axiosPublic.get(GROUPS_URL),
+        queryFn: async () =>
+            await axiosPublic.get(GROUPS_URL).then((res) => res.data),
     });
     const { data: students, isLoading: isStudentsLoading } =
         useQuery<TStudentsResponse>({
-            queryFn: async () => await axiosPublic.get(STUDENTS_URL),
+            queryFn: async () =>
+                await axiosPublic.get(STUDENTS_URL).then((res) => res.data),
         });
     const { mutate, isLoading: isSubmitting } = useMutation<
         TGroupsResponse,
         Error,
         z.infer<typeof GroupFormScheme>
     >({
-        mutationFn: async (data) => await axiosPrivate.post(GROUPS_URL, data),
+        mutationFn: async (data) =>
+            await axiosPrivate.post(GROUPS_URL, data).then((res) => res.data),
     });
     const {
         handleSubmit,
@@ -163,8 +164,8 @@ export default function GroupsPage() {
                         [...Array(3).keys()].map((key) => (
                             <GroupCardSkeleton key={key} />
                         ))
-                    ) : groups?.data.data && groups.data.data.length ? (
-                        groups.data.data
+                    ) : groups?.data && groups.data.length ? (
+                        groups.data
                             .filter((group) =>
                                 search.length
                                     ? group.name
@@ -176,7 +177,7 @@ export default function GroupsPage() {
                                 <GroupCard
                                     group={group}
                                     students={
-                                        students?.data.data.filter(
+                                        students?.data.filter(
                                             (student) =>
                                                 student.group_id === group.id
                                         ) ?? []
@@ -193,7 +194,6 @@ export default function GroupsPage() {
                 <FormDrawer
                     open={isOpen}
                     width={600}
-                    onClose={onCancel}
                     onCancel={onCancel}
                     title={t("Guruh Qo'shish")}
                     footer={

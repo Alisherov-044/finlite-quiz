@@ -6,6 +6,7 @@ import {
     practiceSlice,
     quizSlice,
     routeSlice,
+    sidebarSlice,
     uploadSlice,
 } from "@/redux/slices";
 import { persistReducer, persistStore } from "redux-persist";
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
     quiz: quizSlice.reducer,
     route: routeSlice.reducer,
     upload: uploadSlice.reducer,
+    sidebar: sidebarSlice.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

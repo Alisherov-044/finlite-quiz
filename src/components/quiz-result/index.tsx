@@ -12,8 +12,8 @@ export function QuizResult({ quizzes }: QuizResultProps) {
     const { t } = useTranslate();
 
     return (
-        <Flex className="flex-col border border-blue-300 rounded-md shadow-main">
-            <Row>
+        <Flex className="w-fit flex-col border border-blue-300 rounded-md shadow-main">
+            <Row className="flex flex-nowrap">
                 <HeaderCol span={8}>
                     <Title level={2}>{t("Savol")}</Title>
                 </HeaderCol>
@@ -27,7 +27,7 @@ export function QuizResult({ quizzes }: QuizResultProps) {
             {quizzes.map(({ question, answers, selected }, index) => (
                 <Row
                     key={question.id}
-                    className="border-b border-blue-300 last-of-type:!border-none"
+                    className="w-fit flex flex-nowrap border-b border-blue-300 last-of-type:!border-none"
                 >
                     <ContentCol
                         span={8}

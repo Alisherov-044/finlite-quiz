@@ -109,7 +109,7 @@ export default function PracticePage() {
                 />
                 <Row
                     className={clsx(
-                        "grid grid-cols-2 gap-5",
+                        "grid grid-cols-1 gap-5 lg:grid-cols-2",
                         !practices?.length && "grid-cols-1 flex-auto"
                     )}
                 >

@@ -6,3 +6,4 @@ export const TEACHERS_URL = "/user?role=teacher";
 export const GROUPS_URL = "/group";
 export const UPLOAD_URL = "/aws";
 export const UPLOAD_DELETE_URL = "/aws/delete";
+export const TESTS_URL = "/question";

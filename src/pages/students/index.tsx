@@ -65,9 +65,7 @@ export const StudentFormScheme = z.object({
 });
 
 export type TStudentsResponse = {
-    data: {
-        data: TUser[];
-    };
+    data: TUser[];
 };
 
 export type TStudentsRequest = z.infer<typeof StudentFormScheme> & {
@@ -96,18 +94,21 @@ export default function StudentsPage() {
         isLoading: isStudentsLoading,
         refetch,
     } = useQuery<TStudentsResponse>("students", {
-        queryFn: async () => await axiosPublic(STUDENTS_URL),
+        queryFn: async () =>
+            await axiosPublic(STUDENTS_URL).then((res) => res.data),
     });
     const { data: groups, isLoading: isGroupsLoading } =
         useQuery<TGroupsResponse>("groups", {
-            queryFn: async () => await axiosPublic.get(GROUPS_URL),
+            queryFn: async () =>
+                await axiosPublic.get(GROUPS_URL).then((res) => res.data),
         });
     const { mutate, isLoading: isSubmitting } = useMutation<
         TStudentsResponse,
         Error,
         TStudentsRequest
     >({
-        mutationFn: async (data) => await axiosPrivate.post(STUDENTS_URL, data),
+        mutationFn: async (data) =>
+            await axiosPrivate.post(STUDENTS_URL, data).then((res) => res.data),
     });
     const { mutate: update, isLoading: isUpdating } = useMutation<
         TStudentsResponse,
@@ -115,7 +116,9 @@ export default function StudentsPage() {
         TStudentsRequest
     >({
         mutationFn: async (data) =>
-            await axiosPrivate.patch(STUDENTS_EDIT_URL(editStudent!), data),
+            await axiosPrivate
+                .patch(STUDENTS_EDIT_URL(editStudent!), data)
+                .then((res) => res.data),
     });
     const { mutate: deleteUser, isLoading: isDeleting } = useMutation<
         TStudentsResponse,
@@ -123,7 +126,9 @@ export default function StudentsPage() {
         number
     >({
         mutationFn: async (id) =>
-            await axiosPrivate.delete(STUDENTS_DELETE_URL(deleteStudent ?? id)),
+            await axiosPrivate
+                .delete(STUDENTS_DELETE_URL(deleteStudent ?? id))
+                .then((res) => res.data),
     });
     const { mutate: deleteImg } = useMutation<
         TDeletionResponse,
@@ -131,7 +136,9 @@ export default function StudentsPage() {
         TDeletionRequest
     >({
         mutationFn: async (key) =>
-            await axiosMedia.post(UPLOAD_DELETE_URL, key),
+            await axiosMedia
+                .post(UPLOAD_DELETE_URL, key)
+                .then((res) => res.data),
     });
     const {
         handleSubmit,
@@ -169,7 +176,7 @@ export default function StudentsPage() {
         if (editStudent) {
             const updatedValues: z.infer<typeof StudentFormScheme> =
                 {} as z.infer<typeof StudentFormScheme>;
-            const student = students?.data.data.find(
+            const student = students?.data.find(
                 (item) => item.id === editStudent
             );
 
@@ -284,7 +291,7 @@ export default function StudentsPage() {
 
     useEffect(() => {
         if (editStudent) {
-            let student = students?.data.data.find(
+            let student = students?.data.find(
                 (student) => student.id === editStudent
             );
 
@@ -313,7 +320,7 @@ export default function StudentsPage() {
 
     useEffect(() => {
         if (deleteStudent) {
-            let student = students?.data.data.find(
+            let student = students?.data.find(
                 (student) => student.id === deleteStudent
             );
 
@@ -369,8 +376,8 @@ export default function StudentsPage() {
                         [...Array(3).keys()].map((key) => (
                             <UserCardSkeleton key={key} role="student" />
                         ))
-                    ) : students?.data.data && students.data.data.length ? (
-                        students.data.data
+                    ) : students?.data && students.data.length ? (
+                        students.data
                             .filter((student) =>
                                 search.length
                                     ? `${student.first_name} ${student.last_name}`
@@ -398,7 +405,6 @@ export default function StudentsPage() {
                 <FormDrawer
                     open={isOpen || !!editStudent}
                     width={600}
-                    onClose={() => onCancel()}
                     onCancel={() => onCancel()}
                     title={
                         editStudent ? t("Tahrirlash") : t("O'quvchi Qo'shish")
@@ -485,7 +491,7 @@ export default function StudentsPage() {
                                                     <Icons.arrow.select />
                                                 }
                                                 loading={isGroupsLoading}
-                                                options={groups?.data.data}
+                                                options={groups?.data}
                                                 fieldNames={{
                                                     label: "name",
                                                     value: "id",

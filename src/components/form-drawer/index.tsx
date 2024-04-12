@@ -21,6 +21,7 @@ export function FormDrawer({
         <Drawer
             title={title}
             closeIcon={null}
+            closable={false}
             extra={
                 <button onClick={onCancel}>
                     <Icons.closeCircle />

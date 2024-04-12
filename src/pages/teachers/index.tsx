@@ -205,7 +205,6 @@ export default function TeachersPage() {
                 <FormDrawer
                     open={isOpen || !!editTeacher}
                     width={600}
-                    onClose={onCancel}
                     onCancel={onCancel}
                     title={
                         editTeacher ? t("Tahrirlash") : t("O'qituvchi Qo'shish")

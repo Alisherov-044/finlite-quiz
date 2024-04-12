@@ -48,8 +48,8 @@ export function Quiz({ quiz, selectedAnswerId }: QuizProps) {
     }, [active]);
 
     return (
-        <Flex className="justify-between border border-blue-100 shadow-main rounded-md bg-white">
-            <Flex className="w-1/2 flex-col gap-y-6 p-9 border-r border-blue-300">
+        <Flex className="flex-col lg:flex-row justify-between border border-blue-100 shadow-main rounded-md bg-white">
+            <Flex className="w-full lg:w-1/2 flex-col gap-y-6 p-3 lg:p-9 border-b lg:border-b-0 lg:border-r border-blue-300">
                 <Typography.Title
                     level={2}
                     className="text-lg font-semibold !text-blue-700 capitalize"
@@ -60,7 +60,7 @@ export function Quiz({ quiz, selectedAnswerId }: QuizProps) {
                     {t(question.content)}
                 </Typography>
             </Flex>
-            <Flex className="w-1/2 flex-col gap-y-6 p-9">
+            <Flex className="w-full lg:w-1/2 flex-col gap-y-6 p-3 lg:p-9">
                 <Typography.Title
                     level={2}
                     className="text-lg font-semibold !text-blue-700 capitalize"

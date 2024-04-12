@@ -12,7 +12,7 @@ import { setAuth } from "@/redux/slices/authSlice";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 export const LoginFormScheme = z.object({
-    email: z.string({ required_error: "this field is required" }),
+    phone_number: z.string({ required_error: "this field is required" }),
     password: z.string({ required_error: "this filed is required" }),
     remember: z.boolean().optional().default(false),
 });
@@ -47,15 +47,15 @@ export default function LoginPage() {
         console.log(values);
 
         let roles = [];
-        if (values.email === "admin" && values.password === "admin") {
+        if (values.phone_number === "admin" && values.password === "admin") {
             roles.push(1312);
         } else if (
-            values.email === "teacher" &&
+            values.phone_number === "teacher" &&
             values.password === "teacher"
         ) {
             roles.push(1028);
         } else if (
-            values.email === "student" &&
+            values.phone_number === "student" &&
             values.password === "student"
         ) {
             roles.push(3216);
@@ -72,13 +72,13 @@ export default function LoginPage() {
     };
 
     return (
-        <Flex className="w-full h-full items-center justify-center bg-bg-gray">
+        <Flex className="overflow-hidden w-full h-full items-center justify-center bg-bg-gray">
             <Flex className="flex-col px-9 py-12 bg-white rounded-[32px] z-10 shadow-login">
                 <Logo className="mb-4 self-center" />
                 <Form onFinish={handleSubmit(onSubmit)}>
-                    <FormItem label={t("Login")}>
+                    <FormItem label={t("Telefon Raqam")}>
                         <Controller
-                            name="email"
+                            name="phone_number"
                             control={control}
                             render={({ field }) => <Input {...field} />}
                         />
