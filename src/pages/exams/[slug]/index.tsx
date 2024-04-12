@@ -63,8 +63,8 @@ export default function ExamsDetailsPage() {
                         [...Array(3).keys()].map((key) => (
                             <UserResultsCardSkeleton key={key} />
                         ))
-                    ) : students?.data.data && students.data.data.length ? (
-                        students.data.data
+                    ) : students?.data && students.data.length ? (
+                        students.data
                             .filter((student) =>
                                 search.length
                                     ? `${student.first_name} ${student.last_name}`
