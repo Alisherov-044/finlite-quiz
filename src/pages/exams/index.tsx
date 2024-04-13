@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { clsx } from "clsx";
 import { useActive, useOpen, useSelector, useTranslate } from "@/hooks";
 import {
@@ -9,20 +10,31 @@ import {
     Icons,
     PageHeaderAction,
 } from "@/components";
-import { Button, Col, Empty, Flex, Form, Input, Row, notification } from "antd";
 import { useQuery } from "react-query";
 import { TExam } from "@/components/cards/exam-card";
 import { FormItem } from "@/components/styles";
 import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getCurrentRole } from "@/utils";
 import { Navigate, useLocation } from "react-router-dom";
+import {
+    Button,
+    Col,
+    DatePicker,
+    Empty,
+    Flex,
+    Form,
+    Row,
+    TimePicker,
+    notification,
+} from "antd";
 
 export const ExamFormScheme = z.object({
-    full_name: z.string({ required_error: "this field is required" }),
-    email: z.string({ required_error: "this field is require" }),
-    password: z.string({ required_error: "this field is require" }),
+    starting_date: z.any(),
+    starting_time: z.any(),
+    ending_time: z.any(),
+    // questions_qty: z.number(),
+    // departments: z.array(z.number()),
 });
 
 export default function ExamsPage() {
@@ -72,7 +84,22 @@ export default function ExamsPage() {
     });
 
     function onSubmit(values: z.infer<typeof ExamFormScheme>) {
-        console.log(values);
+        // console.log(values);
+
+        console.log(values.starting_date);
+        console.log(values.starting_time);
+        console.log(values.ending_time);
+
+        console.log(values.starting_date.$D);
+        console.log(values.starting_time.$M);
+        console.log(values.starting_time.$y);
+        console.log(values.starting_time.$H);
+        console.log(values.starting_time.$m);
+        console.log(values.starting_time.$s);
+        console.log(values.ending_time.$H);
+        console.log(values.ending_time.$m);
+        console.log(values.ending_time.$s);
+
         notification.success({
             message: t(
                 editExam ? "O'qituvchi tahrirlandi" : "O'qituvchi yaratildi"
@@ -167,10 +194,32 @@ export default function ExamsPage() {
                                 <Col span={24}>
                                     <FormItem label={t("F.I.SH")}>
                                         <Controller
-                                            name="full_name"
+                                            name="starting_date"
                                             control={control}
                                             render={({ field }) => (
-                                                <Input {...field} />
+                                                <DatePicker
+                                                    suffixIcon={
+                                                        <Icons.calendar />
+                                                    }
+                                                    allowClear={{
+                                                        clearIcon: (
+                                                            <Icons.closeCircle />
+                                                        ),
+                                                    }}
+                                                    nextIcon={
+                                                        <Icons.arrow.right />
+                                                    }
+                                                    prevIcon={
+                                                        <Icons.arrow.left />
+                                                    }
+                                                    superNextIcon={
+                                                        <Icons.arrow.rightDouble />
+                                                    }
+                                                    superPrevIcon={
+                                                        <Icons.arrow.leftDouble />
+                                                    }
+                                                    {...field}
+                                                />
                                             )}
                                         />
                                     </FormItem>
@@ -180,10 +229,30 @@ export default function ExamsPage() {
                                 <Col span={12}>
                                     <FormItem label={t("Login")}>
                                         <Controller
-                                            name="email"
+                                            name="starting_time"
                                             control={control}
                                             render={({ field }) => (
-                                                <Input {...field} />
+                                                <TimePicker
+                                                    suffixIcon={<Icons.clock />}
+                                                    allowClear={{
+                                                        clearIcon: (
+                                                            <Icons.closeCircle />
+                                                        ),
+                                                    }}
+                                                    nextIcon={
+                                                        <Icons.arrow.right />
+                                                    }
+                                                    prevIcon={
+                                                        <Icons.arrow.left />
+                                                    }
+                                                    superNextIcon={
+                                                        <Icons.arrow.rightDouble />
+                                                    }
+                                                    superPrevIcon={
+                                                        <Icons.arrow.leftDouble />
+                                                    }
+                                                    {...field}
+                                                />
                                             )}
                                         />
                                     </FormItem>
@@ -191,10 +260,30 @@ export default function ExamsPage() {
                                 <Col span={12}>
                                     <FormItem label={t("Parol")}>
                                         <Controller
-                                            name="password"
+                                            name="ending_time"
                                             control={control}
                                             render={({ field }) => (
-                                                <Input.Password {...field} />
+                                                <TimePicker
+                                                    suffixIcon={<Icons.clock />}
+                                                    allowClear={{
+                                                        clearIcon: (
+                                                            <Icons.closeCircle />
+                                                        ),
+                                                    }}
+                                                    nextIcon={
+                                                        <Icons.arrow.right />
+                                                    }
+                                                    prevIcon={
+                                                        <Icons.arrow.left />
+                                                    }
+                                                    superNextIcon={
+                                                        <Icons.arrow.rightDouble />
+                                                    }
+                                                    superPrevIcon={
+                                                        <Icons.arrow.leftDouble />
+                                                    }
+                                                    {...field}
+                                                />
                                             )}
                                         />
                                     </FormItem>

@@ -468,7 +468,16 @@ export default function StudentsPage() {
                                         name="password"
                                         control={control}
                                         render={({ field }) => (
-                                            <Input.Password {...field} />
+                                            <Input.Password
+                                                iconRender={(visible) =>
+                                                    visible ? (
+                                                        <Icons.eye.open />
+                                                    ) : (
+                                                        <Icons.eye.close />
+                                                    )
+                                                }
+                                                {...field}
+                                            />
                                         )}
                                     />
                                 </FormItem>

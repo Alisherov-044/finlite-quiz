@@ -7,3 +7,4 @@ export { formatDate } from "./format-date";
 export { fillValues } from "./fill-values";
 export { latinToCyrillic } from "./latin-to-kiril";
 export { handleEncrypted } from "./media-api-helper";
+export { parsePhoneNumber } from "./parse-phone-number";

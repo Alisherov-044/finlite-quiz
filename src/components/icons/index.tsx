@@ -607,11 +607,90 @@ export const Icons = {
             />
         </svg>
     ),
+    teacher: (props: IconProps) => (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            width="30"
+            height="30"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="#8387C5"
+            {...props}
+        >
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5"
+            />
+        </svg>
+    ),
+    clock: (props: IconProps) => (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            width="26"
+            height="26"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="#000"
+            {...props}
+        >
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+            />
+        </svg>
+    ),
+    eye: {
+        open: (props: IconProps) => (
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                {...props}
+            >
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                />
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                />
+            </svg>
+        ),
+        close: (props: IconProps) => (
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                {...props}
+            >
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"
+                />
+            </svg>
+        ),
+    },
     arrow: {
         right: (props: IconProps) => (
             <svg
-                width="16"
-                height="16"
+                width="20"
+                height="20"
                 viewBox="0 0 16 16"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -625,8 +704,8 @@ export const Icons = {
         ),
         rightDouble: (props: IconProps) => (
             <svg
-                width="16"
-                height="16"
+                width="20"
+                height="20"
                 viewBox="0 0 16 16"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -644,8 +723,8 @@ export const Icons = {
         ),
         left: (props: IconProps) => (
             <svg
-                width="16"
-                height="16"
+                width="20"
+                height="20"
                 viewBox="0 0 16 16"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -659,8 +738,8 @@ export const Icons = {
         ),
         leftDouble: (props: IconProps) => (
             <svg
-                width="16"
-                height="16"
+                width="20"
+                height="20"
                 viewBox="0 0 16 16"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -1007,13 +1086,6 @@ export const Icons = {
                     d="M27.8668 25.9666C27.8668 29.1146 27.8668 31.6666 17.7334 31.6666C7.6001 31.6666 7.6001 29.1146 7.6001 25.9666C7.6001 22.8186 12.1369 20.2666 17.7334 20.2666C23.3299 20.2666 27.8668 22.8186 27.8668 25.9666Z"
                     stroke="#8387C5"
                     strokeWidth="1.9"
-                />
-                <path
-                    d="M25.3333 16.8464C25.9928 17.44 26.3626 17.7728 27.0221 18.3664L30.3999 14.5664"
-                    stroke="#8387C5"
-                    strokeWidth="1.9"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
                 />
             </svg>
         ),

@@ -44,7 +44,7 @@ export const sidebarLinks: TSidebarLinks = {
             id: 1,
             link: "/teachers",
             title: "O'qituvchilar",
-            Icon: Icons.user.plus,
+            Icon: Icons.teacher,
         },
         {
             id: 2,

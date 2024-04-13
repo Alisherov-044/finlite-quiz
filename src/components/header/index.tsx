@@ -32,7 +32,7 @@ export function Header() {
                 </Typography>
                 <div className="w-7 h-7 rounded-full bg-blue-900" />
             </Flex>
-            <Logout className="hidden lg:block" />
+            <Logout className="hidden lg:flex" />
             <Avatar className="w-10 h-10 flex-shrink-0 bg-orange-900 lg:hidden">
                 SA
             </Avatar>

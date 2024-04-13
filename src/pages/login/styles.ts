@@ -24,12 +24,12 @@ export const Checkbox = styled(antd.Checkbox)`
 
 export const FormItem = styled(antd.Form.Item)`
     ${twi`
-        !pt-6 !w-[300px]
+        sm:!pt-6 !w-[300px] !flex-none
     `}
 
     .ant-form-item {
         ${twi`
-            !w-full
+            !w-full !flex-none
         `}
 
         &-row {
@@ -40,7 +40,7 @@ export const FormItem = styled(antd.Form.Item)`
 
         &-control {
             ${twi`
-                w-full
+                w-full !flex-none
             `}
 
             .ant-input,
@@ -61,19 +61,19 @@ export const FormItem = styled(antd.Form.Item)`
 
 export const FormCheckbox = styled(antd.Form.Item)`
     ${twi`
-        !pt-8 !mb-0
+        sm:!pt-8 !mb-0
     `}
 
     .ant-form-item {
         &-row {
             ${twi`
-                flex flex-row-reverse items-center justify-end gap-x-3
+                flex flex-row-reverse !flex-nowrap items-center justify-end gap-x-3
             `}
         }
 
         &-control {
             ${twi`
-                flex-none
+                !flex-none
             `}
         }
 
