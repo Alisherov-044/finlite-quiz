@@ -1,12 +1,11 @@
-import { Flex, Tooltip, Typography } from "antd";
+import { useMemo } from "react";
+import { Avatar, Flex, Tooltip, Typography } from "antd";
 import { useTranslate } from "@/hooks";
 import { IconButton, Icons } from "@/components";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import { useMemo } from "react";
+import { generateAvatarColor } from "@/utils";
 
 export type TUser = {
     id: number;
-    image_url: string;
     first_name: string;
     last_name: string;
     group_id: number;
@@ -23,8 +22,7 @@ export type UserCardProps = {
 
 export function UserCard({ user, onEdit, onDelete }: UserCardProps) {
     const { t } = useTranslate();
-    const { image_url, first_name, last_name, group_id, phone_number, role } =
-        user;
+    const { first_name, last_name, group_id, phone_number, role } = user;
     const full_name = useMemo(
         () => `${first_name} ${last_name}`,
         [first_name, last_name]
@@ -33,15 +31,10 @@ export function UserCard({ user, onEdit, onDelete }: UserCardProps) {
     return (
         <Flex className="items-center justify-between p-3 rounded-2xl shadow-main">
             <Flex className="items-center gap-x-5">
-                <LazyLoadImage
-                    loading="lazy"
-                    effect="blur"
-                    src={image_url}
-                    width={56}
-                    height={56}
-                    alt={first_name}
-                    className="rounded-full"
-                />
+                <Avatar className={generateAvatarColor(first_name)}>
+                    {first_name[0]}
+                    {last_name[0]}
+                </Avatar>
                 <Flex className="flex-col gap-y-2">
                     <Flex className="items-center gap-x-4">
                         <Typography className="font-semibold text-lg">
@@ -53,15 +46,9 @@ export function UserCard({ user, onEdit, onDelete }: UserCardProps) {
                             </Typography>
                         )}
                     </Flex>
-                    {role === "student" ? (
-                        <Typography className="font-semibold">
-                            {t("Telefon raqam")}: {phone_number}
-                        </Typography>
-                    ) : (
-                        <Typography className="font-semibold">
-                            {t(`${group_id}-guruh`)}
-                        </Typography>
-                    )}
+                    <Typography className="font-semibold">
+                        {t("Telefon raqam")}: {phone_number}
+                    </Typography>
                 </Flex>
             </Flex>
             <Flex className="items-center gap-x-4">

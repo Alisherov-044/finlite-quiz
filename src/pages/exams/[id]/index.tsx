@@ -27,7 +27,7 @@ import {
     useParams,
 } from "react-router-dom";
 
-export default function PracticeDetailsPage() {
+export default function ExamDetailsPage() {
     const { t } = useTranslate();
     const { slug } = useParams();
     const location = useLocation();
@@ -38,7 +38,7 @@ export default function PracticeDetailsPage() {
     const { items, currentTest, isLeaving } = useSelector(
         (state) => state.quiz
     );
-    const { data: quizzes, isLoading } = useQuery<TQuiz[]>("practice-quiz", {
+    const { data: quizzes, isLoading } = useQuery<TQuiz[]>("exam-quiz", {
         queryFn: async () =>
             await [
                 {
@@ -276,7 +276,7 @@ export default function PracticeDetailsPage() {
     });
 
     if (!department || !testQty) {
-        return <Navigate to="/practice" state={{ from: location }} replace />;
+        return <Navigate to="/exams" state={{ from: location }} replace />;
     }
 
     function onFinish() {
@@ -284,7 +284,7 @@ export default function PracticeDetailsPage() {
         if (quizzes) {
             dispatch(setQuizData(quizzes));
         }
-        navigate(`/practice/quiz/${slug}/result`);
+        navigate(`/exams/quiz/${slug}/result`);
     }
 
     function onCancelLeave() {
@@ -300,7 +300,7 @@ export default function PracticeDetailsPage() {
                     <Flex className="w-full items-end justify-between mt-14 mb-6">
                         <Flex className="flex-col gap-y-2.5">
                             <Typography className="uppercase !text-lg !text-blue-500">
-                                {t("Amaliyot")}
+                                {t("Imtihon")}
                             </Typography>
                             <Typography className="font-semibold !text-lg !text-blue-700">
                                 {t("Bo'lim: ")}
@@ -363,7 +363,7 @@ export default function PracticeDetailsPage() {
 
             <Confirmation
                 title={t("Chiqish")}
-                description={t("Amaliyotni tark etmoqchimisiz?")}
+                description={t("Imtihonni tark etmoqchimisiz?")}
                 btnText={t("Chiqish")}
                 isOpen={isOpen || isLeaving}
                 onCancel={onCancelLeave}

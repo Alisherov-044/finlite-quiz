@@ -94,7 +94,7 @@
 }
 
 .form-select-selector {
-    @apply !rounded-none !border-blue-300;
+    @apply !rounded-none !border-blue-500;
 }
 
 .ant-select-open .ant-select-selector {
@@ -225,10 +225,6 @@
     @apply hidden;
 }
 
-.ant-input:focus-visible {
-    @apply !border-none;
-}
-
 .ant-input::placeholder {
     @apply !capitalize;
 }
@@ -331,6 +327,10 @@
     @apply !rounded-none !py-2;
 }
 
+.ant-select-multiple .ant-select-selector {
+    @apply !py-0;
+}
+
 .ant-select-multiple .ant-select-selection-item {
     @apply flex items-center !bg-blue-500 !text-white !px-2.5 !py-1 !h-auto !rounded-2xl;
 }
@@ -349,4 +349,33 @@
 
 .ant-row {
     @apply h-full;
+}
+
+.ant-picker {
+    @apply !border-blue-500 rounded-none w-full !py-0;
+}
+
+.ant-picker input,
+.ant-picker input::placeholder {
+    @apply !text-blue-700;
+}
+
+.ant-picker-panel-container,
+.ant-picker-panel-layout,
+.ant-picker-panel-layout > div,
+.ant-picker-panel,
+.ant-picker-time-panel-cell-inner {
+    @apply !w-full;
+}
+
+.ant-row {
+    @apply h-2/3;
+}
+
+.ant-avatar {
+    @apply h-12 w-12;
+}
+
+.ant-avatar-string {
+    @apply font-bold text-lg;
 }

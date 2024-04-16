@@ -53,11 +53,14 @@ import {
     setCurrentUploadedImage,
     setCurrentUploadedImageOrigin,
 } from "@/redux/slices/uploadSlice";
+import ReactInputMask from "react-input-mask";
 
 export const StudentFormScheme = z.object({
     first_name: z.string(),
     last_name: z.string(),
-    phone_number: z.string(),
+    phone_number: z
+        .string({ required_error: "telefon raqamingizni kiriting" })
+        .min(19, "telefon raqamingizni to'liq kiriting"),
     password: z.string().optional(),
     group_id: z.number(),
 });
@@ -93,12 +96,12 @@ export default function StudentsPage() {
         refetch,
     } = useQuery<TStudentsResponse>("students", {
         queryFn: async () =>
-            await axiosPublic(STUDENTS_URL).then((res) => res.data),
+            await axiosPublic(STUDENTS_URL).then((res) => res.data.data),
     });
     const { data: groups, isLoading: isGroupsLoading } =
         useQuery<TGroupsResponse>("groups", {
             queryFn: async () =>
-                await axiosPublic.get(GROUPS_URL).then((res) => res.data),
+                await axiosPublic.get(GROUPS_URL).then((res) => res.data.data),
         });
     const { mutate, isLoading: isSubmitting } = useMutation<
         TStudentsResponse,
@@ -106,7 +109,9 @@ export default function StudentsPage() {
         TStudentsRequest
     >({
         mutationFn: async (data) =>
-            await axiosPrivate.post(STUDENTS_URL, data).then((res) => res.data),
+            await axiosPrivate
+                .post(STUDENTS_URL, data)
+                .then((res) => res.data.data),
     });
     const { mutate: update, isLoading: isUpdating } = useMutation<
         TStudentsResponse,
@@ -116,7 +121,7 @@ export default function StudentsPage() {
         mutationFn: async (data) =>
             await axiosPrivate
                 .patch(STUDENTS_EDIT_URL(editStudent!), data)
-                .then((res) => res.data),
+                .then((res) => res.data.data),
     });
     const { mutate: deleteUser, isLoading: isDeleting } = useMutation<
         TStudentsResponse,
@@ -126,7 +131,7 @@ export default function StudentsPage() {
         mutationFn: async (id) =>
             await axiosPrivate
                 .delete(STUDENTS_DELETE_URL(deleteStudent ?? id))
-                .then((res) => res.data),
+                .then((res) => res.data.data),
     });
     const { mutate: deleteImg } = useMutation<
         TDeletionResponse,
@@ -146,6 +151,9 @@ export default function StudentsPage() {
         formState: { isLoading: isFormLoading },
     } = useForm<z.infer<typeof StudentFormScheme>>({
         resolver: zodResolver(StudentFormScheme),
+        defaultValues: {
+            phone_number: "+(998)",
+        },
     });
     const dispatch = useDispatch();
     const { currentUploadedImage } = useSelector((state) => state.upload);
@@ -207,7 +215,6 @@ export default function StudentsPage() {
                             message: t(error.message),
                             closeIcon: false,
                         });
-                        onCancel();
                     },
                 }
             );
@@ -233,7 +240,6 @@ export default function StudentsPage() {
                             message: t(error.message),
                             closeIcon: false,
                         });
-                        onCancel();
                     },
                 }
             );
@@ -298,43 +304,9 @@ export default function StudentsPage() {
                     "phone_number",
                     "group_id",
                 ]);
-
-                dispatch(
-                    setCurrentUploadedImage({
-                        url: student.image_url,
-                        key: `${import.meta.env.VITE_IMAGE_UPLOAD_CLIENT}/${
-                            student.image_url.split("/")[
-                                student.image_url.split("/").length - 1
-                            ]
-                        }`,
-                        project: import.meta.env.VITE_IMAGE_UPLOAD_CLIENT,
-                    })
-                );
             }
         }
     }, [editStudent]);
-
-    useEffect(() => {
-        if (deleteStudent) {
-            let student = students?.data.find(
-                (student) => student.id === deleteStudent
-            );
-
-            if (student) {
-                dispatch(
-                    setCurrentUploadedImage({
-                        url: student.image_url,
-                        key: `${import.meta.env.VITE_IMAGE_UPLOAD_CLIENT}/${
-                            student.image_url.split("/")[
-                                student.image_url.split("/").length - 1
-                            ]
-                        }`,
-                        project: import.meta.env.VITE_IMAGE_UPLOAD_CLIENT,
-                    })
-                );
-            }
-        }
-    }, [deleteStudent]);
 
     return (
         <main>
@@ -457,7 +429,13 @@ export default function StudentsPage() {
                                         name="phone_number"
                                         control={control}
                                         render={({ field }) => (
-                                            <Input type="tel" {...field} />
+                                            <ReactInputMask
+                                                className="ant-input"
+                                                mask="+(999) 99 999-99-99"
+                                                maskChar={null}
+                                                type="tel"
+                                                {...field}
+                                            />
                                         )}
                                     />
                                 </FormItem>
@@ -491,6 +469,7 @@ export default function StudentsPage() {
                                         control={control}
                                         render={({ field }) => (
                                             <Select
+                                                className="!py-2"
                                                 prefixCls="form-select"
                                                 suffixIcon={
                                                     <Icons.arrow.select />

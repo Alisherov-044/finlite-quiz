@@ -1,5 +1,5 @@
 export function formatDate(date: Date) {
-    const day = date.getDay() + 1 < 0 ? date.getDay() : "0" + date.getDay();
+    const day = date.getDate() > 0 ? date.getDate() : "0" + date.getDate();
     const month =
         date.getMonth() + 1 < 0
             ? date.getMonth() + 1

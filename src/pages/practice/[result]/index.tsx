@@ -84,7 +84,7 @@ export default function PracticeResultPage() {
                     </Flex>
                 </Flex>
             </div>
-            <div className="overflow-scroll pl-4">
+            <div className="overflow-scroll pl-4 lg:container lg:mx-auto lg:px-5">
                 <QuizResult quizzes={formattedData} />
             </div>
             <div className="container">

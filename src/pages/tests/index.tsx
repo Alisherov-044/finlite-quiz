@@ -20,11 +20,12 @@ import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useMutation, useQuery } from "react-query";
 import { Navigate, useLocation } from "react-router-dom";
-import { departments } from "@/components/select-practice-mode/data";
 import RichTextEditor from "react-rte";
 import { variants } from "./data";
 import { axiosPrivate, axiosPublic } from "@/lib";
-import { TESTS_URL } from "@/utils/urls";
+import { DEPARTMENTS_URL, TESTS_URL } from "@/utils/urls";
+import { TDepartmentsResponse } from "../departments";
+import parse from "react-html-parser";
 
 const toolbarConfig = {
     display: [
@@ -87,13 +88,13 @@ const columns: ColumnsType<TTest> = [
     },
     {
         title: null,
-        dataIndex: "description",
+        render: (item) => parse(item.description),
         width: "90%",
     },
 ];
 
-export const TeacherFormScheme = z.object({
-    category_ids: z.array(z.number()),
+export const TestsFormScheme = z.object({
+    category_id: z.number(),
     description: z.string(),
     answerA: z.string(),
     answerB: z.string(),
@@ -123,8 +124,15 @@ export default function TestsPage() {
         refetch,
     } = useQuery<TTestsResponse>("tests", {
         queryFn: async () =>
-            await axiosPublic.get(TESTS_URL).then((res) => res.data),
+            await axiosPublic.get(TESTS_URL).then((res) => res.data.data),
     });
+    const { data: departments, isLoading: isDepartmentsLoading } =
+        useQuery<TDepartmentsResponse>("departments", {
+            queryFn: async () =>
+                await axiosPublic
+                    .get(DEPARTMENTS_URL)
+                    .then((res) => res.data.data),
+        });
     const { mutate, isLoading: isSubmitting } = useMutation<
         TTestsResponse,
         Error,
@@ -139,8 +147,8 @@ export default function TestsPage() {
         reset,
         setValue,
         formState: { isLoading: isFormLoading },
-    } = useForm<z.infer<typeof TeacherFormScheme>>({
-        resolver: zodResolver(TeacherFormScheme),
+    } = useForm<z.infer<typeof TestsFormScheme>>({
+        resolver: zodResolver(TestsFormScheme),
     });
 
     const [tableParams] = useState({
@@ -174,7 +182,7 @@ export default function TestsPage() {
         setRteValue(RichTextEditor.createEmptyValue());
     }
 
-    function onSubmit(values: z.infer<typeof TeacherFormScheme>) {
+    function onSubmit(values: z.infer<typeof TestsFormScheme>) {
         const variants = [
             {
                 content: values.answerA,
@@ -196,7 +204,7 @@ export default function TestsPage() {
 
         const data = {
             description: values.description,
-            category_id: Number(values.category_ids[0]),
+            category_id: Number(values.category_id),
             variants,
         };
 
@@ -208,6 +216,7 @@ export default function TestsPage() {
                     closeIcon: false,
                 });
                 refetch();
+                onCancel();
             },
             onError: (error) => {
                 notification.error({
@@ -216,7 +225,6 @@ export default function TestsPage() {
                 });
             },
         });
-        onCancel();
     }
 
     function onChange(e: any) {
@@ -246,13 +254,16 @@ export default function TestsPage() {
                     <Table
                         columns={columns}
                         loading={isLoading}
-                        dataSource={tests?.data.filter((item) =>
-                            search
-                                ? item.description
-                                      .toLocaleLowerCase()
-                                      .includes(search.toLocaleLowerCase())
-                                : true
-                        )}
+                        dataSource={
+                            tests?.data &&
+                            tests.data.filter((item) =>
+                                search
+                                    ? item.description
+                                          .toLocaleLowerCase()
+                                          .includes(search.toLocaleLowerCase())
+                                    : true
+                            )
+                        }
                         pagination={tableParams.pagination}
                     />
                 </Flex>
@@ -291,19 +302,21 @@ export default function TestsPage() {
                     <Form id="tests-form" onFinish={handleSubmit(onSubmit)}>
                         <Row>
                             <Col span={24}>
-                                <FormItem label={t("Bo'limlar")}>
+                                <FormItem label={t("Bo'lim")}>
                                     <Controller
-                                        name="category_ids"
+                                        name="category_id"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
-                                                mode="multiple"
-                                                options={departments.map(
-                                                    (item) => ({
-                                                        ...item,
-                                                        label: t(item.label),
-                                                    })
+                                                placeholder={t(
+                                                    "Bo'limni tanlang"
                                                 )}
+                                                loading={isDepartmentsLoading}
+                                                options={departments?.data}
+                                                fieldNames={{
+                                                    label: "name",
+                                                    value: "id",
+                                                }}
                                                 suffixIcon={
                                                     <Icons.arrow.select />
                                                 }

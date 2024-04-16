@@ -74,8 +74,7 @@ export function Quiz({ quiz, selectedAnswerId }: QuizProps) {
                             onClick={() => !finished && setActive(id)}
                             className={clsx(
                                 "gap-x-3 p-3 border border-blue-500 rounded-md cursor-pointer select-none !text-blue-900",
-                                selectedAnswerId === id &&
-                                    "bg-blue-500 !text-white",
+                                active === id && "bg-blue-500 !text-white",
                                 finished && "cursor-not-allowed"
                             )}
                         >

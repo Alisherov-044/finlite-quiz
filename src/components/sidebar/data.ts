@@ -66,9 +66,21 @@ export const sidebarLinks: TSidebarLinks = {
         },
         {
             id: 5,
+            link: "/exams/categories",
+            title: "Imtihon Bo'limlari",
+            Icon: Icons.diploma,
+        },
+        {
+            id: 6,
             link: "/tests",
             title: "Testlar",
             Icon: Icons.plusCircleCut,
+        },
+        {
+            id: 7,
+            link: "/departments",
+            title: "Bo'limlar",
+            Icon: Icons.case,
         },
     ],
 };

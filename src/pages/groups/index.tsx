@@ -58,12 +58,14 @@ export default function GroupsPage() {
         refetch,
     } = useQuery<TGroupsResponse>("groups", {
         queryFn: async () =>
-            await axiosPublic.get(GROUPS_URL).then((res) => res.data),
+            await axiosPublic.get(GROUPS_URL).then((res) => res.data.data),
     });
     const { data: students, isLoading: isStudentsLoading } =
         useQuery<TStudentsResponse>({
             queryFn: async () =>
-                await axiosPublic.get(STUDENTS_URL).then((res) => res.data),
+                await axiosPublic
+                    .get(STUDENTS_URL)
+                    .then((res) => res.data.data),
         });
     const { mutate, isLoading: isSubmitting } = useMutation<
         TGroupsResponse,
@@ -118,7 +120,6 @@ export default function GroupsPage() {
                     message: t(error.message),
                     closeIcon: false,
                 });
-                onCancel();
             },
         });
     }

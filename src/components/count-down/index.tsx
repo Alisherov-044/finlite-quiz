@@ -1,4 +1,5 @@
-import { Flex } from "antd";
+import { useTranslate } from "@/hooks";
+import { Flex, Typography } from "antd";
 
 export type CountDownProps = {
     days: number;
@@ -8,15 +9,33 @@ export type CountDownProps = {
 };
 
 export function CountDown({ days, hours, minutes, seconds }: CountDownProps) {
+    const { t } = useTranslate();
+
     return (
-        <Flex className="items-center justify-center gap-x-0.5 py-2 px-10 bg-error-main text-white !font-bold rounded-md">
+        <Flex className="items-end justify-center gap-x-0.5 py-2 px-10 bg-error-main text-white !font-bold rounded-md">
             {days > 0 && (
                 <>
-                    <span>{days + "D"}</span>:
+                    <Flex className="flex-col items-center">
+                        <Typography className="text-xs">{t("kun")}</Typography>
+                        <Typography>{days}</Typography>
+                    </Flex>
+                    :
                 </>
             )}
-            <span>{hours + "H"}</span>:<span>{minutes + "M"}</span>:
-            <span>{seconds + "S"}</span>
+            <Flex className="flex-col items-center">
+                <Typography className="text-xs">{t("soat")}</Typography>
+                <Typography>{hours}</Typography>
+            </Flex>
+            :
+            <Flex className="flex-col items-center">
+                <Typography className="text-xs">{t("daqiqa")}</Typography>
+                <Typography>{minutes}</Typography>
+            </Flex>
+            :
+            <Flex className="flex-col items-center">
+                <Typography className="text-xs">{t("soniya")}</Typography>
+                <Typography>{seconds}</Typography>
+            </Flex>
         </Flex>
     );
 }

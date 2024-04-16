@@ -4,24 +4,39 @@ import { Button, Flex, Typography } from "antd";
 import { Confirmation, CountDown, Icons } from "@/components";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useCountDown, useOpen, useSelector, useTranslate } from "@/hooks";
-import { convertTime, formatDate, formatTime, getCurrentRole } from "@/utils";
+import {
+    convertTime,
+    formatDate,
+    formatNumber,
+    formatTime,
+    getCurrentRole,
+} from "@/utils";
 
 export type TExam = {
     id: number;
-    starting_date: Date;
-    starting_time: string;
-    questions_qty: number;
-    duration?: number;
+    title: string;
+    start: string;
+    end: string;
+    questions_count: number;
+    participants_count: number;
 };
 
 export type ExamCardProps = {
     exam: TExam;
     onEdit?: () => void;
     onDelete?: () => void;
+    onBeforeEdit?: () => void;
+    onBeforeEditCancel?: () => void;
 };
 
-export function ExamCard({ exam, onEdit, onDelete }: ExamCardProps) {
-    const { starting_date, starting_time, questions_qty, duration } = exam;
+export function ExamCard({
+    exam,
+    onEdit,
+    onDelete,
+    onBeforeEdit,
+    onBeforeEditCancel,
+}: ExamCardProps) {
+    const { start: starting_date, end: ending_date, questions_count } = exam;
 
     const location = useLocation();
     const { roles } = useSelector((state) => state.auth);
@@ -34,10 +49,7 @@ export function ExamCard({ exam, onEdit, onDelete }: ExamCardProps) {
     const { t } = useTranslate();
     const { isOpen, open, close } = useOpen();
     const navigate = useNavigate();
-    const timePeriod =
-        new Date(
-            `${starting_date.toLocaleDateString()} ${starting_time}`
-        ).getTime() - new Date().getTime();
+    const timePeriod = new Date(starting_date).getTime() - new Date().getTime();
     const { time, start } = useCountDown(
         convertTime(
             timePeriod > 0 ? timePeriod : 0,
@@ -45,13 +57,20 @@ export function ExamCard({ exam, onEdit, onDelete }: ExamCardProps) {
             TimeUnit.Second
         )
     );
-    const { hours, minutes } = formatTime((duration ?? 0) * 60);
+    const duration =
+        new Date(ending_date).getTime() - new Date(starting_date).getTime();
+    const { hours, minutes } = formatTime(duration / 1000);
     const {
         days: leftDays,
         hours: leftHours,
         minutes: leftMinutes,
         seconds: leftSeconds,
     } = formatTime(time);
+    const {
+        hours: startingHours,
+        minutes: startingMinutes,
+        seconds: startingSeconds,
+    } = formatTime(new Date(starting_date).getTime() / 1000);
 
     useEffect(() => {
         start();
@@ -61,13 +80,16 @@ export function ExamCard({ exam, onEdit, onDelete }: ExamCardProps) {
         <Flex className="relative items-end justify-between p-6 border shadow-main rounded-2xl">
             <Flex className="flex-col gap-y-2">
                 <Typography>
-                    {t("Boshlanish vaqti")}: {formatDate(starting_date)}
+                    {t("Boshlanish vaqti")}:{" "}
+                    {formatDate(new Date(starting_date))}
                 </Typography>
                 <Typography>
-                    {t("Soat")}: {starting_time}
+                    {t("Soat")}: {formatNumber(startingHours)}:
+                    {formatNumber(startingMinutes)}:
+                    {formatNumber(startingSeconds)}
                 </Typography>
                 <Typography>
-                    {t("Savollar soni")}: {questions_qty}
+                    {t("Savollar soni")}: {questions_count}
                 </Typography>
                 {duration ? (
                     time === 0 ? (
@@ -102,13 +124,15 @@ export function ExamCard({ exam, onEdit, onDelete }: ExamCardProps) {
                     <Button
                         className="!py-3"
                         onClick={() =>
-                            currentRole === "teacher"
+                            ["teacher", "admin"].includes(currentRole)
                                 ? navigate("/exams/results")
                                 : open()
                         }
                     >
                         {t(
-                            currentRole === "teacher" ? "Natijalar" : "Boshlash"
+                            ["teacher", "admin"].includes(currentRole)
+                                ? "Natijalar"
+                                : "Boshlash"
                         )}
                     </Button>
                 ) : (
@@ -125,6 +149,8 @@ export function ExamCard({ exam, onEdit, onDelete }: ExamCardProps) {
             </Flex>
             {currentRole === "admin" && (
                 <button
+                    onMouseOver={onBeforeEdit}
+                    onMouseOut={onBeforeEditCancel}
                     onClick={onEdit}
                     className="flex items-center gap-x-1.5 absolute top-3 right-6"
                 >
@@ -132,32 +158,34 @@ export function ExamCard({ exam, onEdit, onDelete }: ExamCardProps) {
                 </button>
             )}
 
-            <Confirmation
-                primaryBtn
-                btnText={t("Boshlash")}
-                description={
-                    <Flex className="flex-col">
-                        <span>
-                            {t(
-                                duration
-                                    ? "Bu rejimda vaqt chegaralangan"
-                                    : "Bu rejimda vaqt chegaralanmagan"
-                            )}
-                        </span>
-                        {duration && (
+            {onDelete && (
+                <Confirmation
+                    primaryBtn
+                    btnText={t("Boshlash")}
+                    description={
+                        <Flex className="flex-col">
                             <span>
                                 {t(
-                                    `Imtihon uchun ${hours}:${minutes} soat vaqt ajratilgan`
+                                    duration
+                                        ? "Bu rejimda vaqt chegaralangan"
+                                        : "Bu rejimda vaqt chegaralanmagan"
                                 )}
                             </span>
-                        )}
-                    </Flex>
-                }
-                isOpen={isOpen}
-                onCancel={close}
-                onConfirm={() => {}}
-                title={t("Imtihon")}
-            />
+                            {duration && (
+                                <span>
+                                    {t(
+                                        `Imtihon uchun ${hours}:${minutes} soat vaqt ajratilgan`
+                                    )}
+                                </span>
+                            )}
+                        </Flex>
+                    }
+                    isOpen={isOpen}
+                    onCancel={close}
+                    onConfirm={onDelete}
+                    title={t("Imtihon")}
+                />
+            )}
         </Flex>
     );
 }

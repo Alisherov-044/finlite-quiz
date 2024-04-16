@@ -1,5 +1,6 @@
 import * as antd from "antd";
 import styled from "styled-components";
+import tw from "tailwind-styled-components";
 import { twi } from "tw-to-css";
 
 export const FormItem = styled(antd.Form.Item)`
@@ -11,7 +12,7 @@ export const FormItem = styled(antd.Form.Item)`
 
     .rich-text-editor-wrapper {
         ${twi`
-            border-blue-300 !max-w-full !w-full rounded-none
+            border-blue-500 !max-w-full !w-full rounded-none
         `}
     }
 
@@ -25,7 +26,7 @@ export const FormItem = styled(antd.Form.Item)`
     .IconButton__root___3tqZW,
     .EditorToolbar__root___3_Aqz {
         ${twi`
-            !border-blue-300
+            !border-blue-500
         `}
     }
 
@@ -60,7 +61,7 @@ export const FormItem = styled(antd.Form.Item)`
     .ant-input,
     .ant-input-affix-wrapper {
         ${twi`
-            !px-2 !py-0 !rounded-none !border-blue-300
+            !px-2 !py-0 !rounded-none !border !border-blue-500
         `}
     }
 
@@ -72,7 +73,7 @@ export const FormItem = styled(antd.Form.Item)`
 
     .ant-select-selector {
         ${twi`
-            !rounded-none !py-0
+            !rounded-none
         `}
     }
 `;
@@ -83,4 +84,8 @@ export const Col = styled(antd.Col)`
             !min-h-fit
         `}
     }
+`;
+
+export const Row = tw(antd.Row)`
+    !h-28
 `;

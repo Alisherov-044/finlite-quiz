@@ -2,7 +2,7 @@ import { z } from "zod";
 import InputMask from "react-input-mask";
 import { Icons, Logo } from "@/components";
 import { useDispatch, useSelector, useTranslate } from "@/hooks";
-import { Button, Flex, Form, Input } from "antd";
+import { Button, Flex, Form, Input, Typography } from "antd";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Checkbox, FormCheckbox, FormItem } from "./styles";
@@ -14,8 +14,10 @@ import { parsePhoneNumber } from "@/utils";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 export const LoginFormScheme = z.object({
-    phone_number: z.string().min(19),
-    password: z.string(),
+    phone_number: z
+        .string({ required_error: "telefon raqamingizni kiriting" })
+        .min(19, "telefon raqamingizni to'liq kiriting"),
+    password: z.string({ required_error: "parolni kiriting" }),
     remember: z.boolean().optional().default(false),
 });
 
@@ -33,7 +35,7 @@ export default function LoginPage() {
         control,
         handleSubmit,
         reset,
-        formState: { isLoading, isDirty },
+        formState: { isLoading, isDirty, errors },
     } = useForm<z.infer<typeof LoginFormScheme>>({
         resolver: zodResolver(LoginFormScheme),
         defaultValues: {
@@ -98,6 +100,11 @@ export default function LoginPage() {
                                 />
                             )}
                         />
+                        {errors.phone_number && (
+                            <Typography className="mt-2 !text-error-main">
+                                {errors.phone_number.message}
+                            </Typography>
+                        )}
                     </FormItem>
                     <FormItem label={t("Parol")}>
                         <Controller
@@ -116,6 +123,11 @@ export default function LoginPage() {
                                 />
                             )}
                         />
+                        {errors.password && (
+                            <Typography className="mt-2 !text-error-main">
+                                {errors.password.message}
+                            </Typography>
+                        )}
                     </FormItem>
                     <FormCheckbox label={t("Meni eslab qolish")}>
                         <Controller

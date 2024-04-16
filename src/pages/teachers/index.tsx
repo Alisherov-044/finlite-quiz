@@ -16,7 +16,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import {
     Button,
-    Col,
     Empty,
     Flex,
     Form,
@@ -32,16 +31,19 @@ import {
     TEACHERS_EDIT_URL,
     TEACHERS_URL,
 } from "@/utils/urls";
-import { FormItem } from "@/components/styles";
+import { FormItem, Col } from "@/components/styles";
 import { fillValues, getCurrentRole } from "@/utils";
 import { Navigate, useLocation } from "react-router-dom";
 import type { TSetValue } from "@/utils/fill-values";
 import type { TUser } from "@/components/cards/user-card";
+import ReactInputMask from "react-input-mask";
 
 export const TeacherFormScheme = z.object({
     first_name: z.string(),
     last_name: z.string(),
-    phone_number: z.string(),
+    phone_number: z
+        .string({ required_error: "telefon raqamingizni kiriting" })
+        .min(19, "telefon raqamingizni to'liq kiriting"),
     password: z.string().optional(),
 });
 
@@ -76,7 +78,7 @@ export default function TeachersPage() {
         refetch,
     } = useQuery<TTeachersResponse>("teachers", {
         queryFn: async () =>
-            await axiosPublic.get(TEACHERS_URL).then((res) => res.data),
+            await axiosPublic.get(TEACHERS_URL).then((res) => res.data.data),
     });
     const { mutate, isLoading: isSubmitting } = useMutation<
         TTeachersResponse,
@@ -114,6 +116,9 @@ export default function TeachersPage() {
         formState: { isLoading: isFormLoading },
     } = useForm<z.infer<typeof TeacherFormScheme>>({
         resolver: zodResolver(TeacherFormScheme),
+        defaultValues: {
+            phone_number: "+(998)",
+        },
     });
     const [search, setSearch] = useState<string>("");
     const [_, setFilter] = useState<string>("");
@@ -168,6 +173,7 @@ export default function TeachersPage() {
                             closeIcon: false,
                         });
                         refetch();
+                        onCancel();
                     },
                     onError: (error) => {
                         notification.success({
@@ -187,6 +193,8 @@ export default function TeachersPage() {
                             icon: <Icons.checkCircle />,
                             closeIcon: false,
                         });
+                        refetch();
+                        onCancel();
                     },
                     onError: (error) => {
                         notification.success({
@@ -197,7 +205,6 @@ export default function TeachersPage() {
                 }
             );
         }
-        onCancel();
     }
 
     function onDelete() {
@@ -359,7 +366,13 @@ export default function TeachersPage() {
                                         name="phone_number"
                                         control={control}
                                         render={({ field }) => (
-                                            <Input type="tel" {...field} />
+                                            <ReactInputMask
+                                                className="ant-input"
+                                                mask="+(999) 99 999-99-99"
+                                                maskChar={null}
+                                                type="tel"
+                                                {...field}
+                                            />
                                         )}
                                     />
                                 </FormItem>

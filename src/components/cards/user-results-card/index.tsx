@@ -1,9 +1,8 @@
-import { formatTime } from "@/utils";
-import { useTranslate } from "@/hooks";
-import { Button, Flex, Typography } from "antd";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import type { TUser } from "@/components/cards/user-card";
 import { useMemo } from "react";
+import { formatTime, generateAvatarColor } from "@/utils";
+import { useTranslate } from "@/hooks";
+import { Avatar, Button, Flex, Typography } from "antd";
+import type { TUser } from "@/components/cards/user-card";
 
 export type TResult = {
     correct_answers: number;
@@ -18,7 +17,7 @@ export type UserResultsCardProps = {
 
 export function UserResultsCard({ user, result }: UserResultsCardProps) {
     const { t } = useTranslate();
-    const { image_url, first_name, last_name, group_id } = user;
+    const { first_name, last_name, group_id } = user;
     const { correct_answers, incorrect_answers, duration } = result;
     const { minutes, seconds } = formatTime(duration);
     const full_name = useMemo(
@@ -29,15 +28,10 @@ export function UserResultsCard({ user, result }: UserResultsCardProps) {
     return (
         <Flex className="items-center justify-between p-3 rounded-2xl shadow-main">
             <Flex className="items-center gap-x-5">
-                <LazyLoadImage
-                    loading="lazy"
-                    effect="blur"
-                    src={image_url}
-                    width={56}
-                    height={56}
-                    alt={first_name}
-                    className="rounded-full"
-                />
+                <Avatar className={generateAvatarColor(first_name)}>
+                    {first_name[0]}
+                    {last_name[0]}
+                </Avatar>
                 <Flex className="flex-col gap-y-2">
                     <Flex className="items-center gap-x-4">
                         <Typography className="font-semibold text-lg">

@@ -8,3 +8,5 @@ export { fillValues } from "./fill-values";
 export { latinToCyrillic } from "./latin-to-kiril";
 export { handleEncrypted } from "./media-api-helper";
 export { parsePhoneNumber } from "./parse-phone-number";
+export { generateAvatarColor } from "./generate-avatar-color";
+export { formatNumber } from "./format-number";

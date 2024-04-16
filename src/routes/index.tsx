@@ -1,5 +1,7 @@
 import { LoginPageSkeleton } from "@/components";
 import {
+    DepartmentsPage,
+    ExamCategoriesPage,
     ExamsDetailsPage,
     ExamsPage,
     GroupsPage,
@@ -129,6 +131,18 @@ export const routes: TRoutes = {
             path: "/exams/results",
             element: <ExamsDetailsPage />,
             roles: [...userRoles.admin, ...userRoles.teacher],
+        },
+        {
+            id: 15,
+            path: "/departments",
+            element: <DepartmentsPage />,
+            roles: [...userRoles.admin],
+        },
+        {
+            id: 16,
+            path: "/exams/categories",
+            element: <ExamCategoriesPage />,
+            roles: [...userRoles.admin],
         },
     ],
 };
