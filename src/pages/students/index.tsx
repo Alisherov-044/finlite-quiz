@@ -34,7 +34,7 @@ import {
 import { FormItem, Col } from "@/components/styles";
 import { fillValues, getCurrentRole } from "@/utils";
 import { Navigate, useLocation } from "react-router-dom";
-import { axiosMedia, axiosPrivate, axiosPublic } from "@/lib";
+import { axiosMedia, axiosPrivate } from "@/lib";
 import {
     GROUPS_URL,
     STUDENTS_DELETE_URL,
@@ -96,12 +96,12 @@ export default function StudentsPage() {
         refetch,
     } = useQuery<TStudentsResponse>("students", {
         queryFn: async () =>
-            await axiosPublic(STUDENTS_URL).then((res) => res.data.data),
+            await axiosPrivate.get(STUDENTS_URL).then((res) => res.data.data),
     });
     const { data: groups, isLoading: isGroupsLoading } =
         useQuery<TGroupsResponse>("groups", {
             queryFn: async () =>
-                await axiosPublic.get(GROUPS_URL).then((res) => res.data.data),
+                await axiosPrivate.get(GROUPS_URL).then((res) => res.data.data),
         });
     const { mutate, isLoading: isSubmitting } = useMutation<
         TStudentsResponse,

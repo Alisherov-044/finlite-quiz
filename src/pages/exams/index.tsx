@@ -36,7 +36,7 @@ import {
     notification,
 } from "antd";
 import { TDepartmentsResponse } from "@/pages/departments";
-import { axiosPrivate, axiosPublic } from "@/lib";
+import { axiosPrivate } from "@/lib";
 import {
     EXAMS_URL,
     EXAM_CATEGORIES_URL,
@@ -89,13 +89,13 @@ export type TExamResponse = {
 };
 
 export const ExamFormScheme = z.object({
-    title: z.string(),
-    starting_date: z.any(),
-    starting_time: z.any(),
-    ending_time: z.any(),
-    category_id: z.number(),
-    participant_ids: z.array(z.number()),
-    file: z.array(z.any()),
+    title: z.string().optional(),
+    starting_date: z.any().optional(),
+    starting_time: z.any().optional(),
+    ending_time: z.any().optional(),
+    category_id: z.number().optional(),
+    participant_ids: z.array(z.number()).optional(),
+    file: z.array(z.any()).optional(),
 });
 
 export default function ExamsPage() {
@@ -117,25 +117,26 @@ export default function ExamsPage() {
     const { active: deleteExam, setActive: setDeleteExam } = useActive<
         number | null
     >(null);
+    const { access_token } = useSelector((state) => state.auth);
     const {
         data: exams,
         isLoading,
         refetch,
     } = useQuery<TExamsResponse>("exams", {
         queryFn: async () =>
-            await axiosPublic.get(EXAMS_URL).then((res) => res.data.data),
+            await axiosPrivate.get(EXAMS_URL).then((res) => res.data.data),
     });
     const { data: students, isLoading: isStudentsLoading } =
         useQuery<TStudentsResponse>("students", {
             queryFn: async () =>
-                await axiosPublic
+                await axiosPrivate
                     .get(STUDENTS_URL)
                     .then((res) => res.data.data),
         });
     const { data: departments, isLoading: isDepartmentsLoading } =
         useQuery<TDepartmentsResponse>("exam-categories", {
             queryFn: async () =>
-                await axiosPublic
+                await axiosPrivate
                     .get(EXAM_CATEGORIES_URL)
                     .then((res) => res.data),
         });
@@ -157,12 +158,35 @@ export default function ExamsPage() {
         queryFn: useMemo(
             () => async () =>
                 typeof editExam === "number"
-                    ? await axiosPublic
+                    ? await axiosPrivate
                           .get(EXAM_URL(editExam))
                           .then((res) => res.data)
                     : { data: null },
             [editExam]
         ),
+        enabled: !!editExam,
+    });
+    const { mutate: updateExam, isLoading: isUpdating } = useMutation<
+        TExamsResponse,
+        Error,
+        TExamsRequest
+    >({
+        mutationFn: async (data) =>
+            await axiosPrivate
+                .patch(EXAM_URL(editExam!), data)
+                .then((res) => res.data.data),
+    });
+    const { mutate: deleteExamMutation, isLoading: isDeleting } = useMutation<
+        TExamResponse,
+        Error,
+        number
+    >({
+        mutationFn: async (id) =>
+            await axiosPrivate.delete(EXAM_URL(deleteExam ?? id), {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }),
     });
     const {
         handleSubmit,
@@ -177,9 +201,8 @@ export default function ExamsPage() {
     const dispatch = useDispatch();
 
     function onSubmit(values: z.infer<typeof ExamFormScheme>) {
-        console.log(values.starting_date);
         const data: TExamsRequest = {
-            title: values.title,
+            title: values.title!,
             start: new Date(
                 `${values.starting_date.$y}-${formatNumber(
                     values.starting_date.$M + 1
@@ -198,22 +221,61 @@ export default function ExamsPage() {
                     values.ending_time.$s
                 )}Z`
             ),
-            category_id: values.category_id,
-            participant_ids: values.participant_ids,
-            file: values.file,
+            category_id: values.category_id!,
+            participant_ids: values.participant_ids!,
+            file: values.file!,
         };
 
-        mutate(data, {
-            onSuccess: () => {
-                notification.success({
-                    message: t("Imtihon yaratildi"),
-                    icon: <Icons.checkCircle />,
-                    closeIcon: false,
-                });
-                refetch();
-                onCancel();
-            },
-        });
+        if (editExam) {
+            const updatedValues: TExamsRequest = {} as TExamsRequest;
+            const exam = exams?.data.find((item) => item.id === editExam);
+
+            const objKeys = Object.keys(values);
+
+            for (let i = 0; i < objKeys.length; i++) {
+                // @ts-ignore
+                if (values[objKeys[i]] !== exam[objKeys[i]]) {
+                    // @ts-ignore
+                    updatedValues[objKeys[i]] = values[objKeys[i]];
+                }
+            }
+
+            updateExam(updatedValues, {
+                onSuccess: () => {
+                    notification.success({
+                        message: t("Imtihon tahrirlandi"),
+                        icon: <Icons.checkCircle />,
+                        closeIcon: false,
+                    });
+                    refetch();
+                    onCancel();
+                },
+                onError: (error) => {
+                    notification.error({
+                        message: t(error.message),
+                        closeIcon: false,
+                    });
+                },
+            });
+        } else {
+            mutate(data, {
+                onSuccess: () => {
+                    notification.success({
+                        message: t("Imtihon yaratildi"),
+                        icon: <Icons.checkCircle />,
+                        closeIcon: false,
+                    });
+                    refetch();
+                    onCancel();
+                },
+                onError: (error) => {
+                    notification.error({
+                        message: t(error.message),
+                        closeIcon: false,
+                    });
+                },
+            });
+        }
     }
 
     function onCancel() {
@@ -248,6 +310,28 @@ export default function ExamsPage() {
         }
     }, [editExam]);
 
+    function onDelete() {
+        if (deleteExam) {
+            deleteExamMutation(deleteExam, {
+                onSuccess: () => {
+                    notification.success({
+                        message: t("Imtihon o'chirildi"),
+                        icon: <Icons.checkCircle />,
+                        closeIcon: false,
+                    });
+                    refetch();
+                    setDeleteExam(null);
+                },
+                onError: (error) => {
+                    notification.error({
+                        message: t(error.message),
+                        closeIcon: null,
+                    });
+                },
+            });
+        }
+    }
+
     return (
         <>
             <FilterTab>
@@ -271,6 +355,7 @@ export default function ExamsPage() {
                             title={t("Imtihon Yaratish")}
                             btnText={t("Imtihon Yaratish")}
                             onAction={() => {
+                                setEditExam(null);
                                 reset();
                                 open();
                             }}
@@ -292,7 +377,6 @@ export default function ExamsPage() {
                                     }}
                                     onDelete={() => setDeleteExam(exam.id)}
                                     onBeforeEdit={() => setEditExam(exam.id)}
-                                    onBeforeEditCancel={() => setEditExam(null)}
                                 />
                             ))
                         ) : (
@@ -307,7 +391,9 @@ export default function ExamsPage() {
                         width={600}
                         onCancel={onCancel}
                         title={
-                            editExam ? t("Tahrirlash") : t("Imtihon Qo'shish")
+                            editExam || isEdit
+                                ? t("Tahrirlash")
+                                : t("Imtihon Qo'shish")
                         }
                         footer={
                             <Button
@@ -316,12 +402,14 @@ export default function ExamsPage() {
                                 loading={
                                     isFormLoading ||
                                     isSubmitting ||
-                                    isExamLoading
+                                    isExamLoading ||
+                                    isUpdating
                                 }
                                 disabled={
                                     isFormLoading ||
                                     isSubmitting ||
-                                    isExamLoading
+                                    isExamLoading ||
+                                    isUpdating
                                 }
                                 className="!w-full mt-4"
                             >
@@ -522,9 +610,10 @@ export default function ExamsPage() {
                     <Confirmation
                         isOpen={!!deleteExam}
                         onCancel={() => setDeleteExam(null)}
-                        onConfirm={() => {}}
+                        onConfirm={onDelete}
                         btnText={t("O'chirish")}
                         title={t("O'chirish")}
+                        loading={isDeleting}
                         description={t("Imtihonni o'chirmoqchimisiz?")}
                     />
                 </div>

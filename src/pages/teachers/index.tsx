@@ -25,7 +25,7 @@ import {
     Typography,
     notification,
 } from "antd";
-import { axiosPrivate, axiosPublic } from "@/lib";
+import { axiosPrivate } from "@/lib";
 import {
     TEACHERS_DELETE_URL,
     TEACHERS_EDIT_URL,
@@ -78,7 +78,7 @@ export default function TeachersPage() {
         refetch,
     } = useQuery<TTeachersResponse>("teachers", {
         queryFn: async () =>
-            await axiosPublic.get(TEACHERS_URL).then((res) => res.data.data),
+            await axiosPrivate.get(TEACHERS_URL).then((res) => res.data.data),
     });
     const { mutate, isLoading: isSubmitting } = useMutation<
         TTeachersResponse,

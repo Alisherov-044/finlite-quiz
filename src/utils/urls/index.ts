@@ -1,7 +1,7 @@
 export const baseURL = import.meta.env.VITE_BASE_URL;
 export const mediaBaseURL = import.meta.env.VITE_MEDIA_BASE_URL;
 
-export const LOGIN_URL = "/login";
+export const LOGIN_URL = "/auth/login";
 
 export const STUDENTS_URL = "/user?role=student";
 export const STUDENTS_EDIT_URL = (id: number) => `/user/${id}`;
@@ -24,3 +24,8 @@ export const EXAMS_URL = "/exam";
 export const EXAM_CATEGORIES_URL = "/exam/category";
 export const EXAM_URL = (id: number) => `/exam/${id}`;
 export const EXAMS_EDIT_URL = (id: number) => `/exam/${id}`;
+
+export const PRACTICE_URL = "/practice";
+export const PRACTICE_HISTORY_URL = (id: number) => `/practice?user_id=${id}`;
+export const PRACTICE_CONTENT_URL = (id: number) => `/practice/${id}`;
+export const PRACTICE_ANSWER_URL = "/practice/answer";

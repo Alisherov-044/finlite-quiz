@@ -12,7 +12,6 @@ export const axiosPublic = axios.create({
 export const axiosPrivate = axios.create({
     baseURL,
     headers: {
-        Authorization: `bearer ${1}`,
         "Content-Type": "application/json",
     },
 });

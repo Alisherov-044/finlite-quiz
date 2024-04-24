@@ -1,11 +1,8 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export type PracticeState = {
-    department?: {
-        id: number;
-        title: string;
-    };
-    testQty?: number;
+    category_ids?: number[];
+    question_count?: number;
 };
 
 const initialState: PracticeState = {};
@@ -15,8 +12,8 @@ export const practiceSlice = createSlice({
     initialState,
     reducers: {
         setPractice: (state, { payload }: PayloadAction<PracticeState>) => {
-            state.department = payload.department;
-            state.testQty = payload.testQty;
+            state.category_ids = payload.category_ids;
+            state.question_count = payload.question_count;
         },
     },
 });

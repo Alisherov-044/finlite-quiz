@@ -1,18 +1,3 @@
-export const departments = [
-    {
-        label: "Department 1",
-        value: 1,
-    },
-    {
-        label: "Department 2",
-        value: 2,
-    },
-    {
-        label: "Department 3",
-        value: 3,
-    },
-];
-
 export const tests = [
     {
         label: "5",

@@ -28,7 +28,7 @@ import {
 import { FormItem } from "@/components/styles";
 import { Navigate, useLocation } from "react-router-dom";
 import { getCurrentRole } from "@/utils";
-import { axiosPrivate, axiosPublic } from "@/lib";
+import { axiosPrivate } from "@/lib";
 import { GROUPS_URL, STUDENTS_URL } from "@/utils/urls";
 import type { TStudentsResponse } from "@/pages/students";
 import type { TGroup } from "@/components/cards/group-card";
@@ -58,12 +58,12 @@ export default function GroupsPage() {
         refetch,
     } = useQuery<TGroupsResponse>("groups", {
         queryFn: async () =>
-            await axiosPublic.get(GROUPS_URL).then((res) => res.data.data),
+            await axiosPrivate.get(GROUPS_URL).then((res) => res.data.data),
     });
     const { data: students, isLoading: isStudentsLoading } =
         useQuery<TStudentsResponse>({
             queryFn: async () =>
-                await axiosPublic
+                await axiosPrivate
                     .get(STUDENTS_URL)
                     .then((res) => res.data.data),
         });

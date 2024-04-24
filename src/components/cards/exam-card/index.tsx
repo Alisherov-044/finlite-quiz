@@ -158,34 +158,32 @@ export function ExamCard({
                 </button>
             )}
 
-            {onDelete && (
-                <Confirmation
-                    primaryBtn
-                    btnText={t("Boshlash")}
-                    description={
-                        <Flex className="flex-col">
+            <Confirmation
+                primaryBtn
+                btnText={t("Boshlash")}
+                description={
+                    <Flex className="flex-col">
+                        <span>
+                            {t(
+                                duration
+                                    ? "Bu rejimda vaqt chegaralangan"
+                                    : "Bu rejimda vaqt chegaralanmagan"
+                            )}
+                        </span>
+                        {duration && (
                             <span>
                                 {t(
-                                    duration
-                                        ? "Bu rejimda vaqt chegaralangan"
-                                        : "Bu rejimda vaqt chegaralanmagan"
+                                    `Imtihon uchun ${hours}:${minutes} soat vaqt ajratilgan`
                                 )}
                             </span>
-                            {duration && (
-                                <span>
-                                    {t(
-                                        `Imtihon uchun ${hours}:${minutes} soat vaqt ajratilgan`
-                                    )}
-                                </span>
-                            )}
-                        </Flex>
-                    }
-                    isOpen={isOpen}
-                    onCancel={close}
-                    onConfirm={onDelete}
-                    title={t("Imtihon")}
-                />
-            )}
+                        )}
+                    </Flex>
+                }
+                isOpen={isOpen}
+                onCancel={close}
+                onConfirm={() => {}}
+                title={t("Imtihon")}
+            />
         </Flex>
     );
 }

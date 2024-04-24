@@ -1,43 +1,123 @@
 import { Logo, QuizResult } from "@/components";
 import { useDispatch, useSelector, useTranslate } from "@/hooks";
+import { axiosPrivate } from "@/lib";
 import { setPractice } from "@/redux/slices/practiceSlice";
 import {
     clearQuiz,
+    clearQuizData,
     endQuiz,
     finishQuiz,
     setCurrentTest,
+    setQuizData,
     unfinishQuiz,
 } from "@/redux/slices/quizSlice";
 import { setRedirectUrl } from "@/redux/slices/routeSlice";
+import { PRACTICE_ANSWER_URL } from "@/utils/urls";
 import { Button, Flex, Typography } from "antd";
 import { useEffect } from "react";
+import { useMutation } from "react-query";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
+
+export type TRequest = {
+    practice_id: number;
+    answers: {
+        practice_question_id: number;
+        variant_id: number | null;
+    }[];
+};
+
+type TResult = {
+    data: {
+        practice_question: {
+            question: {
+                id: number;
+                description: string;
+                variants: {
+                    id: number;
+                    content: string;
+                    is_right: boolean;
+                    question_id: number;
+                }[];
+            };
+        };
+    }[];
+};
 
 export default function PracticeResultPage() {
     const { t } = useTranslate();
     const dispatch = useDispatch();
     const location = useLocation();
     const navigate = useNavigate();
-    const { department } = useSelector((state) => state.practice);
-    const { data, items } = useSelector((state) => state.quiz);
+    const { category_ids } = useSelector((state) => state.practice);
+    const { access_token } = useSelector((state) => state.auth);
+    const { id, data, items } = useSelector((state) => state.quiz);
+    const { mutate } = useMutation<any, Error, TRequest>({
+        mutationFn: async (data) =>
+            await axiosPrivate
+                .post(PRACTICE_ANSWER_URL, data, {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
+                .then((res) => res.data),
+    });
+
+    function getResult() {
+        if (id) {
+            try {
+                mutate(
+                    {
+                        practice_id: id,
+                        answers: items,
+                    },
+                    {
+                        onSuccess: (data: TResult) => {
+                            dispatch(
+                                setQuizData(
+                                    data?.data?.map(
+                                        (item) =>
+                                            item.practice_question.question
+                                    )
+                                )
+                            );
+                        },
+                        onError: (error) => {
+                            console.log(error.message);
+                        },
+                    }
+                );
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    }
 
     useEffect(() => {
+        try {
+            getResult();
+        } catch (error) {
+            console.error(error);
+        }
         dispatch(finishQuiz());
     }, []);
 
     const formattedData = data.map((item) => ({
         ...item,
-        selected: items.find((each) => each.questionId === item.question.id)
-            ?.selectedAnswerId,
+        selected: items.find((each) => each.practice_question_id === item.id)
+            ?.variant_id,
     }));
 
-    const correctAnswers = formattedData.filter(
-        (item) =>
-            item.selected === item.answers.find((each) => each.isCorrect)?.id
-    ).length;
-    const incorrectAnswers = data.length - correctAnswers;
+    const correctAnswers = data.length
+        ? formattedData.filter((item) =>
+              item.variants
+                  ? item.selected ===
+                    item?.variants.find((each) => each.is_right)?.id
+                  : false
+          ).length
+        : 0;
+    const incorrectAnswers = data.length ? data.length - correctAnswers : 0;
 
-    if (!department) {
+    if (!id) {
         return <Navigate to="/practice" state={{ from: location }} replace />;
     }
 
@@ -46,10 +126,11 @@ export default function PracticeResultPage() {
         dispatch(clearQuiz());
         dispatch(
             setPractice({
-                department: undefined,
-                testQty: undefined,
+                category_ids: undefined,
+                question_count: undefined,
             })
         );
+        dispatch(clearQuizData());
         dispatch(setCurrentTest(1));
         dispatch(endQuiz(true));
         dispatch(setRedirectUrl(null));
@@ -69,7 +150,7 @@ export default function PracticeResultPage() {
                         </Typography>
                         <Typography className="font-semibold !text-lg !text-blue-700">
                             {t("Bo'lim: ")}
-                            {department.title}
+                            {category_ids}
                         </Typography>
                     </Flex>
                     <Flex className="flex-col mt-5 lg:mt-0 lg:items-end gap-y-2.5">

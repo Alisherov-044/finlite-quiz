@@ -2,7 +2,7 @@ import { z } from "zod";
 import InputMask from "react-input-mask";
 import { Icons, Logo } from "@/components";
 import { useDispatch, useSelector, useTranslate } from "@/hooks";
-import { Button, Flex, Form, Input, Typography } from "antd";
+import { Button, Flex, Form, Input, Typography, notification } from "antd";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Checkbox, FormCheckbox, FormItem } from "./styles";
@@ -20,6 +20,18 @@ export const LoginFormScheme = z.object({
     password: z.string({ required_error: "parolni kiriting" }),
     remember: z.boolean().optional().default(false),
 });
+
+export type TResponse = {
+    data: {
+        access_token: string;
+        first_name: string;
+        id: number;
+        last_name: string;
+        phone_number: string;
+        refresh_token: string;
+        role: number;
+    };
+};
 
 export default function LoginPage() {
     const { isAuthenticated } = useSelector((state) => state.auth);
@@ -42,42 +54,43 @@ export default function LoginPage() {
             phone_number: "+(998)",
         },
     });
-    const { mutate } = useMutation({
-        mutationFn: (userData: z.infer<typeof LoginFormScheme>) =>
-            axiosPublic.post(LOGIN_URL, userData),
+    const { mutate } = useMutation<
+        TResponse,
+        Error,
+        z.infer<typeof LoginFormScheme>
+    >({
+        mutationFn: async (userData) =>
+            await axiosPublic.post(LOGIN_URL, userData).then((res) => res.data),
     });
 
-    // fake login call
     const dispatch = useDispatch();
 
     const onSubmit = (values: z.infer<typeof LoginFormScheme>) => {
-        console.log(values);
-
-        let roles = [];
-        if (
-            parsePhoneNumber(values.phone_number) === "+998999999999" &&
-            values.password === "admin"
-        ) {
-            roles.push(1312);
-        } else if (
-            parsePhoneNumber(values.phone_number) === "+998999999999" &&
-            values.password === "teacher"
-        ) {
-            roles.push(1028);
-        } else if (
-            parsePhoneNumber(values.phone_number) === "+998999999999" &&
-            values.password === "student"
-        ) {
-            roles.push(3216);
-        }
-
-        if (roles.length !== 0) {
-            dispatch(
-                setAuth({ isAuthenticated: true, roles, name: "Sa'dulla" })
-            );
-            return navigate("/");
-        }
-        mutate(values);
+        mutate(
+            { ...values, phone_number: parsePhoneNumber(values.phone_number) },
+            {
+                onSuccess: (data) => {
+                    dispatch(
+                        setAuth({
+                            id: data.data.id,
+                            isAuthenticated: true,
+                            roles: [data.data.role],
+                            name: `${data.data.first_name} ${data.data.last_name}`,
+                            phone_number: data.data.phone_number,
+                            access_token: data.data.access_token,
+                            refresh_token: data.data.refresh_token,
+                        })
+                    );
+                    navigate("/");
+                },
+                onError: (error) => {
+                    notification.error({
+                        message: t(error.message),
+                        closeIcon: null,
+                    });
+                },
+            }
+        );
         reset();
     };
 

@@ -7,66 +7,96 @@ import {
     SelectPracticeMode,
 } from "@/components";
 import { options } from "@/components/data";
-import { useDispatch, useOpen, useTranslate } from "@/hooks";
+import { useDispatch, useOpen, useSelector, useTranslate } from "@/hooks";
 import { useState } from "react";
-import { useQuery } from "react-query";
-import { Empty, Flex, Row, Select, Typography } from "antd";
-import { setPractice } from "@/redux/slices/practiceSlice";
+import { useMutation, useQuery } from "react-query";
+import { Empty, Flex, Row, Select, Typography, notification } from "antd";
+import { PracticeState, setPractice } from "@/redux/slices/practiceSlice";
 import { useNavigate } from "react-router-dom";
 import type { TPractice } from "@/components/cards/practice-card";
 import {
     clearQuiz,
     endQuiz,
     setCurrentTest,
+    setQuizData,
+    setQuizId,
     unfinishQuiz,
 } from "@/redux/slices/quizSlice";
+import { axiosPrivate } from "@/lib";
+import {
+    PRACTICE_CONTENT_URL,
+    PRACTICE_HISTORY_URL,
+    PRACTICE_URL,
+} from "@/utils/urls";
+import { boolean } from "zod";
+
+export type TPracticeResponse = {
+    data: {
+        categories: number[];
+        created_at: string;
+        id: number;
+        student: { id: number; first_name: string; last_name: string };
+        updated_at: string;
+        user_id: number;
+    };
+};
+
+export type TPracticeContentResponse = {
+    id: number;
+    practice_questions: {
+        id: number;
+        answer: number | null;
+        question: {
+            id: number;
+            description: string;
+            variants: {
+                id: number;
+                content: string;
+            }[];
+        };
+    }[];
+    user_id: number;
+    success: boolean;
+    timestamp: string;
+};
 
 export default function PracticePage() {
     const { t } = useTranslate();
     const dispatch = useDispatch();
+    const { id, access_token } = useSelector((state) => state.auth);
     const navigate = useNavigate();
     const { isOpen, open, close } = useOpen();
     const [_, setFilter] = useState<string>("");
-    const { data: practices, isLoading } = useQuery<TPractice[]>("practices", {
-        queryFn: async () =>
-            await [
-                {
-                    id: 1,
-                    date: new Date("2024-04-05"),
-                    department: "1C Dasturi prinsiplari",
-                    test_qty: 10,
-                    correct_answers: 8,
-                },
-                {
-                    id: 1,
-                    date: new Date("2024-04-05"),
-                    department: "1C Dasturi prinsiplari",
-                    test_qty: 10,
-                    correct_answers: 8,
-                },
-                {
-                    id: 1,
-                    date: new Date("2024-04-05"),
-                    department: "1C Dasturi prinsiplari",
-                    test_qty: 10,
-                    correct_answers: 8,
-                },
-                {
-                    id: 1,
-                    date: new Date("2024-04-05"),
-                    department: "1C Dasturi prinsiplari",
-                    test_qty: 10,
-                    correct_answers: 8,
-                },
-            ],
+    const { data: practices, isLoading } = useQuery<TPracticeResponse>(
+        "practices",
+        {
+            queryFn: async () =>
+                await axiosPrivate
+                    .get(PRACTICE_HISTORY_URL(id))
+                    .then((res) => res.data.data),
+        }
+    );
+    const { mutate, isLoading: isSubmitting } = useMutation<
+        TPracticeResponse,
+        Error,
+        PracticeState
+    >({
+        mutationFn: async (data) =>
+            await axiosPrivate
+                .post(PRACTICE_URL, data, {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
+                .then((res) => res.data),
     });
 
     return (
         <main>
             <div
                 className={clsx(
-                    "flex flex-col container",
-                    practices?.length && "!h-fit"
+                    "flex flex-col container"
+                    // (practices?.data.length || isLoading) && "!h-fit"
                 )}
             >
                 <PageHeaderAction
@@ -97,38 +127,61 @@ export default function PracticePage() {
                 </Flex>
                 <SelectPracticeMode
                     isOpen={isOpen}
+                    loading={isSubmitting}
                     onSubmit={(values) => {
-                        dispatch(clearQuiz());
-                        dispatch(unfinishQuiz());
-                        dispatch(setCurrentTest(1));
-                        dispatch(setPractice(values));
-                        dispatch(endQuiz(false));
-                        navigate("/practice/quiz/1c-buxgalteriya");
+                        mutate(values, {
+                            onSuccess: async (data) => {
+                                notification.success({
+                                    message: t("Amaliyot yaratildi"),
+                                    icon: <Icons.checkCircle />,
+                                    closeIcon: false,
+                                });
+                                if (data.data.id) {
+                                    dispatch(setQuizId(data.data.id));
+                                }
+                                dispatch(clearQuiz());
+                                dispatch(unfinishQuiz());
+                                dispatch(setCurrentTest(1));
+                                dispatch(setPractice(values));
+                                dispatch(endQuiz(false));
+                                if (data.data.id) {
+                                    navigate(`/practice/quiz/${data.data.id}`);
+                                }
+                            },
+                            onError: (error) => {
+                                notification.error({
+                                    message: t(error.message),
+                                    icon: <Icons.closeCircle />,
+                                    closeIcon: false,
+                                });
+                            },
+                        });
                     }}
                     onCancel={close}
                 />
                 <Row
                     className={clsx(
                         "grid grid-cols-1 gap-5 lg:grid-cols-2",
-                        !practices?.length && "grid-cols-1 flex-auto"
+                        isLoading && "!grid grid-cols-1 flex-auto"
+                        // !practices?.data.length && "!flex flex-auto"
                     )}
                 >
-                    {isLoading ? (
-                        [...Array(3).keys()].map((key) => (
+                    {/* {isLoading ? (
+                        [...Array(4).keys()].map((key) => (
                             <PracticeCardSkeleton key={key} />
                         ))
-                    ) : practices && practices.length ? (
-                        practices.map((practice) => (
+                    ) : practices && practices.data.length ? (
+                        practices.data.map((practice) => (
                             <PracticeCard
                                 key={practice.id}
                                 practice={practice}
                             />
                         ))
                     ) : (
-                        <Flex className="flex-auto items-center justify-center">
+                        <Flex className="w-full flex-auto items-center justify-center">
                             <Empty description={false} />
                         </Flex>
-                    )}
+                    )} */}
                 </Row>
             </div>
         </main>

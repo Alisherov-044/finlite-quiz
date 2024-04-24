@@ -5,11 +5,12 @@ import {
     QuizHeader,
     QuizSkeleton,
 } from "@/components";
-import { TQuiz } from "@/components/quiz";
 import { useDispatch, useOpen, useSelector, useTranslate } from "@/hooks";
+import { axiosPrivate } from "@/lib";
 import { setPractice } from "@/redux/slices/practiceSlice";
 import {
     clearQuiz,
+    clearQuizData,
     endQuiz,
     finishQuiz,
     setCurrentTest,
@@ -17,6 +18,7 @@ import {
     setQuizData,
     unfinishQuiz,
 } from "@/redux/slices/quizSlice";
+import { PRACTICE_CONTENT_URL } from "@/utils/urls";
 import { Flex, Typography } from "antd";
 import clsx from "clsx";
 import { useQuery } from "react-query";
@@ -26,6 +28,11 @@ import {
     useNavigate,
     useParams,
 } from "react-router-dom";
+import { TPracticeContentResponse } from "..";
+
+export type TPracticeQuizResponse = {
+    data: TPracticeContentResponse;
+};
 
 export default function PracticeDetailsPage() {
     const { t } = useTranslate();
@@ -34,255 +41,41 @@ export default function PracticeDetailsPage() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { isOpen, open, close } = useOpen();
-    const { department, testQty } = useSelector((state) => state.practice);
-    const { items, currentTest, isLeaving } = useSelector(
+    const { category_ids, question_count } = useSelector(
+        (state) => state.practice
+    );
+    const { id, items, currentTest, isLeaving } = useSelector(
         (state) => state.quiz
     );
-    const { data: quizzes, isLoading } = useQuery<TQuiz[]>("practice-quiz", {
-        queryFn: async () =>
-            await [
-                {
-                    question: {
-                        id: 1,
-                        content:
-                            "Какие методы необходимо использовать в различных режимах запроса при ведении учета по нескольким планам счетов или с использованием разделителя учета для получение итогов?",
-                    },
-                    answers: [
-                        {
-                            id: 1,
-                            content:
-                                "Если срок эксплуатации истек или истек срок годности, то оборудование должно быть списано.",
-                            isCorrect: true,
-                        },
-                        {
-                            id: 2,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого оборудования на выбранную дату",
-                            isCorrect: false,
-                        },
-                        {
-                            id: 3,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого",
-                            isCorrect: false,
-                        },
-                        {
-                            id: 4,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого",
-                            isCorrect: false,
-                        },
-                    ],
-                },
-                {
-                    question: {
-                        id: 2,
-                        content:
-                            "Какие методы необходимо использовать в различных режимах запроса при ведении учета по нескольким планам счетов или с использованием разделителя учета для получение итогов?",
-                    },
-                    answers: [
-                        {
-                            id: 5,
-                            content:
-                                "Если срок эксплуатации истек или истек срок годности, то оборудование должно быть списано.",
-                            isCorrect: true,
-                        },
-                        {
-                            id: 6,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого оборудования на выбранную дату",
-                            isCorrect: false,
-                        },
-                        {
-                            id: 7,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого",
-                            isCorrect: false,
-                        },
-                        {
-                            id: 8,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого",
-                            isCorrect: false,
-                        },
-                    ],
-                },
-                {
-                    question: {
-                        id: 3,
-                        content:
-                            "Какие методы необходимо использовать в различных режимах запроса при ведении учета по нескольким планам счетов или с использованием разделителя учета для получение итогов?",
-                    },
-                    answers: [
-                        {
-                            id: 9,
-                            content:
-                                "Если срок эксплуатации истек или истек срок годности, то оборудование должно быть списано.",
-                            isCorrect: true,
-                        },
-                        {
-                            id: 10,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого оборудования на выбранную дату",
-                            isCorrect: false,
-                        },
-                        {
-                            id: 11,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого",
-                            isCorrect: false,
-                        },
-                        {
-                            id: 12,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого",
-                            isCorrect: false,
-                        },
-                    ],
-                },
-                {
-                    question: {
-                        id: 4,
-                        content:
-                            "Какие методы необходимо использовать в различных режимах запроса при ведении учета по нескольким планам счетов или с использованием разделителя учета для получение итогов?",
-                    },
-                    answers: [
-                        {
-                            id: 13,
-                            content:
-                                "Если срок эксплуатации истек или истек срок годности, то оборудование должно быть списано.",
-                            isCorrect: true,
-                        },
-                        {
-                            id: 14,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого оборудования на выбранную дату",
-                            isCorrect: false,
-                        },
-                        {
-                            id: 15,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого",
-                            isCorrect: false,
-                        },
-                        {
-                            id: 16,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого",
-                            isCorrect: false,
-                        },
-                    ],
-                },
-                {
-                    question: {
-                        id: 5,
-                        content:
-                            "Какие методы необходимо использовать в различных режимах запроса при ведении учета по нескольким планам счетов или с использованием разделителя учета для получение итогов?",
-                    },
-                    answers: [
-                        {
-                            id: 17,
-                            content:
-                                "Если срок эксплуатации истек или истек срок годности, то оборудование должно быть списано.",
-                            isCorrect: true,
-                        },
-                        {
-                            id: 18,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого оборудования на выбранную дату",
-                            isCorrect: false,
-                        },
-                        {
-                            id: 19,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого",
-                            isCorrect: false,
-                        },
-                        {
-                            id: 20,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого",
-                            isCorrect: false,
-                        },
-                    ],
-                },
-                {
-                    question: {
-                        id: 6,
-                        content:
-                            "Какие методы необходимо использовать в различных режимах запроса при ведении учета по нескольким планам счетов или с использованием разделителя учета для получение итогов?",
-                    },
-                    answers: [
-                        {
-                            id: 9,
-                            content:
-                                "Если срок эксплуатации истек или истек срок годности, то оборудование должно быть списано.",
-                            isCorrect: true,
-                        },
-                        {
-                            id: 10,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого оборудования на выбранную дату",
-                            isCorrect: false,
-                        },
-                        {
-                            id: 11,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого",
-                            isCorrect: false,
-                        },
-                        {
-                            id: 12,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого",
-                            isCorrect: false,
-                        },
-                    ],
-                },
-                {
-                    question: {
-                        id: 7,
-                        content:
-                            "Какие методы необходимо использовать в различных режимах запроса при ведении учета по нескольким планам счетов или с использованием разделителя учета для получение итогов?",
-                    },
-                    answers: [
-                        {
-                            id: 9,
-                            content:
-                                "Если срок эксплуатации истек или истек срок годности, то оборудование должно быть списано.",
-                            isCorrect: true,
-                        },
-                        {
-                            id: 10,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого оборудования на выбранную дату",
-                            isCorrect: false,
-                        },
-                        {
-                            id: 11,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого",
-                            isCorrect: false,
-                        },
-                        {
-                            id: 13,
-                            content:
-                                "Необходимо создать отчет о состоянии эксплуатируемого",
-                            isCorrect: false,
-                        },
-                    ],
-                },
-            ],
-    });
+    const { data: quizzes, isLoading } = useQuery<TPracticeQuizResponse>(
+        "practice-quiz",
+        {
+            queryFn: async () =>
+                await axiosPrivate
+                    .get(PRACTICE_CONTENT_URL(id!))
+                    .then((res) => res.data),
+            enabled: !!id,
+        }
+    );
 
-    if (!department || !testQty) {
+    console.log(items);
+    console.log(quizzes?.data.practice_questions[currentTest - 1].question.id);
+    console.log(
+        items.find(
+            (item) =>
+                item.practice_question_id ===
+                quizzes?.data.practice_questions[currentTest - 1].question.id
+        )?.variant_id as number
+    );
+
+    if (!id || !category_ids || !question_count) {
         return <Navigate to="/practice" state={{ from: location }} replace />;
     }
 
     function onFinish() {
         dispatch(finishQuiz());
         if (quizzes) {
-            dispatch(setQuizData(quizzes));
+            dispatch(setQuizData(quizzes.data.practice_questions));
         }
         navigate(`/practice/quiz/${slug}/result`);
     }
@@ -304,24 +97,28 @@ export default function PracticeDetailsPage() {
                             </Typography>
                             <Typography className="font-semibold !text-lg !text-blue-700">
                                 {t("Bo'lim: ")}
-                                {department.title}
+                                {category_ids}
                             </Typography>
                         </Flex>
                         <Typography className="font-semibold !text-blue-700">
-                            {currentTest} / {testQty}
+                            {currentTest} / {question_count}
                         </Typography>
                     </Flex>
                     {isLoading || !quizzes ? (
                         <QuizSkeleton />
                     ) : (
                         <Quiz
-                            quiz={quizzes[currentTest - 1]}
+                            quiz={
+                                quizzes.data.practice_questions[currentTest - 1]
+                            }
                             selectedAnswerId={
                                 items.find(
                                     (item) =>
-                                        item.questionId ===
-                                        quizzes[currentTest - 1].question.id
-                                )?.selectedAnswerId as number
+                                        item.practice_question_id ===
+                                        quizzes.data.practice_questions[
+                                            currentTest - 1
+                                        ].question.id
+                                )?.variant_id as number
                             }
                         />
                     )}
@@ -344,14 +141,14 @@ export default function PracticeDetailsPage() {
                     <button
                         className={clsx("flex items-center gap-x-2.5")}
                         onClick={() =>
-                            currentTest === testQty
+                            currentTest === question_count
                                 ? onFinish()
                                 : dispatch(setCurrentTest(currentTest + 1))
                         }
                     >
                         <Typography>
                             {t(
-                                currentTest === testQty
+                                currentTest === question_count
                                     ? "Yakunlash"
                                     : "Keyingi savol"
                             )}
@@ -370,8 +167,8 @@ export default function PracticeDetailsPage() {
                 onConfirm={() => {
                     dispatch(
                         setPractice({
-                            department: undefined,
-                            testQty: undefined,
+                            category_ids: undefined,
+                            question_count: undefined,
                         })
                     );
                     dispatch(clearQuiz());
@@ -379,6 +176,7 @@ export default function PracticeDetailsPage() {
                     dispatch(setCurrentTest(1));
                     dispatch(setLeaving(false));
                     dispatch(endQuiz(true));
+                    dispatch(clearQuizData());
                 }}
             />
         </Flex>

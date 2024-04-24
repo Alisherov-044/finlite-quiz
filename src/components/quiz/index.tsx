@@ -11,12 +11,16 @@ export type TAnswer = {
 };
 
 export type TQuiz = {
+    id: number;
     question: {
         id: number;
-        content: string;
+        description: string;
+        variants: {
+            id: number;
+            content: string;
+        }[];
     };
-    answers: TAnswer[];
-    selected?: number;
+    answer: number | null;
 };
 
 export type QuizProps = {
@@ -32,17 +36,19 @@ export const answerPrefixLetter: Record<number, "A" | "B" | "C" | "D"> = {
 };
 
 export function Quiz({ quiz, selectedAnswerId }: QuizProps) {
-    const { question, answers } = quiz;
+    const { question, id } = quiz;
     const { t } = useTranslate();
     const { finished } = useSelector((state) => state.quiz);
     const dispatch = useDispatch();
     const { active, setActive } = useActive<number>(selectedAnswerId);
 
     useEffect(() => {
+        console.log(active, selectedAnswerId);
+
         dispatch(
             setQuiz({
-                questionId: question.id,
-                selectedAnswerId: active as number,
+                practice_question_id: question.id,
+                variant_id: active as number,
             })
         );
     }, [active]);
@@ -57,7 +63,7 @@ export function Quiz({ quiz, selectedAnswerId }: QuizProps) {
                     {t("Savol")}
                 </Typography.Title>
                 <Typography className="font-semibold !text-gray-text">
-                    {t(question.content)}
+                    {t(question.description)}
                 </Typography>
             </Flex>
             <Flex className="w-full lg:w-1/2 flex-col gap-y-6 p-3 lg:p-9">
@@ -68,7 +74,7 @@ export function Quiz({ quiz, selectedAnswerId }: QuizProps) {
                     {t("Javob")}
                 </Typography.Title>
                 <Flex className="flex-col gap-y-4">
-                    {answers.map(({ id, content }, index) => (
+                    {question.variants.map(({ id, content }, index) => (
                         <Flex
                             key={id}
                             onClick={() => !finished && setActive(id)}

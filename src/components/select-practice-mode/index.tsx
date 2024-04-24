@@ -1,27 +1,34 @@
 import { z } from "zod";
 import { Icons } from "@/components";
 import { useTranslate } from "@/hooks";
-import { departments, tests } from "./data";
+import { tests } from "./data";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Flex, Form, Modal, Select, Typography } from "antd";
 import { PracticeState } from "@/redux/slices/practiceSlice";
+import { MultiSelect } from "./styles";
+import { TDepartmentsResponse } from "@/pages/departments";
+import { axiosPublic } from "@/lib";
+import { DEPARTMENTS_URL } from "@/utils/urls";
+import { useQuery } from "react-query";
 
 export const PracticeModeFormScheme = z.object({
-    department: z.number({ required_error: "This field is required" }),
-    testQty: z.number({ required_error: "This field is required" }),
+    category_ids: z.array(z.number()),
+    question_count: z.number(),
 });
 
 export type SelectPracticeModeProps = {
     isOpen: boolean;
     onSubmit: (values: PracticeState) => void;
     onCancel: () => void;
+    loading?: boolean;
 };
 
 export function SelectPracticeMode({
     isOpen,
     onSubmit,
     onCancel,
+    loading,
 }: SelectPracticeModeProps) {
     const { t } = useTranslate();
     const {
@@ -32,6 +39,13 @@ export function SelectPracticeMode({
     } = useForm<z.infer<typeof PracticeModeFormScheme>>({
         resolver: zodResolver(PracticeModeFormScheme),
     });
+    const { data: departments, isLoading: isDepartmentsLoading } =
+        useQuery<TDepartmentsResponse>("departments", {
+            queryFn: async () =>
+                await axiosPublic
+                    .get(DEPARTMENTS_URL)
+                    .then((res) => res.data.data),
+        });
 
     return (
         <Modal closable centered open={isOpen} onCancel={onCancel}>
@@ -45,26 +59,21 @@ export function SelectPracticeMode({
                 <Form
                     className="mt-8"
                     onFinish={handleSubmit((values) => {
-                        const department = {
-                            id: Number(values.department),
-                            title: departments.find(
-                                (option) =>
-                                    Number(option.value) ===
-                                    Number(values.department)
-                            )?.label as string,
-                        };
-                        onSubmit({ ...values, department });
+                        onSubmit(values);
                         reset();
                     })}
                 >
                     <Form.Item>
                         <Controller
-                            name="department"
+                            name="category_ids"
                             control={control}
                             render={({ field }) => (
-                                <Select
+                                <MultiSelect
+                                    mode="multiple"
                                     placeholder={t("Bo'lim tanlash")}
-                                    options={departments}
+                                    loading={isDepartmentsLoading}
+                                    options={departments?.data}
+                                    fieldNames={{ label: "name", value: "id" }}
                                     suffixIcon={<Icons.arrow.select />}
                                     placement="bottomRight"
                                     {...field}
@@ -74,7 +83,7 @@ export function SelectPracticeMode({
                     </Form.Item>
                     <Form.Item>
                         <Controller
-                            name="testQty"
+                            name="question_count"
                             control={control}
                             render={({ field }) => (
                                 <Select
@@ -95,8 +104,8 @@ export function SelectPracticeMode({
                     <Button
                         htmlType="submit"
                         size="large"
-                        loading={isLoading}
-                        disabled={isLoading}
+                        loading={isLoading || loading}
+                        disabled={isLoading || loading}
                         className="!w-full"
                     >
                         {t("Boshlash")}

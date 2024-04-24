@@ -1,13 +1,24 @@
-import { TQuiz } from "@/components/quiz";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export type TSelectedQuiz = {
-    questionId: number;
-    selectedAnswerId: number | undefined;
+    practice_question_id: number;
+    variant_id: number | null;
+};
+
+export type TType = {
+    id: number;
+    description: string;
+    variants: {
+        id: number;
+        content: string;
+        is_right: boolean;
+        question_id: number;
+    }[];
 };
 
 export type QuizState = {
-    data: TQuiz[];
+    id?: number;
+    data: TType[];
     items: TSelectedQuiz[];
     finished?: boolean;
     currentTest: number;
@@ -33,14 +44,16 @@ export const quizSlice = createSlice({
 
             if (
                 state.items.some(
-                    (item) => item.questionId === payload.questionId
+                    (item) =>
+                        item.practice_question_id ===
+                        payload.practice_question_id
                 )
             ) {
                 state.items = state.items.map((item) =>
-                    item.questionId === payload.questionId
+                    item.practice_question_id === payload.practice_question_id
                         ? {
                               ...item,
-                              selectedAnswerId: payload.selectedAnswerId,
+                              variant_id: payload.variant_id,
                           }
                         : item
                 );
@@ -60,14 +73,20 @@ export const quizSlice = createSlice({
         unfinishQuiz: (state) => {
             state.finished = false;
         },
-        setQuizData: (state, { payload }: PayloadAction<TQuiz[]>) => {
+        setQuizData: (state, { payload }: PayloadAction<TType[]>) => {
             state.data = payload;
         },
         setLeaving: (state, { payload }: PayloadAction<boolean>) => {
             state.isLeaving = payload;
         },
+        clearQuizData: (state) => {
+            state.data = [];
+        },
         endQuiz: (state, { payload }: PayloadAction<boolean>) => {
             state.isQuizEnded = payload;
+        },
+        setQuizId: (state, { payload }: PayloadAction<number>) => {
+            state.id = payload;
         },
     },
 });
@@ -79,6 +98,8 @@ export const {
     finishQuiz,
     unfinishQuiz,
     setQuizData,
+    clearQuizData,
     setLeaving,
-    endQuiz
+    endQuiz,
+    setQuizId,
 } = quizSlice.actions;

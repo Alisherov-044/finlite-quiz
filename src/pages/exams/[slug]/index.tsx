@@ -15,7 +15,10 @@ export default function ExamsDetailsPage() {
     const [_, setFilter] = useState<string>("");
     const { data: students, isLoading: isLoading } =
         useQuery<TStudentsResponse>("students", {
-            queryFn: async () => await axiosPublic.get(STUDENTS_URL),
+            queryFn: async () =>
+                await axiosPublic
+                    .get(STUDENTS_URL)
+                    .then((res) => res.data.data),
         });
 
     useEffect(() => {
