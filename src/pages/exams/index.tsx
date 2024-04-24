@@ -58,7 +58,7 @@ export type TExamsRequest = {
     end: Date;
     category_id: number;
     participant_ids: number[];
-    file: any[];
+    file: any;
 };
 
 export type TExamDetail = {
@@ -163,6 +163,7 @@ export default function ExamsPage() {
             await axiosPrivate
                 .post(EXAMS_URL, data, {
                     headers: {
+                        "Content-Type" : "multipart/form-data",
                         Authorization: `Bearer ${access_token}`,
                     },
                 })
@@ -227,6 +228,8 @@ export default function ExamsPage() {
     const dispatch = useDispatch();
 
     function onSubmit(values: z.infer<typeof ExamFormScheme>) {
+        console.log(values);
+
         const data: TExamsRequest = {
             title: values.title!,
             start: new Date(
@@ -626,10 +629,13 @@ export default function ExamsPage() {
                                     </FormItem>
                                 </Col>
                             </Row>
+        
                             <FileUpload
                                 resetUrl={() => resetField("file")}
                                 setUrl={(file) => setValue("file", [file])}
                             />
+
+                            <input type="file"  onChange={(e) => console.log(e)}/>
                         </Form>
                     </FormDrawer>
 

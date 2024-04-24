@@ -57,7 +57,7 @@ export type TTeachersRequest = z.infer<typeof TeacherFormScheme> & {
 
 export default function TeachersPage() {
     const { t } = useTranslate();
-    const { roles } = useSelector((state) => state.auth);
+    const { roles , access_token } = useSelector((state) => state.auth);
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
 
@@ -78,7 +78,11 @@ export default function TeachersPage() {
         refetch,
     } = useQuery<TTeachersResponse>("teachers", {
         queryFn: async () =>
-            await axiosPrivate.get(TEACHERS_URL).then((res) => res.data.data),
+            await axiosPrivate.get(TEACHERS_URL ,  {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }).then((res) => res.data.data),
     });
     const { mutate, isLoading: isSubmitting } = useMutation<
         TTeachersResponse,
@@ -86,7 +90,11 @@ export default function TeachersPage() {
         TTeachersRequest
     >({
         mutationFn: async (data) =>
-            await axiosPrivate.post(TEACHERS_URL, data).then((res) => res.data),
+            await axiosPrivate.post(TEACHERS_URL, data ,  {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }).then((res) => res.data),
     });
     const { mutate: update, isLoading: isUpdating } = useMutation<
         TTeachersResponse,
@@ -95,7 +103,11 @@ export default function TeachersPage() {
     >({
         mutationFn: async (data) =>
             await axiosPrivate
-                .patch(TEACHERS_EDIT_URL(editTeacher!), data)
+                .patch(TEACHERS_EDIT_URL(editTeacher!), data ,  {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
                 .then((res) => res.data),
     });
     const { mutate: deleteUser, isLoading: isDeleting } = useMutation<
@@ -105,7 +117,11 @@ export default function TeachersPage() {
     >({
         mutationFn: async (id: number) =>
             await axiosPrivate
-                .delete(TEACHERS_DELETE_URL(deleteTeacher ?? id))
+                .delete(TEACHERS_DELETE_URL(deleteTeacher ?? id) ,  {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
                 .then((res) => res.data),
     });
     const {

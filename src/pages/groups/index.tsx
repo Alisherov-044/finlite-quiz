@@ -43,7 +43,7 @@ export type TGroupsResponse = {
 
 export default function GroupsPage() {
     const { t } = useTranslate();
-    const { roles } = useSelector((state) => state.auth);
+    const { roles , access_token } = useSelector((state) => state.auth);
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
 
@@ -58,13 +58,21 @@ export default function GroupsPage() {
         refetch,
     } = useQuery<TGroupsResponse>("groups", {
         queryFn: async () =>
-            await axiosPrivate.get(GROUPS_URL).then((res) => res.data.data),
+            await axiosPrivate.get(GROUPS_URL ,  {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }).then((res) => res.data.data),
     });
     const { data: students, isLoading: isStudentsLoading } =
         useQuery<TStudentsResponse>({
             queryFn: async () =>
                 await axiosPrivate
-                    .get(STUDENTS_URL)
+                    .get(STUDENTS_URL ,  {
+                        headers: {
+                            Authorization: `Bearer ${access_token}`,
+                        },
+                    })
                     .then((res) => res.data.data),
         });
     const { mutate, isLoading: isSubmitting } = useMutation<
@@ -73,7 +81,11 @@ export default function GroupsPage() {
         z.infer<typeof GroupFormScheme>
     >({
         mutationFn: async (data) =>
-            await axiosPrivate.post(GROUPS_URL, data).then((res) => res.data),
+            await axiosPrivate.post(GROUPS_URL, data , {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }).then((res) => res.data),
     });
     const {
         handleSubmit,

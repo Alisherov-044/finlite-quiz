@@ -15,6 +15,17 @@ export type TType = {
         question_id: number;
     }[];
 };
+// export type TTypeFinish = {
+//     id: number;
+//     user_id:number;
+//     practice_questions: {
+//         id: number;
+//         answer:null | number;
+//         question:{
+//             id: number
+//         }
+//     }[];
+// };
 
 export type QuizState = {
     id?: number;

@@ -9,6 +9,7 @@ import { useDispatch, useOpen, useSelector, useTranslate } from "@/hooks";
 import { axiosPrivate } from "@/lib";
 import { setPractice } from "@/redux/slices/practiceSlice";
 import {
+    TType,
     clearQuiz,
     clearQuizData,
     endQuiz,
@@ -70,7 +71,10 @@ export default function PracticeDetailsPage() {
     function onFinish() {
         dispatch(finishQuiz());
         if (quizzes) {
-            dispatch(setQuizData(quizzes.data.practice_questions));
+            // @ts-ignore
+            dispatch( setQuizData(quizzes.data.practice_questions as TType[]));
+            console.log(quizzes , "quzizza");
+            
         }
         navigate(`/practice/quiz/${slug}/result`);
     }

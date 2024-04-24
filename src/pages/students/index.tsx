@@ -75,7 +75,7 @@ export type TStudentsRequest = z.infer<typeof StudentFormScheme> & {
 
 export default function StudentsPage() {
     const { t } = useTranslate();
-    const { roles } = useSelector((state) => state.auth);
+    const { roles, access_token } = useSelector((state) => state.auth);
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
 
@@ -96,12 +96,24 @@ export default function StudentsPage() {
         refetch,
     } = useQuery<TStudentsResponse>("students", {
         queryFn: async () =>
-            await axiosPrivate.get(STUDENTS_URL).then((res) => res.data.data),
+            await axiosPrivate
+                .get(STUDENTS_URL, {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
+                .then((res) => res.data.data),
     });
     const { data: groups, isLoading: isGroupsLoading } =
         useQuery<TGroupsResponse>("groups", {
             queryFn: async () =>
-                await axiosPrivate.get(GROUPS_URL).then((res) => res.data.data),
+                await axiosPrivate
+                    .get(GROUPS_URL, {
+                        headers: {
+                            Authorization: `Bearer ${access_token}`,
+                        },
+                    })
+                    .then((res) => res.data.data),
         });
     const { mutate, isLoading: isSubmitting } = useMutation<
         TStudentsResponse,
@@ -110,7 +122,11 @@ export default function StudentsPage() {
     >({
         mutationFn: async (data) =>
             await axiosPrivate
-                .post(STUDENTS_URL, data)
+                .post(STUDENTS_URL, data, {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
                 .then((res) => res.data.data),
     });
     const { mutate: update, isLoading: isUpdating } = useMutation<
@@ -120,7 +136,11 @@ export default function StudentsPage() {
     >({
         mutationFn: async (data) =>
             await axiosPrivate
-                .patch(STUDENTS_EDIT_URL(editStudent!), data)
+                .patch(STUDENTS_EDIT_URL(editStudent!), data, {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
                 .then((res) => res.data.data),
     });
     const { mutate: deleteUser, isLoading: isDeleting } = useMutation<
@@ -130,7 +150,11 @@ export default function StudentsPage() {
     >({
         mutationFn: async (id) =>
             await axiosPrivate
-                .delete(STUDENTS_DELETE_URL(deleteStudent ?? id))
+                .delete(STUDENTS_DELETE_URL(deleteStudent ?? id), {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
                 .then((res) => res.data.data),
     });
     const { mutate: deleteImg } = useMutation<
@@ -140,7 +164,11 @@ export default function StudentsPage() {
     >({
         mutationFn: async (key) =>
             await axiosMedia
-                .post(UPLOAD_DELETE_URL, key)
+                .post(UPLOAD_DELETE_URL, key, {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
                 .then((res) => res.data),
     });
     const {
