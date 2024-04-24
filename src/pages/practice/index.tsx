@@ -30,9 +30,26 @@ import {
 } from "@/utils/urls";
 import { boolean } from "zod";
 
+export type TPracticeHistoryResponse = {
+    data: {
+        categories: {
+            id: number;
+            name: string;
+        }[];
+        correct_answers_count: number;
+        created_at: string;
+        id: number;
+        questions_count: number;
+        user_id: number;
+    }[];
+};
+
 export type TPracticeResponse = {
     data: {
-        categories: number[];
+        categories: {
+            id: number;
+            name: string;
+        }[];
         created_at: string;
         id: number;
         student: { id: number; first_name: string; last_name: string };
@@ -40,6 +57,7 @@ export type TPracticeResponse = {
         user_id: number;
     };
 };
+
 
 export type TPracticeContentResponse = {
     id: number;
@@ -67,15 +85,21 @@ export default function PracticePage() {
     const navigate = useNavigate();
     const { isOpen, open, close } = useOpen();
     const [_, setFilter] = useState<string>("");
-    const { data: practices, isLoading } = useQuery<TPracticeResponse>(
+    const { data: practices, isLoading } = useQuery<TPracticeHistoryResponse>(
         "practices",
         {
             queryFn: async () =>
                 await axiosPrivate
-                    .get(PRACTICE_HISTORY_URL(id))
+                    .get(PRACTICE_HISTORY_URL(id), {
+                        headers: {
+                            Authorization: `Bearer ${access_token}`,
+                        },
+                    })
                     .then((res) => res.data.data),
         }
     );
+    console.log(practices);
+
     const { mutate, isLoading: isSubmitting } = useMutation<
         TPracticeResponse,
         Error,
@@ -95,8 +119,8 @@ export default function PracticePage() {
         <main>
             <div
                 className={clsx(
-                    "flex flex-col container"
-                    // (practices?.data.length || isLoading) && "!h-fit"
+                    "flex flex-col container",
+                    (practices?.data.length || isLoading) && "!h-fit"
                 )}
             >
                 <PageHeaderAction
@@ -131,6 +155,8 @@ export default function PracticePage() {
                     onSubmit={(values) => {
                         mutate(values, {
                             onSuccess: async (data) => {
+                                console.log(data);
+                                
                                 notification.success({
                                     message: t("Amaliyot yaratildi"),
                                     icon: <Icons.checkCircle />,
@@ -162,11 +188,11 @@ export default function PracticePage() {
                 <Row
                     className={clsx(
                         "grid grid-cols-1 gap-5 lg:grid-cols-2",
-                        isLoading && "!grid grid-cols-1 flex-auto"
-                        // !practices?.data.length && "!flex flex-auto"
+                        isLoading && "!grid grid-cols-1 flex-auto",
+                        !practices?.data.length && "!flex flex-auto"
                     )}
                 >
-                    {/* {isLoading ? (
+                     {isLoading ? (
                         [...Array(4).keys()].map((key) => (
                             <PracticeCardSkeleton key={key} />
                         ))
@@ -181,7 +207,7 @@ export default function PracticePage() {
                         <Flex className="w-full flex-auto items-center justify-center">
                             <Empty description={false} />
                         </Flex>
-                    )} */}
+                    )} 
                 </Row>
             </div>
         </main>

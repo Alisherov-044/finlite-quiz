@@ -47,12 +47,17 @@ export default function PracticeDetailsPage() {
     const { id, items, currentTest, isLeaving } = useSelector(
         (state) => state.quiz
     );
+    const { access_token } = useSelector((state) => state.auth);
     const { data: quizzes, isLoading } = useQuery<TPracticeQuizResponse>(
         "practice-quiz",
         {
             queryFn: async () =>
                 await axiosPrivate
-                    .get(PRACTICE_CONTENT_URL(id!))
+                    .get(PRACTICE_CONTENT_URL(id!), {
+                        headers: {
+                            Authorization: `Bearer ${access_token}`,
+                        },
+                    })
                     .then((res) => res.data),
             enabled: !!id,
         }

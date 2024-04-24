@@ -100,7 +100,7 @@ export const ExamFormScheme = z.object({
 
 export default function ExamsPage() {
     const { t } = useTranslate();
-    const { roles } = useSelector((state) => state.auth);
+    const { roles, access_token } = useSelector((state) => state.auth);
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
 
@@ -117,27 +117,41 @@ export default function ExamsPage() {
     const { active: deleteExam, setActive: setDeleteExam } = useActive<
         number | null
     >(null);
-    const { access_token } = useSelector((state) => state.auth);
+    // const { access_token } = useSelector((state) => state.auth);
     const {
         data: exams,
         isLoading,
         refetch,
     } = useQuery<TExamsResponse>("exams", {
         queryFn: async () =>
-            await axiosPrivate.get(EXAMS_URL).then((res) => res.data.data),
+            await axiosPrivate
+                .get(EXAMS_URL, {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
+                .then((res) => res.data.data),
     });
     const { data: students, isLoading: isStudentsLoading } =
         useQuery<TStudentsResponse>("students", {
             queryFn: async () =>
                 await axiosPrivate
-                    .get(STUDENTS_URL)
+                    .get(STUDENTS_URL, {
+                        headers: {
+                            Authorization: `Bearer ${access_token}`,
+                        },
+                    })
                     .then((res) => res.data.data),
         });
     const { data: departments, isLoading: isDepartmentsLoading } =
         useQuery<TDepartmentsResponse>("exam-categories", {
             queryFn: async () =>
                 await axiosPrivate
-                    .get(EXAM_CATEGORIES_URL)
+                    .get(EXAM_CATEGORIES_URL, {
+                        headers: {
+                            Authorization: `Bearer ${access_token}`,
+                        },
+                    })
                     .then((res) => res.data),
         });
     const { mutate, isLoading: isSubmitting } = useMutation<
@@ -147,7 +161,11 @@ export default function ExamsPage() {
     >({
         mutationFn: async (data) =>
             await axiosPrivate
-                .post(EXAMS_URL, data)
+                .post(EXAMS_URL, data, {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
                 .then((res) => res.data.data),
     });
     const {
@@ -159,7 +177,11 @@ export default function ExamsPage() {
             () => async () =>
                 typeof editExam === "number"
                     ? await axiosPrivate
-                          .get(EXAM_URL(editExam))
+                          .get(EXAM_URL(editExam), {
+                              headers: {
+                                  Authorization: `Bearer ${access_token}`,
+                              },
+                          })
                           .then((res) => res.data)
                     : { data: null },
             [editExam]
@@ -173,7 +195,11 @@ export default function ExamsPage() {
     >({
         mutationFn: async (data) =>
             await axiosPrivate
-                .patch(EXAM_URL(editExam!), data)
+                .patch(EXAM_URL(editExam!), data, {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
                 .then((res) => res.data.data),
     });
     const { mutate: deleteExamMutation, isLoading: isDeleting } = useMutation<
