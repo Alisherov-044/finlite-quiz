@@ -58,16 +58,6 @@ export default function PracticeDetailsPage() {
         }
     );
 
-    console.log(items);
-    console.log(quizzes?.data.practice_questions[currentTest - 1].question.id);
-    console.log(
-        items.find(
-            (item) =>
-                item.practice_question_id ===
-                quizzes?.data.practice_questions[currentTest - 1].question.id
-        )?.variant_id as number
-    );
-
     if (!id || !category_ids || !question_count) {
         return <Navigate to="/practice" state={{ from: location }} replace />;
     }

@@ -36,15 +36,13 @@ export const answerPrefixLetter: Record<number, "A" | "B" | "C" | "D"> = {
 };
 
 export function Quiz({ quiz, selectedAnswerId }: QuizProps) {
-    const { question, id } = quiz;
+    const { question } = quiz;
     const { t } = useTranslate();
     const { finished } = useSelector((state) => state.quiz);
     const dispatch = useDispatch();
     const { active, setActive } = useActive<number>(selectedAnswerId);
 
     useEffect(() => {
-        console.log(active, selectedAnswerId);
-
         dispatch(
             setQuiz({
                 practice_question_id: question.id,
@@ -80,7 +78,8 @@ export function Quiz({ quiz, selectedAnswerId }: QuizProps) {
                             onClick={() => !finished && setActive(id)}
                             className={clsx(
                                 "gap-x-3 p-3 border border-blue-500 rounded-md cursor-pointer select-none !text-blue-900",
-                                active === id && "bg-blue-500 !text-white",
+                                (active === id || selectedAnswerId === id) &&
+                                    "bg-blue-500 !text-white",
                                 finished && "cursor-not-allowed"
                             )}
                         >
