@@ -27,16 +27,14 @@ import {
     useParams,
 } from "react-router-dom";
 
-export default function ExamDetailsPage() {
+export default function ExamQuizPage() {
     const { t } = useTranslate();
     const { slug } = useParams();
     const location = useLocation();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { isOpen, open, close } = useOpen();
-    const { category_ids, question_count } = useSelector(
-        (state) => state.practice
-    );
+    const { questions } = useSelector((state) => state.exam);
     const { items, currentTest, isLeaving } = useSelector(
         (state) => state.quiz
     );
@@ -44,7 +42,7 @@ export default function ExamDetailsPage() {
         queryFn: async () => await axiosPrivate.get(""),
     });
 
-    if (!category_ids?.length || !question_count) {
+    if (!questions?.length) {
         return <Navigate to="/exams" state={{ from: location }} replace />;
     }
 
@@ -73,18 +71,21 @@ export default function ExamDetailsPage() {
                             </Typography>
                             <Typography className="font-semibold !text-lg !text-blue-700">
                                 {t("Bo'lim: ")}
-                                {category_ids[0]}
                             </Typography>
                         </Flex>
                         <Typography className="font-semibold !text-blue-700">
-                            {currentTest} / {question_count}
+                            {currentTest} / {questions.length}
                         </Typography>
                     </Flex>
                     {isLoading || !quizzes ? (
                         <QuizSkeleton />
                     ) : (
                         <Quiz
-                            quiz={quizzes[currentTest - 1]}
+                            quiz={{
+                                id: 1,
+                                question: quizzes[currentTest - 1],
+                                answer: null,
+                            }}
                             selectedAnswerId={
                                 items.find(
                                     (item) =>
@@ -113,14 +114,14 @@ export default function ExamDetailsPage() {
                     <button
                         className={clsx("flex items-center gap-x-2.5")}
                         onClick={() =>
-                            currentTest === question_count
+                            currentTest === questions.length
                                 ? onFinish()
                                 : dispatch(setCurrentTest(currentTest + 1))
                         }
                     >
                         <Typography>
                             {t(
-                                currentTest === question_count
+                                currentTest === questions.length
                                     ? "Yakunlash"
                                     : "Keyingi savol"
                             )}

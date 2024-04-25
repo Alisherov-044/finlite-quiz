@@ -23,6 +23,7 @@ export type TExam = {
 
 export type ExamCardProps = {
     exam: TExam;
+    onConfirm?: () => void;
     onEdit?: () => void;
     onDelete?: () => void;
     onBeforeEdit?: () => void;
@@ -31,6 +32,7 @@ export type ExamCardProps = {
 
 export function ExamCard({
     exam,
+    onConfirm,
     onEdit,
     onDelete,
     onBeforeEdit,
@@ -181,7 +183,7 @@ export function ExamCard({
                 }
                 isOpen={isOpen}
                 onCancel={close}
-                onConfirm={() => {}}
+                onConfirm={() => onConfirm?.()}
                 title={t("Imtihon")}
             />
         </Flex>

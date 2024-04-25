@@ -2,6 +2,7 @@ import { LoginPageSkeleton } from "@/components";
 import {
     DepartmentsPage,
     ExamCategoriesPage,
+    ExamQuizPage,
     ExamsDetailsPage,
     ExamsPage,
     GroupsPage,
@@ -143,6 +144,12 @@ export const routes: TRoutes = {
             path: "/exams/categories",
             element: <ExamCategoriesPage />,
             roles: [...userRoles.admin],
+        },
+        {
+            id: 17,
+            path: "/exams/quiz/:id",
+            element: <ExamQuizPage />,
+            roles: [...userRoles.student],
         },
     ],
 };

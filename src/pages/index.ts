@@ -17,3 +17,4 @@ export const RedirectionToRolePage = lazy(() => import("./redirect-to-role"));
 export const PracticeResultPage = lazy(() => import("./practice/[result]"));
 export const DepartmentsPage = lazy(() => import("./departments"));
 export const ExamCategoriesPage = lazy(() => import("./exam-categories"));
+export const ExamQuizPage = lazy(() => import("./exams/[id]"));

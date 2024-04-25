@@ -22,7 +22,7 @@ import { FormItem, Row } from "@/components/styles";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { fillValues, formatNumber, getCurrentRole } from "@/utils";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import {
     Button,
     Col,
@@ -40,6 +40,7 @@ import { axiosPrivate } from "@/lib";
 import {
     EXAMS_URL,
     EXAM_CATEGORIES_URL,
+    EXAM_QUESTIONS_URL,
     EXAM_URL,
     STUDENTS_URL,
 } from "@/utils/urls";
@@ -51,6 +52,7 @@ import {
 import type { TExam } from "@/components/cards/exam-card";
 import { useEffect, useMemo } from "react";
 import { TSetValue } from "@/utils/fill-values";
+import { clearQuestions, setQuestions } from "@/redux/slices/examSlice";
 
 export type TExamsRequest = {
     title: string;
@@ -103,6 +105,7 @@ export default function ExamsPage() {
     const { roles, access_token } = useSelector((state) => state.auth);
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
+    const navigate = useNavigate();
 
     if (!currentRole) {
         return <Navigate to="/login" state={{ from: location }} replace />;
@@ -358,6 +361,20 @@ export default function ExamsPage() {
         }
     }
 
+    async function getExamQuestions(id: number) {
+        try {
+            const res = await axiosPrivate.get(EXAM_QUESTIONS_URL(id), {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            });
+            dispatch(setQuestions(res.data.data.data));
+            return navigate(`/exams/quiz/${id}`);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     return (
         <>
             <FilterTab>
@@ -395,6 +412,7 @@ export default function ExamsPage() {
                         ) : filteredExams && filteredExams.length ? (
                             filteredExams.map((exam) => (
                                 <ExamCard
+                                    onConfirm={() => getExamQuestions(exam.id)}
                                     key={exam.id}
                                     exam={exam}
                                     onEdit={() => {

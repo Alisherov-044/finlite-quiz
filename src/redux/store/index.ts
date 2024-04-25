@@ -2,6 +2,7 @@ import storage from "redux-persist/lib/storage";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import {
     authSlice,
+    examSlice,
     langSlice,
     practiceSlice,
     quizSlice,
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
     route: routeSlice.reducer,
     upload: uploadSlice.reducer,
     sidebar: sidebarSlice.reducer,
+    exam: examSlice.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
