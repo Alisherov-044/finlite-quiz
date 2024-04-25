@@ -24,6 +24,8 @@ export const EXAMS_URL = "/exam";
 export const EXAM_CATEGORIES_URL = "/exam/category";
 export const EXAM_URL = (id: number) => `/exam/${id}`;
 export const EXAMS_EDIT_URL = (id: number) => `/exam/${id}`;
+export const EXAM_QUESTIONS_URL = (id: number) =>
+    `/exam/question?exam_id=${id}&page=1&take=50`;
 
 export const PRACTICE_URL = "/practice";
 export const PRACTICE_HISTORY_URL = (id: number) => `/practice?user_id=${id}`;

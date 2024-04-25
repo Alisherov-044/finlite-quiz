@@ -10,3 +10,4 @@ export { handleEncrypted } from "./media-api-helper";
 export { parsePhoneNumber } from "./parse-phone-number";
 export { generateAvatarColor } from "./generate-avatar-color";
 export { formatNumber } from "./format-number";
+export { formatPhoneNumber } from "./format-phone-number";

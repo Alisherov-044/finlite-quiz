@@ -117,7 +117,6 @@ export default function ExamsPage() {
     const { active: deleteExam, setActive: setDeleteExam } = useActive<
         number | null
     >(null);
-    // const { access_token } = useSelector((state) => state.auth);
     const {
         data: exams,
         isLoading,
@@ -163,7 +162,7 @@ export default function ExamsPage() {
             await axiosPrivate
                 .post(EXAMS_URL, data, {
                     headers: {
-                        "Content-Type" : "multipart/form-data",
+                        "Content-Type": "multipart/form-data",
                         Authorization: `Bearer ${access_token}`,
                     },
                 })
@@ -228,8 +227,6 @@ export default function ExamsPage() {
     const dispatch = useDispatch();
 
     function onSubmit(values: z.infer<typeof ExamFormScheme>) {
-        console.log(values);
-
         const data: TExamsRequest = {
             title: values.title!,
             start: new Date(
@@ -377,7 +374,7 @@ export default function ExamsPage() {
                     {t("Tugallangan imtihonlar")}
                 </button>
             </FilterTab>
-            <main>
+            <main className="pb-10">
                 <div className="flex flex-col container">
                     {currentRole === "admin" ? (
                         <PageHeaderAction
@@ -390,7 +387,7 @@ export default function ExamsPage() {
                             }}
                         />
                     ) : null}
-                    <Flex className="flex-auto flex-col gap-y-6 mt-6">
+                    <Flex className="pb-10 flex-auto flex-col gap-y-6 mt-6">
                         {isLoading ? (
                             [...Array(3).keys()].map((key) => (
                                 <ExamCardSkeleton key={key} />
@@ -629,13 +626,16 @@ export default function ExamsPage() {
                                     </FormItem>
                                 </Col>
                             </Row>
-        
+
                             <FileUpload
                                 resetUrl={() => resetField("file")}
                                 setUrl={(file) => setValue("file", [file])}
                             />
 
-                            <input type="file"  onChange={(e) => console.log(e)}/>
+                            <input
+                                type="file"
+                                onChange={(e) => console.log(e)}
+                            />
                         </Form>
                     </FormDrawer>
 

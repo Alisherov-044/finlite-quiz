@@ -32,7 +32,7 @@ import {
     TEACHERS_URL,
 } from "@/utils/urls";
 import { FormItem, Col } from "@/components/styles";
-import { fillValues, getCurrentRole } from "@/utils";
+import { fillValues, getCurrentRole, parsePhoneNumber } from "@/utils";
 import { Navigate, useLocation } from "react-router-dom";
 import type { TSetValue } from "@/utils/fill-values";
 import type { TUser } from "@/components/cards/user-card";
@@ -57,7 +57,7 @@ export type TTeachersRequest = z.infer<typeof TeacherFormScheme> & {
 
 export default function TeachersPage() {
     const { t } = useTranslate();
-    const { roles , access_token } = useSelector((state) => state.auth);
+    const { roles, access_token } = useSelector((state) => state.auth);
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
 
@@ -78,11 +78,13 @@ export default function TeachersPage() {
         refetch,
     } = useQuery<TTeachersResponse>("teachers", {
         queryFn: async () =>
-            await axiosPrivate.get(TEACHERS_URL ,  {
-                headers: {
-                    Authorization: `Bearer ${access_token}`,
-                },
-            }).then((res) => res.data.data),
+            await axiosPrivate
+                .get(TEACHERS_URL, {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
+                .then((res) => res.data.data),
     });
     const { mutate, isLoading: isSubmitting } = useMutation<
         TTeachersResponse,
@@ -90,11 +92,13 @@ export default function TeachersPage() {
         TTeachersRequest
     >({
         mutationFn: async (data) =>
-            await axiosPrivate.post(TEACHERS_URL, data ,  {
-                headers: {
-                    Authorization: `Bearer ${access_token}`,
-                },
-            }).then((res) => res.data),
+            await axiosPrivate
+                .post(TEACHERS_URL, data, {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
+                .then((res) => res.data),
     });
     const { mutate: update, isLoading: isUpdating } = useMutation<
         TTeachersResponse,
@@ -103,7 +107,7 @@ export default function TeachersPage() {
     >({
         mutationFn: async (data) =>
             await axiosPrivate
-                .patch(TEACHERS_EDIT_URL(editTeacher!), data ,  {
+                .patch(TEACHERS_EDIT_URL(editTeacher!), data, {
                     headers: {
                         Authorization: `Bearer ${access_token}`,
                     },
@@ -117,7 +121,7 @@ export default function TeachersPage() {
     >({
         mutationFn: async (id: number) =>
             await axiosPrivate
-                .delete(TEACHERS_DELETE_URL(deleteTeacher ?? id) ,  {
+                .delete(TEACHERS_DELETE_URL(deleteTeacher ?? id), {
                     headers: {
                         Authorization: `Bearer ${access_token}`,
                     },
@@ -180,7 +184,11 @@ export default function TeachersPage() {
             }
 
             update(
-                { ...updatedValues, role: "teacher" },
+                {
+                    ...updatedValues,
+                    phone_number: parsePhoneNumber(values.phone_number),
+                    role: "teacher",
+                },
                 {
                     onSuccess: () => {
                         notification.success({
@@ -201,7 +209,11 @@ export default function TeachersPage() {
             );
         } else {
             mutate(
-                { ...values, role: "teacher" },
+                {
+                    ...values,
+                    phone_number: parsePhoneNumber(values.phone_number),
+                    role: "teacher",
+                },
                 {
                     onSuccess: () => {
                         notification.success({
@@ -266,7 +278,7 @@ export default function TeachersPage() {
     }, [editTeacher]);
 
     return (
-        <main>
+        <main className="pb-10">
             <div className="flex flex-col container">
                 {currentRole === "admin" ? (
                     <PageHeaderAction
@@ -296,7 +308,7 @@ export default function TeachersPage() {
                         onChange={debouncedSearch}
                     />
                 </Flex>
-                <Flex className="flex-auto flex-col gap-y-5 mt-10">
+                <Flex className="pb-10 flex-auto flex-col gap-y-5 mt-10">
                     {isLoading ? (
                         [...Array(3).keys()].map((key) => (
                             <UserCardSkeleton key={key} role="teacher" />

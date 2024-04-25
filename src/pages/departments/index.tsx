@@ -140,10 +140,8 @@ export default function DepartmentsPage() {
         });
     }
 
-    console.log(departments);
-
     return (
-        <main>
+        <main className="pb-10">
             <div className="flex flex-col container">
                 {currentRole === "admin" ? (
                     <PageHeaderAction

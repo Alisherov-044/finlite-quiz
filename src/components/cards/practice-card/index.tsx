@@ -13,8 +13,6 @@ export type TPractice = {
     correct_answers_count: number;
     created_at: string;
     id: number;
-    // student: { id: number; first_name: string; last_name: string };
-    // updated_at: string;
     questions_count: number;
     user_id: number;
 };
@@ -24,7 +22,8 @@ export type PracticeCardProps = {
 };
 
 export function PracticeCard({ practice }: PracticeCardProps) {
-    const { categories , correct_answers_count , created_at , id , questions_count , user_id } = practice;
+    const { categories, correct_answers_count, created_at, questions_count } =
+        practice;
 
     const { t } = useTranslate();
 
@@ -35,7 +34,7 @@ export function PracticeCard({ practice }: PracticeCardProps) {
                     {t("Sana")}: {formatDate(new Date(created_at))}
                 </Typography>
                 <Typography>
-                    {t("Bo'lim")}: {"1C Dasturi prinsplari"}
+                    {t("Bo'lim")}: {categories[0].name}
                 </Typography>
                 <Typography>
                     {t("Test soni")}: {questions_count}
@@ -62,7 +61,10 @@ export function PracticeCard({ practice }: PracticeCardProps) {
                                 styles={buildStyles({
                                     rotation:
                                         0.5 +
-                                        (1 - correct_answers_count / questions_count) / 2,
+                                        (1 -
+                                            correct_answers_count /
+                                                questions_count) /
+                                            2,
                                     pathTransition: "none",
                                     textColor: "#000",
                                     pathColor: "#8387c5",

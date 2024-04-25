@@ -233,7 +233,7 @@ export default function TestsPage() {
     }
 
     return (
-        <main>
+        <main className="pb-10">
             <div className="flex flex-col container">
                 {currentRole === "admin" ? (
                     <PageHeaderAction

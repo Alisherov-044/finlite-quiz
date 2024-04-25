@@ -43,7 +43,7 @@ export type TGroupsResponse = {
 
 export default function GroupsPage() {
     const { t } = useTranslate();
-    const { roles , access_token } = useSelector((state) => state.auth);
+    const { roles, access_token } = useSelector((state) => state.auth);
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
 
@@ -58,17 +58,19 @@ export default function GroupsPage() {
         refetch,
     } = useQuery<TGroupsResponse>("groups", {
         queryFn: async () =>
-            await axiosPrivate.get(GROUPS_URL ,  {
-                headers: {
-                    Authorization: `Bearer ${access_token}`,
-                },
-            }).then((res) => res.data.data),
+            await axiosPrivate
+                .get(GROUPS_URL, {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
+                .then((res) => res.data.data),
     });
     const { data: students, isLoading: isStudentsLoading } =
         useQuery<TStudentsResponse>({
             queryFn: async () =>
                 await axiosPrivate
-                    .get(STUDENTS_URL ,  {
+                    .get(STUDENTS_URL, {
                         headers: {
                             Authorization: `Bearer ${access_token}`,
                         },
@@ -81,11 +83,13 @@ export default function GroupsPage() {
         z.infer<typeof GroupFormScheme>
     >({
         mutationFn: async (data) =>
-            await axiosPrivate.post(GROUPS_URL, data , {
-                headers: {
-                    Authorization: `Bearer ${access_token}`,
-                },
-            }).then((res) => res.data),
+            await axiosPrivate
+                .post(GROUPS_URL, data, {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
+                .then((res) => res.data),
     });
     const {
         handleSubmit,
@@ -142,7 +146,7 @@ export default function GroupsPage() {
     }
 
     return (
-        <main>
+        <main className="pb-10">
             <div className="flex flex-col container">
                 {currentRole === "admin" ? (
                     <PageHeaderAction
@@ -172,7 +176,7 @@ export default function GroupsPage() {
                         onChange={debouncedSearch}
                     />
                 </Flex>
-                <Flex className="flex-auto flex-col gap-y-3 mt-10">
+                <Flex className="pb-10 flex-auto flex-col gap-y-3 mt-10">
                     {isLoading || isStudentsLoading ? (
                         [...Array(3).keys()].map((key) => (
                             <GroupCardSkeleton key={key} />

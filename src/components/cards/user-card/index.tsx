@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Avatar, Flex, Tooltip, Typography } from "antd";
 import { useTranslate } from "@/hooks";
 import { IconButton, Icons } from "@/components";
-import { generateAvatarColor } from "@/utils";
+import { formatPhoneNumber, generateAvatarColor } from "@/utils";
 
 export type TUser = {
     id: number;
@@ -47,7 +47,7 @@ export function UserCard({ user, onEdit, onDelete }: UserCardProps) {
                         )}
                     </Flex>
                     <Typography className="font-semibold">
-                        {t("Telefon raqam")}: {phone_number}
+                        {t("Telefon raqam")}: {formatPhoneNumber(phone_number)}
                     </Typography>
                 </Flex>
             </Flex>

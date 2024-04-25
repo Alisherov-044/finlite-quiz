@@ -17,7 +17,13 @@ export function Logout({ className }: LogoutProps) {
 
     const onConfirm = () => {
         dispatch(
-            setAuth({ name: undefined, roles: [], isAuthenticated: false })
+            setAuth({
+                access_token: "",
+                id: -1,
+                isAuthenticated: false,
+                refresh_token: "",
+                roles: [],
+            })
         );
         dispatch(setPreviousLocation("/login"));
         return navigate("/login", { state: { from: location }, replace: true });

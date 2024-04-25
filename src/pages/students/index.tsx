@@ -32,7 +32,7 @@ import {
     notification,
 } from "antd";
 import { FormItem, Col } from "@/components/styles";
-import { fillValues, getCurrentRole } from "@/utils";
+import { fillValues, getCurrentRole, parsePhoneNumber } from "@/utils";
 import { Navigate, useLocation } from "react-router-dom";
 import { axiosMedia, axiosPrivate } from "@/lib";
 import {
@@ -226,6 +226,7 @@ export default function StudentsPage() {
                 {
                     ...updatedValues,
                     group_id: Number(values.group_id),
+                    phone_number: parsePhoneNumber(values.phone_number),
                     role: "student",
                 },
                 {
@@ -251,6 +252,7 @@ export default function StudentsPage() {
                 {
                     ...values,
                     group_id: Number(values.group_id),
+                    phone_number: parsePhoneNumber(values.phone_number),
                     role: "student",
                 },
                 {
@@ -337,7 +339,7 @@ export default function StudentsPage() {
     }, [editStudent]);
 
     return (
-        <main>
+        <main className="pb-10">
             <div className="flex flex-col container">
                 {currentRole === "admin" ? (
                     <PageHeaderAction
@@ -367,7 +369,7 @@ export default function StudentsPage() {
                         onChange={debouncedSearch}
                     />
                 </Flex>
-                <Flex className="flex-auto flex-col gap-y-5 mt-10">
+                <Flex className="pb-10 flex-auto flex-col gap-y-5 mt-10">
                     {isStudentsLoading ? (
                         [...Array(3).keys()].map((key) => (
                             <UserCardSkeleton key={key} role="student" />

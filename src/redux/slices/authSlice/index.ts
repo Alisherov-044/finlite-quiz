@@ -11,6 +11,7 @@ export type AuthState = {
 };
 
 const initialState: AuthState = {
+    id: -1,
     roles: [],
     isAuthenticated: false,
     access_token: "",

@@ -55,7 +55,7 @@ export const ExamCategoriesFormScheme = z.object({
 
 export default function ExamCategoriesPage() {
     const { t } = useTranslate();
-    const { roles } = useSelector((state) => state.auth);
+    const { roles, access_token } = useSelector((state) => state.auth);
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
 
@@ -70,7 +70,13 @@ export default function ExamCategoriesPage() {
         refetch,
     } = useQuery<TExamCategoriesResponse>("exam-categories", {
         queryFn: async () =>
-            await axiosPublic.get(EXAM_CATEGORIES_URL).then((res) => res.data),
+            await axiosPublic
+                .get(EXAM_CATEGORIES_URL, {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
+                .then((res) => res.data),
     });
     const { mutate, isLoading: isSubmitting } = useMutation<
         TExamCategoriesResponse,
@@ -79,7 +85,11 @@ export default function ExamCategoriesPage() {
     >({
         mutationFn: async (data) =>
             await axiosPrivate
-                .post(EXAM_CATEGORIES_URL, data)
+                .post(EXAM_CATEGORIES_URL, data, {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
                 .then((res) => res.data),
     });
     const {

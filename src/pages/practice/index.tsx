@@ -13,22 +13,15 @@ import { useMutation, useQuery } from "react-query";
 import { Empty, Flex, Row, Select, Typography, notification } from "antd";
 import { PracticeState, setPractice } from "@/redux/slices/practiceSlice";
 import { useNavigate } from "react-router-dom";
-import type { TPractice } from "@/components/cards/practice-card";
 import {
     clearQuiz,
     endQuiz,
     setCurrentTest,
-    setQuizData,
     setQuizId,
     unfinishQuiz,
 } from "@/redux/slices/quizSlice";
 import { axiosPrivate } from "@/lib";
-import {
-    PRACTICE_CONTENT_URL,
-    PRACTICE_HISTORY_URL,
-    PRACTICE_URL,
-} from "@/utils/urls";
-import { boolean } from "zod";
+import { PRACTICE_HISTORY_URL, PRACTICE_URL } from "@/utils/urls";
 
 export type TPracticeHistoryResponse = {
     data: {
@@ -57,7 +50,6 @@ export type TPracticeResponse = {
         user_id: number;
     };
 };
-
 
 export type TPracticeContentResponse = {
     id: number;
@@ -98,7 +90,6 @@ export default function PracticePage() {
                     .then((res) => res.data.data),
         }
     );
-    console.log(practices);
 
     const { mutate, isLoading: isSubmitting } = useMutation<
         TPracticeResponse,
@@ -116,7 +107,7 @@ export default function PracticePage() {
     });
 
     return (
-        <main>
+        <main className="pb-10">
             <div
                 className={clsx(
                     "flex flex-col container",
@@ -156,7 +147,7 @@ export default function PracticePage() {
                         mutate(values, {
                             onSuccess: async (data) => {
                                 console.log(data);
-                                
+
                                 notification.success({
                                     message: t("Amaliyot yaratildi"),
                                     icon: <Icons.checkCircle />,
@@ -192,7 +183,7 @@ export default function PracticePage() {
                         !practices?.data.length && "!flex flex-auto"
                     )}
                 >
-                     {isLoading ? (
+                    {isLoading ? (
                         [...Array(4).keys()].map((key) => (
                             <PracticeCardSkeleton key={key} />
                         ))
@@ -207,7 +198,7 @@ export default function PracticePage() {
                         <Flex className="w-full flex-auto items-center justify-center">
                             <Empty description={false} />
                         </Flex>
-                    )} 
+                    )}
                 </Row>
             </div>
         </main>
