@@ -11,10 +11,12 @@ type TExamQuestion = {
 
 type ExamState = {
     questions: TExamQuestion[] | null;
+    duration: number | null;
 };
 
 const initialState: ExamState = {
     questions: null,
+    duration: null,
 };
 
 export const examSlice = createSlice({
@@ -27,7 +29,14 @@ export const examSlice = createSlice({
         clearQuestions: (state) => {
             state.questions = null;
         },
+        setDurations: (state, { payload }: PayloadAction<number>) => {
+            state.duration = payload;
+        },
+        clearDurations: (state) => {
+            state.duration = null;
+        },
     },
 });
 
-export const { setQuestions, clearQuestions } = examSlice.actions;
+export const { setQuestions, clearQuestions, setDurations, clearDurations } =
+    examSlice.actions;

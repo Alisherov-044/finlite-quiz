@@ -18,13 +18,15 @@ export function App() {
     useEffect(() => {
         if (isAuthenticated) {
             const isResultPage =
-                location.pathname.startsWith("/practice/quiz/") &&
-                location.pathname.endsWith("/result");
-
+                (location.pathname.startsWith("/practice/quiz/") &&
+                    location.pathname.endsWith("/result")) ||
+                (location.pathname.startsWith("/exams/quiz/") &&
+                    location.pathname.endsWith("/result"));
             const isQuizPage =
-                previousLocation.startsWith("/practice/quiz/") &&
-                !previousLocation.endsWith("/result");
-
+                (previousLocation.startsWith("/practice/quiz/") &&
+                    !previousLocation.endsWith("/result")) ||
+                (previousLocation.startsWith("/exams/quiz/") &&
+                    !previousLocation.endsWith("/result"));
             if (
                 !isQuizEnded &&
                 isQuizPage &&

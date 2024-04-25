@@ -3,7 +3,13 @@ import { TimeUnit } from "@/types";
 import { Button, Flex, Typography } from "antd";
 import { Confirmation, CountDown, Icons } from "@/components";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import { useCountDown, useOpen, useSelector, useTranslate } from "@/hooks";
+import {
+    useCountDown,
+    useDispatch,
+    useOpen,
+    useSelector,
+    useTranslate,
+} from "@/hooks";
 import {
     convertTime,
     formatDate,
@@ -11,6 +17,7 @@ import {
     formatTime,
     getCurrentRole,
 } from "@/utils";
+import { setDurations } from "@/redux/slices/examSlice";
 
 export type TExam = {
     id: number;
@@ -51,6 +58,7 @@ export function ExamCard({
     const { t } = useTranslate();
     const { isOpen, open, close } = useOpen();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const timePeriod = new Date(starting_date).getTime() - new Date().getTime();
     const { time, start } = useCountDown(
         convertTime(
@@ -175,7 +183,11 @@ export function ExamCard({
                         {duration && (
                             <span>
                                 {t(
-                                    `Imtihon uchun ${hours}:${minutes} soat vaqt ajratilgan`
+                                    `Imtihon uchun ${formatNumber(
+                                        hours
+                                    )}:${formatNumber(
+                                        minutes
+                                    )} soat vaqt ajratilgan`
                                 )}
                             </span>
                         )}
@@ -183,7 +195,10 @@ export function ExamCard({
                 }
                 isOpen={isOpen}
                 onCancel={close}
-                onConfirm={() => onConfirm?.()}
+                onConfirm={() => {
+                    onConfirm?.();
+                    dispatch(setDurations(duration));
+                }}
                 title={t("Imtihon")}
             />
         </Flex>

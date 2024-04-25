@@ -31,6 +31,7 @@ export {
 } from "./cards";
 export { CountDown } from "./count-down";
 export { Quiz } from "./quiz";
+export { ExamQuiz } from "./exam-quiz";
 export { QuizResult } from "./quiz-result";
 export { PageHeaderAction } from "./page-header-action";
 export { FormDrawer } from "./form-drawer";

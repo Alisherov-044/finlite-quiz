@@ -10,7 +10,7 @@ export function Layout() {
         "/un-authorized",
         "/not-found",
         "/practice/quiz/",
-        "/exam/quiz/",
+        "/exams/quiz/",
     ];
 
     if (

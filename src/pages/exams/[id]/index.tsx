@@ -1,11 +1,12 @@
 import {
     Confirmation,
+    ExamQuiz,
     Icons,
     Quiz,
     QuizHeader,
     QuizSkeleton,
 } from "@/components";
-import { useDispatch, useOpen, useSelector, useTranslate } from "@/hooks";
+import { useCountDown, useDispatch, useOpen, useSelector, useTranslate } from "@/hooks";
 import { axiosPrivate } from "@/lib";
 import { setPractice } from "@/redux/slices/practiceSlice";
 import {
@@ -17,8 +18,10 @@ import {
     setQuizData,
     unfinishQuiz,
 } from "@/redux/slices/quizSlice";
+import { formatNumber, formatTime } from "@/utils";
 import { Flex, Typography } from "antd";
 import clsx from "clsx";
+import { useEffect } from "react";
 import { useQuery } from "react-query";
 import {
     Navigate,
@@ -34,7 +37,7 @@ export default function ExamQuizPage() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { isOpen, open, close } = useOpen();
-    const { questions } = useSelector((state) => state.exam);
+    const { questions, duration } = useSelector((state) => state.exam);
     const { items, currentTest, isLeaving } = useSelector(
         (state) => state.quiz
     );
@@ -46,6 +49,9 @@ export default function ExamQuizPage() {
         return <Navigate to="/exams" state={{ from: location }} replace />;
     }
 
+    // console.log(questions);
+    const {time , start } = useCountDown(duration as number)
+    const {hours, minutes,seconds} = formatTime(time)
     function onFinish() {
         dispatch(finishQuiz());
         if (quizzes) {
@@ -58,6 +64,10 @@ export default function ExamQuizPage() {
         close();
         dispatch(setLeaving(false));
     }
+
+    useEffect(() => {
+        start()
+    } , [])
 
     return (
         <Flex className="h-full flex-col justify-between">
@@ -77,20 +87,18 @@ export default function ExamQuizPage() {
                             {currentTest} / {questions.length}
                         </Typography>
                     </Flex>
-                    {isLoading || !quizzes ? (
+                    {!questions ? (
                         <QuizSkeleton />
                     ) : (
-                        <Quiz
+                        <ExamQuiz
                             quiz={{
-                                id: 1,
-                                question: quizzes[currentTest - 1],
-                                answer: null,
+                                question: questions[currentTest - 1],
                             }}
                             selectedAnswerId={
                                 items.find(
                                     (item) =>
                                         item.practice_question_id ===
-                                        quizzes[currentTest - 1].question.id
+                                        questions[currentTest - 1].id
                                 )?.variant_id as number
                             }
                         />
@@ -111,6 +119,10 @@ export default function ExamQuizPage() {
                         <Icons.prev />
                         <Typography>{t("Oldingi savol")}</Typography>
                     </button>
+                    <Typography className="flex justify-start items-start gap-x-1.5">
+                        <span>{t("Qolgan Vaqt:")}</span>
+                        <span>{`${formatNumber(hours)}:${formatNumber(minutes)}:${formatNumber(seconds)}`}</span>
+                    </Typography>
                     <button
                         className={clsx("flex items-center gap-x-2.5")}
                         onClick={() =>
