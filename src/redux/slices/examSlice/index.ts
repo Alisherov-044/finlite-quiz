@@ -12,11 +12,13 @@ type TExamQuestion = {
 type ExamState = {
     questions: TExamQuestion[] | null;
     duration: number | null;
+    finished?: boolean;
 };
 
 const initialState: ExamState = {
     questions: null,
     duration: null,
+    finished: false,
 };
 
 export const examSlice = createSlice({
@@ -25,6 +27,9 @@ export const examSlice = createSlice({
     reducers: {
         setQuestions: (state, { payload }: PayloadAction<TExamQuestion[]>) => {
             state.questions = payload;
+        },
+        finishQuestions: (state) => {
+            state.finished = true;
         },
         clearQuestions: (state) => {
             state.questions = null;
@@ -38,5 +43,4 @@ export const examSlice = createSlice({
     },
 });
 
-export const { setQuestions, clearQuestions, setDurations, clearDurations } =
-    examSlice.actions;
+export const { setQuestions, finishQuestions, clearQuestions,  setDurations, clearDurations } = examSlice.actions;

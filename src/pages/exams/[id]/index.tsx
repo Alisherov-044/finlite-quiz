@@ -8,6 +8,7 @@ import {
 } from "@/components";
 import { useCountDown, useDispatch, useOpen, useSelector, useTranslate } from "@/hooks";
 import { axiosPrivate } from "@/lib";
+import { finishQuestions, setQuestions } from "@/redux/slices/examSlice";
 import { setPractice } from "@/redux/slices/practiceSlice";
 import {
     clearQuiz,
@@ -41,9 +42,9 @@ export default function ExamQuizPage() {
     const { items, currentTest, isLeaving } = useSelector(
         (state) => state.quiz
     );
-    const { data: quizzes, isLoading } = useQuery<any>("exam-quiz", {
-        queryFn: async () => await axiosPrivate.get(""),
-    });
+    // const { data: quizzes, isLoading } = useQuery<any>("exam-quiz", {
+    //     queryFn: async () => await axiosPrivate.get(""),
+    // });
 
     if (!questions?.length) {
         return <Navigate to="/exams" state={{ from: location }} replace />;
@@ -53,9 +54,9 @@ export default function ExamQuizPage() {
     const {time , start } = useCountDown(duration as number)
     const {hours, minutes,seconds} = formatTime(time)
     function onFinish() {
-        dispatch(finishQuiz());
-        if (quizzes) {
-            dispatch(setQuizData(quizzes));
+        dispatch(finishQuestions());
+        if (questions) {
+            dispatch(setQuestions(questions));
         }
         navigate(`/exams/quiz/${slug}/result`);
     }
