@@ -22,6 +22,7 @@ export const DEPARTMENTS_URL = "/question/category";
 
 export const EXAMS_URL = "/exam";
 export const EXAM_CATEGORIES_URL = "/exam/category";
+export const EXAM_ANSWER_URL = "/exam/answer";
 export const EXAM_URL = (id: number) => `/exam/${id}`;
 export const EXAMS_EDIT_URL = (id: number) => `/exam/${id}`;
 export const EXAM_QUESTIONS_URL = (id: number) =>

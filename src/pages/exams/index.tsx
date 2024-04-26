@@ -52,7 +52,11 @@ import {
 import type { TExam } from "@/components/cards/exam-card";
 import { useEffect, useMemo } from "react";
 import { TSetValue } from "@/utils/fill-values";
-import { clearQuestions, setQuestions } from "@/redux/slices/examSlice";
+import {
+    clearQuestions,
+    setExamId,
+    setQuestions,
+} from "@/redux/slices/examSlice";
 
 export type TExamsRequest = {
     title: string;
@@ -412,7 +416,10 @@ export default function ExamsPage() {
                         ) : filteredExams && filteredExams.length ? (
                             filteredExams.map((exam) => (
                                 <ExamCard
-                                    onConfirm={() => getExamQuestions(exam.id)}
+                                    onConfirm={() => {
+                                        getExamQuestions(exam.id);
+                                        dispatch(setExamId(exam.id));
+                                    }}
                                     key={exam.id}
                                     exam={exam}
                                     onEdit={() => {

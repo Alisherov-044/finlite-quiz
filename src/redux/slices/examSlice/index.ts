@@ -13,6 +13,7 @@ type ExamState = {
     questions: TExamQuestion[] | null;
     duration: number | null;
     finished?: boolean;
+    id?: number;
 };
 
 const initialState: ExamState = {
@@ -27,6 +28,9 @@ export const examSlice = createSlice({
     reducers: {
         setQuestions: (state, { payload }: PayloadAction<TExamQuestion[]>) => {
             state.questions = payload;
+        },
+        setExamId: (state, { payload }: PayloadAction<number>) => {
+            state.id = payload;
         },
         finishQuestions: (state) => {
             state.finished = true;
@@ -43,4 +47,4 @@ export const examSlice = createSlice({
     },
 });
 
-export const { setQuestions, finishQuestions, clearQuestions,  setDurations, clearDurations } = examSlice.actions;
+export const { setQuestions, finishQuestions, clearQuestions,  setDurations, clearDurations , setExamId } = examSlice.actions;
