@@ -2,5 +2,6 @@
     "semi": true,
     "tabWidth": 4,
     "singleQuote": false,
-    "bracketSpacing": true
+    "bracketSpacing": true,
+    "plugins": ["prettier-plugin-organize-imports"]
 }

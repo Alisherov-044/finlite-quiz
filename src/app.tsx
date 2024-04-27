@@ -17,20 +17,37 @@ export function App() {
 
     useEffect(() => {
         if (isAuthenticated) {
+            console.log(location.pathname, previousLocation);
             const isResultPage =
-                (location.pathname.startsWith("/practice/quiz/") &&
-                    location.pathname.endsWith("/result")) ||
-                (location.pathname.startsWith("/exams/quiz/") &&
-                    location.pathname.endsWith("/result"));
+                location.pathname.startsWith("/practice/quiz/") &&
+                location.pathname.endsWith("/result");
+            const isExamResultPage =
+                location.pathname.startsWith("/exams/quiz/") &&
+                location.pathname.endsWith("/result");
             const isQuizPage =
-                (previousLocation.startsWith("/practice/quiz/") &&
-                    !previousLocation.endsWith("/result")) ||
-                (previousLocation.startsWith("/exams/quiz/") &&
-                    !previousLocation.endsWith("/result"));
+                previousLocation.startsWith("/practice/quiz/") &&
+                !previousLocation.endsWith("/result");
+            const isExamPage =
+                previousLocation.startsWith("/exams/quiz/") &&
+                !previousLocation.endsWith("/result");
+
             if (
                 !isQuizEnded &&
                 isQuizPage &&
                 !isResultPage &&
+                previousLocation !== location.pathname
+            ) {
+                navigate(previousLocation, {
+                    state: { from: location },
+                    replace: true,
+                });
+                dispatch(setLeaving(true));
+            }
+
+            if (
+                !isQuizEnded &&
+                isExamPage &&
+                !isExamResultPage &&
                 previousLocation !== location.pathname
             ) {
                 navigate(previousLocation, {

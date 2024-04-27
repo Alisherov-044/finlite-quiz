@@ -52,11 +52,7 @@ import {
 import type { TExam } from "@/components/cards/exam-card";
 import { useEffect, useMemo } from "react";
 import { TSetValue } from "@/utils/fill-values";
-import {
-    clearQuestions,
-    setExamId,
-    setQuestions,
-} from "@/redux/slices/examSlice";
+import { setExamId, setQuestions } from "@/redux/slices/examSlice";
 
 export type TExamsRequest = {
     title: string;
@@ -651,15 +647,9 @@ export default function ExamsPage() {
                                     </FormItem>
                                 </Col>
                             </Row>
-
                             <FileUpload
                                 resetUrl={() => resetField("file")}
                                 setUrl={(file) => setValue("file", [file])}
-                            />
-
-                            <input
-                                type="file"
-                                onChange={(e) => console.log(e)}
                             />
                         </Form>
                     </FormDrawer>

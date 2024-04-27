@@ -2,7 +2,6 @@ import {
     Confirmation,
     ExamQuiz,
     Icons,
-    Quiz,
     QuizHeader,
     QuizSkeleton,
 } from "@/components";
@@ -14,7 +13,7 @@ import {
     useTranslate,
 } from "@/hooks";
 import { axiosPrivate } from "@/lib";
-import { finishQuestions, setQuestions } from "@/redux/slices/examSlice";
+import { finishQuestions, setDurations } from "@/redux/slices/examSlice";
 import { setPractice } from "@/redux/slices/practiceSlice";
 import {
     clearQuiz,
@@ -22,23 +21,16 @@ import {
     finishQuiz,
     setCurrentTest,
     setLeaving,
-    setQuizData,
     unfinishQuiz,
 } from "@/redux/slices/quizSlice";
 import { formatNumber, formatTime } from "@/utils";
 import { Flex, Typography } from "antd";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { useEffect, useState } from "react";
-import { useMutation, useQuery } from "react-query";
-import {
-    Navigate,
-    useLocation,
-    useNavigate,
-    useParams,
-} from "react-router-dom";
+import { useMutation } from "react-query";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 import { EXAM_ANSWER_URL } from "@/utils/urls";
-import { TResult } from "@/components/cards/user-results-card";
 
 export type TRequest = {
     exam_id: number;
@@ -48,18 +40,16 @@ export type TRequest = {
     }[];
 };
 
-
 export default function ExamQuizPage() {
-    const [finished , setFinished] = useState<boolean>(false)
+    const [finished, setFinished] = useState<boolean>(false);
     const { t } = useTranslate();
-    const { slug } = useParams();
     const location = useLocation();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { isOpen, open, close } = useOpen();
-    const { questions, duration , id } = useSelector((state) => state.exam);
+    const { questions, duration, id } = useSelector((state) => state.exam);
     const { access_token } = useSelector((state) => state.auth);
-    const { items, currentTest, isLeaving } = useSelector(
+    const { items, currentTest, isLeaving, isQuizEnded } = useSelector(
         (state) => state.quiz
     );
     const { mutate } = useMutation<any, Error, TRequest>({
@@ -72,31 +62,34 @@ export default function ExamQuizPage() {
                 })
                 .then((res) => res.data),
     });
-    // const { data: quizzes, isLoading } = useQuery<any>("exam-quiz", {
-    //     queryFn: async () => await axiosPrivate.get(""),
-    // });
 
-    if (!questions?.length) {
+    if (!questions?.length || !duration || duration <= 0 || isQuizEnded) {
         return <Navigate to="/exams" state={{ from: location }} replace />;
     }
 
-    // console.log(questions);
-    const { time, start } = useCountDown(duration as number);
+    const { time, start } = useCountDown((duration / 1000) as number);
     const { hours, minutes, seconds } = formatTime(time);
     function onFinish() {
         dispatch(finishQuestions());
-        // navigate(`/exams/quiz/${slug}/result`);
-        setFinished(true)
-        if(id){
+        dispatch(finishQuiz());
+        dispatch(setCurrentTest(1));
+        dispatch(clearQuiz());
+        dispatch(endQuiz(true));
+        dispatch(setDurations(0));
+        setFinished(true);
+        if (id) {
             try {
                 mutate(
                     {
                         exam_id: id,
-                        answers: items.map(item => ({...item , exam_question_id:item.practice_question_id})),
+                        answers: items.map((item) => ({
+                            ...item,
+                            exam_question_id: item.practice_question_id,
+                        })),
                     },
                     {
                         onSuccess: () => {
-                            setFinished(true)
+                            setFinished(true);
                         },
                         onError: (error) => {
                             console.log(error.message);
@@ -113,16 +106,20 @@ export default function ExamQuizPage() {
         close();
         dispatch(setLeaving(false));
     }
-    
-    function onCancelFinished(){
-        setFinished(false)
+
+    function onCancelFinished() {
+        setFinished(false);
     }
 
     useEffect(() => {
         start();
     }, []);
-    console.log(id,finished  );
-    
+
+    useEffect(() => {
+        if (hours <= 0 && minutes <= 0 && seconds <= 0) {
+            onFinish();
+        }
+    }, [hours, minutes, seconds]);
 
     return (
         <Flex className="h-full flex-col justify-between">
@@ -218,9 +215,15 @@ export default function ExamQuizPage() {
                     dispatch(setCurrentTest(1));
                     dispatch(setLeaving(false));
                     dispatch(endQuiz(true));
+                    dispatch(finishQuestions());
+                    dispatch(finishQuiz());
+                    dispatch(clearQuiz());
+                    dispatch(endQuiz(true));
+                    dispatch(setDurations(0));
+                    navigate("/exams");
                 }}
             />
-              <Confirmation
+            <Confirmation
                 title={t("Imtihon yakunlandi")}
                 description={t("Bosh sahifaga qaytish")}
                 btnText={t("Yakunlash")}
@@ -236,9 +239,14 @@ export default function ExamQuizPage() {
                     dispatch(clearQuiz());
                     dispatch(unfinishQuiz());
                     dispatch(setCurrentTest(1));
-                    setFinished(false)
+                    setFinished(false);
                     dispatch(endQuiz(true));
-                    navigate("/exams")
+                    dispatch(finishQuestions());
+                    dispatch(finishQuiz());
+                    dispatch(clearQuiz());
+                    dispatch(endQuiz(true));
+                    dispatch(setDurations(0));
+                    navigate("/exams");
                 }}
             />
         </Flex>

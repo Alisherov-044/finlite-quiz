@@ -18,6 +18,12 @@ import {
     getCurrentRole,
 } from "@/utils";
 import { setDurations } from "@/redux/slices/examSlice";
+import {
+    clearQuiz,
+    endQuiz,
+    setCurrentTest,
+    unfinishQuiz,
+} from "@/redux/slices/quizSlice";
 
 export type TExam = {
     id: number;
@@ -67,9 +73,13 @@ export function ExamCard({
             TimeUnit.Second
         )
     );
-    const duration =
+    const duration = new Date(ending_date).getTime() - new Date().getTime();
+    const timeForExam =
         new Date(ending_date).getTime() - new Date(starting_date).getTime();
     const { hours, minutes } = formatTime(duration / 1000);
+    const { hours: timeForExamHours, minutes: timeForExamMinutes } = formatTime(
+        timeForExam / 1000
+    );
     const {
         days: leftDays,
         hours: leftHours,
@@ -184,9 +194,9 @@ export function ExamCard({
                             <span>
                                 {t(
                                     `Imtihon uchun ${formatNumber(
-                                        hours
+                                        timeForExamHours
                                     )}:${formatNumber(
-                                        minutes
+                                        timeForExamMinutes
                                     )} soat vaqt ajratilgan`
                                 )}
                             </span>
@@ -196,7 +206,11 @@ export function ExamCard({
                 isOpen={isOpen}
                 onCancel={close}
                 onConfirm={() => {
-                    onConfirm?.();
+                    duration && duration > 0 && onConfirm?.();
+                    dispatch(endQuiz(false));
+                    dispatch(clearQuiz());
+                    dispatch(unfinishQuiz());
+                    dispatch(setCurrentTest(1));
                     dispatch(setDurations(duration));
                 }}
                 title={t("Imtihon")}
