@@ -682,6 +682,37 @@ export const Icons = {
             />
         </svg>
     ),
+    oclock: (props: IconProps) => (
+        <svg
+            width="38"
+            height="38"
+            viewBox="0 0 38 38"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            {...props}
+        >
+            <path
+                d="M19 10.022V18.9942V10.022ZM24.3079 15.9421L19.0301 18.9894L24.3079 15.9421Z"
+                fill="#454AA9"
+            />
+            <path
+                d="M18.9787 31.1336C25.6829 31.1336 31.1176 25.6988 31.1176 18.9947C31.1176 12.2906 25.6829 6.85583 18.9787 6.85583C12.2746 6.85583 6.83984 12.2906 6.83984 18.9947C6.83984 25.6988 12.2746 31.1336 18.9787 31.1336Z"
+                stroke="#454AA9"
+                stroke-width="2.5"
+                stroke-miterlimit="10"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+            <path
+                d="M19 10.022V18.9942M24.3079 15.9421L19.0301 18.9894"
+                stroke="#454AA9"
+                stroke-width="2.5"
+                stroke-miterlimit="10"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+        </svg>
+    ),
     eye: {
         open: (props: IconProps) => (
             <svg

@@ -28,9 +28,8 @@ import { Flex, Typography } from "antd";
 import { clsx } from "clsx";
 import { useEffect, useState } from "react";
 import { useMutation } from "react-query";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
-
 import { EXAM_ANSWER_URL } from "@/utils/urls";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 export type TRequest = {
     exam_id: number;
@@ -69,13 +68,8 @@ export default function ExamQuizPage() {
 
     const { time, start } = useCountDown((duration / 1000) as number);
     const { hours, minutes, seconds } = formatTime(time);
+
     function onFinish() {
-        dispatch(finishQuestions());
-        dispatch(finishQuiz());
-        dispatch(setCurrentTest(1));
-        dispatch(clearQuiz());
-        dispatch(endQuiz(true));
-        dispatch(setDurations(0));
         setFinished(true);
         if (id) {
             try {
@@ -171,12 +165,15 @@ export default function ExamQuizPage() {
                         <Icons.prev />
                         <Typography>{t("Oldingi savol")}</Typography>
                     </button>
-                    <Typography className="flex justify-start items-start gap-x-1.5">
-                        <span>{t("Qolgan Vaqt:")}</span>
-                        <span>{`${formatNumber(hours)}:${formatNumber(
-                            minutes
-                        )}:${formatNumber(seconds)}`}</span>
-                    </Typography>
+                    <Flex className="items-center gap-x-2">
+                        <Icons.oclock />
+                        <Typography className="flex justify-start items-start gap-x-1.5">
+                            <span>{t("Qolgan Vaqt:")}</span>
+                            <span>{`${formatNumber(hours)}:${formatNumber(
+                                minutes
+                            )}:${formatNumber(seconds)}`}</span>
+                        </Typography>
+                    </Flex>
                     <button
                         className={clsx("flex items-center gap-x-2.5")}
                         onClick={() =>

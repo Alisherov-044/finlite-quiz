@@ -388,7 +388,7 @@ export default function ExamsPage() {
                     onClick={() => setActive("completed")}
                     className={clsx(active === "completed" && "active")}
                 >
-                    {t("Tugallangan imtihonlar")}
+                    {t("Faol imtihonlar")}
                 </button>
             </FilterTab>
             <main className="pb-10">
