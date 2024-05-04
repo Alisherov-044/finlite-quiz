@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { FormDrawer, Icons, PageHeaderAction } from "@/components";
 import { FormItem, Col } from "@/components/styles";
-import { useOpen, useSelector, useTranslate } from "@/hooks";
+import { useDispatch, useOpen, useSelector, useTranslate } from "@/hooks";
 import { getCurrentRole } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -19,9 +19,11 @@ import { debounce } from "lodash";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useMutation, useQuery } from "react-query";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { axiosPrivate, axiosPublic } from "@/lib";
 import { EXAM_CATEGORIES_URL } from "@/utils/urls";
+import { AxiosError } from "axios";
+import { setAuth } from "@/redux/slices/authSlice";
 
 type ColumnsType<T> = TableProps<T>["columns"];
 
@@ -59,6 +61,8 @@ export default function ExamCategoriesPage() {
     const { roles, access_token } = useSelector((state) => state.auth);
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     if (!currentRole) {
         return <Navigate to="/login" state={{ from: location }} replace />;
@@ -69,16 +73,20 @@ export default function ExamCategoriesPage() {
         data: examCategories,
         isLoading,
         refetch,
-    } = useQuery<TExamCategoriesResponse>("exam-categories", {
-        queryFn: async () =>
-            await axiosPublic
-                .get(EXAM_CATEGORIES_URL, {
-                    headers: {
-                        Authorization: `Bearer ${access_token}`,
-                    },
-                })
-                .then((res) => res.data),
-    });
+        error,
+    } = useQuery<TExamCategoriesResponse, AxiosError<{ error: string }>>(
+        "exam-categories",
+        {
+            queryFn: async () =>
+                await axiosPublic
+                    .get(EXAM_CATEGORIES_URL, {
+                        headers: {
+                            Authorization: `Bearer ${access_token}`,
+                        },
+                    })
+                    .then((res) => res.data),
+        }
+    );
     const { mutate, isLoading: isSubmitting } = useMutation<
         TExamCategoriesResponse,
         Error,
@@ -101,6 +109,21 @@ export default function ExamCategoriesPage() {
     } = useForm<z.infer<typeof ExamCategoriesFormScheme>>({
         resolver: zodResolver(ExamCategoriesFormScheme),
     });
+
+    if (error?.response?.data.error === "JWT_EXPIRED") {
+        dispatch(
+            setAuth({
+                id: -1,
+                roles: [],
+                isAuthenticated: false,
+                access_token: "",
+                refresh_token: "",
+                name: undefined,
+                phone_number: undefined,
+            })
+        );
+        return navigate("/login", { replace: true });
+    }
 
     const [tableParams] = useState({
         pagination: {

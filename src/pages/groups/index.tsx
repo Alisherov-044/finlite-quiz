@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { useMutation, useQuery } from "react-query";
-import { useOpen, useSelector, useTranslate } from "@/hooks";
+import { useDispatch, useOpen, useSelector, useTranslate } from "@/hooks";
 import { options } from "@/components/data";
 import {
     FormDrawer,
@@ -26,12 +26,14 @@ import {
     notification,
 } from "antd";
 import { FormItem } from "@/components/styles";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { getCurrentRole } from "@/utils";
 import { axiosPrivate } from "@/lib";
 import { GROUPS_URL, STUDENTS_URL } from "@/utils/urls";
 import type { TStudentsResponse } from "@/pages/students";
 import type { TGroup } from "@/components/cards/group-card";
+import { AxiosError } from "axios";
+import { setAuth } from "@/redux/slices/authSlice";
 
 export const GroupFormScheme = z.object({
     name: z.string({ required_error: "this field is required" }),
@@ -46,6 +48,8 @@ export default function GroupsPage() {
     const { roles, access_token } = useSelector((state) => state.auth);
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     if (!currentRole) {
         return <Navigate to="/login" state={{ from: location }} replace />;
@@ -56,7 +60,8 @@ export default function GroupsPage() {
         data: groups,
         isLoading,
         refetch,
-    } = useQuery<TGroupsResponse>("groups", {
+        error,
+    } = useQuery<TGroupsResponse, AxiosError<{ error: string }>>("groups", {
         queryFn: async () =>
             await axiosPrivate
                 .get(GROUPS_URL, {
@@ -101,6 +106,21 @@ export default function GroupsPage() {
     });
     const [search, setSearch] = useState<string>("");
     const [filter, setFilter] = useState<string>("");
+
+    if (error?.response?.data.error === "JWT_EXPIRED") {
+        dispatch(
+            setAuth({
+                id: -1,
+                roles: [],
+                isAuthenticated: false,
+                access_token: "",
+                refresh_token: "",
+                name: undefined,
+                phone_number: undefined,
+            })
+        );
+        return navigate("/login", { replace: true });
+    }
 
     useEffect(() => {
         return () => {

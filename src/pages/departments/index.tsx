@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { FormDrawer, Icons, PageHeaderAction } from "@/components";
 import { FormItem, Col } from "@/components/styles";
-import { useOpen, useSelector, useTranslate } from "@/hooks";
+import { useDispatch, useOpen, useSelector, useTranslate } from "@/hooks";
 import { getCurrentRole } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -19,9 +19,11 @@ import { debounce } from "lodash";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useMutation, useQuery } from "react-query";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { axiosPrivate, axiosPublic } from "@/lib";
 import { DEPARTMENTS_URL } from "@/utils/urls";
+import { AxiosError } from "axios";
+import { setAuth } from "@/redux/slices/authSlice";
 
 type ColumnsType<T> = TableProps<T>["columns"];
 
@@ -59,6 +61,8 @@ export default function DepartmentsPage() {
     const { roles } = useSelector((state) => state.auth);
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     if (!currentRole) {
         return <Navigate to="/login" state={{ from: location }} replace />;
@@ -69,10 +73,16 @@ export default function DepartmentsPage() {
         data: departments,
         isLoading,
         refetch,
-    } = useQuery<TDepartmentsResponse>("departments", {
-        queryFn: async () =>
-            await axiosPublic.get(DEPARTMENTS_URL).then((res) => res.data.data),
-    });
+        error,
+    } = useQuery<TDepartmentsResponse, AxiosError<{ error: string }>>(
+        "departments",
+        {
+            queryFn: async () =>
+                await axiosPublic
+                    .get(DEPARTMENTS_URL)
+                    .then((res) => res.data.data),
+        }
+    );
     const { mutate, isLoading: isSubmitting } = useMutation<
         TDepartmentsResponse,
         Error,
@@ -91,6 +101,21 @@ export default function DepartmentsPage() {
     } = useForm<z.infer<typeof DepartmentsFormScheme>>({
         resolver: zodResolver(DepartmentsFormScheme),
     });
+
+    if (error?.response?.data.error === "JWT_EXPIRED") {
+        dispatch(
+            setAuth({
+                id: -1,
+                roles: [],
+                isAuthenticated: false,
+                access_token: "",
+                refresh_token: "",
+                name: undefined,
+                phone_number: undefined,
+            })
+        );
+        return navigate("/login", { replace: true });
+    }
 
     const [tableParams] = useState({
         pagination: {

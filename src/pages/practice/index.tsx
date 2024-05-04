@@ -22,6 +22,8 @@ import {
 } from "@/redux/slices/quizSlice";
 import { axiosPrivate } from "@/lib";
 import { PRACTICE_HISTORY_URL, PRACTICE_URL } from "@/utils/urls";
+import { AxiosError } from "axios";
+import { setAuth } from "@/redux/slices/authSlice";
 
 export type TPracticeHistoryResponse = {
     data: {
@@ -77,7 +79,11 @@ export default function PracticePage() {
     const navigate = useNavigate();
     const { isOpen, open, close } = useOpen();
     const [_, setFilter] = useState<string>("");
-    const { data: practices, isLoading } = useQuery<TPracticeHistoryResponse>(
+    const {
+        data: practices,
+        isLoading,
+        error,
+    } = useQuery<TPracticeHistoryResponse, AxiosError<{ error: string }>>(
         "practices",
         {
             queryFn: async () =>
@@ -105,6 +111,21 @@ export default function PracticePage() {
                 })
                 .then((res) => res.data),
     });
+
+    if (error?.response?.data.error === "JWT_EXPIRED") {
+        dispatch(
+            setAuth({
+                id: -1,
+                roles: [],
+                isAuthenticated: false,
+                access_token: "",
+                refresh_token: "",
+                name: undefined,
+                phone_number: undefined,
+            })
+        );
+        return navigate("/login", { replace: true });
+    }
 
     return (
         <main className="pb-10">

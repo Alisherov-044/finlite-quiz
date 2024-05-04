@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { FormDrawer, Icons, PageHeaderAction } from "@/components";
 import { FormItem, Col } from "@/components/styles";
-import { useOpen, useSelector, useTranslate } from "@/hooks";
+import { useDispatch, useOpen, useSelector, useTranslate } from "@/hooks";
 import { getCurrentRole } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -20,13 +20,15 @@ import { debounce } from "lodash";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useMutation, useQuery } from "react-query";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import RichTextEditor from "react-rte";
 import { variants } from "./data";
 import { axiosPrivate, axiosPublic } from "@/lib";
 import { DEPARTMENTS_URL, TESTS_URL } from "@/utils/urls";
 import { TDepartmentsResponse } from "../departments";
 import parse from "react-html-parser";
+import { AxiosError } from "axios";
+import { setAuth } from "@/redux/slices/authSlice";
 
 const toolbarConfig = {
     display: [
@@ -113,6 +115,8 @@ export default function TestsPage() {
     const [rteValue, setRteValue] = useState<any>(
         RichTextEditor.createEmptyValue()
     );
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     if (!currentRole) {
         return <Navigate to="/login" state={{ from: location }} replace />;
@@ -123,7 +127,8 @@ export default function TestsPage() {
         data: tests,
         isLoading,
         refetch,
-    } = useQuery<TTestsResponse>("tests", {
+        error,
+    } = useQuery<TTestsResponse, AxiosError<{ error: string }>>("tests", {
         queryFn: async () =>
             await axiosPublic.get(TESTS_URL).then((res) => res.data.data),
     });
@@ -151,6 +156,21 @@ export default function TestsPage() {
     } = useForm<z.infer<typeof TestsFormScheme>>({
         resolver: zodResolver(TestsFormScheme),
     });
+
+    if (error?.response?.data.error === "JWT_EXPIRED") {
+        dispatch(
+            setAuth({
+                id: -1,
+                roles: [],
+                isAuthenticated: false,
+                access_token: "",
+                refresh_token: "",
+                name: undefined,
+                phone_number: undefined,
+            })
+        );
+        return navigate("/login", { replace: true });
+    }
 
     const [tableParams] = useState({
         pagination: {

@@ -1,6 +1,12 @@
 import { z } from "zod";
 import { useMutation, useQuery } from "react-query";
-import { useActive, useOpen, useSelector, useTranslate } from "@/hooks";
+import {
+    useActive,
+    useDispatch,
+    useOpen,
+    useSelector,
+    useTranslate,
+} from "@/hooks";
 import { options } from "@/components/data";
 import {
     Confirmation,
@@ -32,10 +38,12 @@ import {
 } from "@/utils/urls";
 import { FormItem, Row, Col } from "@/components/styles";
 import { fillValues, getCurrentRole, parsePhoneNumber } from "@/utils";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import type { TSetValue } from "@/utils/fill-values";
 import type { TUser } from "@/components/cards/user-card";
 import ReactInputMask from "react-input-mask";
+import { AxiosError } from "axios";
+import { setAuth } from "@/redux/slices/authSlice";
 
 export const TeacherFormScheme = z.object({
     first_name: z.string().optional(),
@@ -76,7 +84,8 @@ export default function TeachersPage() {
         data: teachers,
         isLoading,
         refetch,
-    } = useQuery<TTeachersResponse>("teachers", {
+        error,
+    } = useQuery<TTeachersResponse, AxiosError<{ error: string }>>("teachers", {
         queryFn: async () =>
             await axiosPrivate
                 .get(TEACHERS_URL, {
@@ -142,6 +151,23 @@ export default function TeachersPage() {
     });
     const [search, setSearch] = useState<string>("");
     const [_, setFilter] = useState<string>("");
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    if (error?.response?.data.error === "JWT_EXPIRED") {
+        dispatch(
+            setAuth({
+                id: -1,
+                roles: [],
+                isAuthenticated: false,
+                access_token: "",
+                refresh_token: "",
+                name: undefined,
+                phone_number: undefined,
+            })
+        );
+        return navigate("/login", { replace: true });
+    }
 
     useEffect(() => {
         return () => {

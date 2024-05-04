@@ -33,7 +33,7 @@ import {
 } from "antd";
 import { FormItem, Col } from "@/components/styles";
 import { fillValues, getCurrentRole, parsePhoneNumber } from "@/utils";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { axiosMedia, axiosPrivate } from "@/lib";
 import {
     GROUPS_URL,
@@ -54,6 +54,8 @@ import {
     setCurrentUploadedImageOrigin,
 } from "@/redux/slices/uploadSlice";
 import ReactInputMask from "react-input-mask";
+import { AxiosError } from "axios";
+import { setAuth } from "@/redux/slices/authSlice";
 
 export const StudentFormScheme = z.object({
     first_name: z.string().optional(),
@@ -95,7 +97,8 @@ export default function StudentsPage() {
         data: students,
         isLoading: isStudentsLoading,
         refetch,
-    } = useQuery<TStudentsResponse>("students", {
+        error,
+    } = useQuery<TStudentsResponse, AxiosError<{ error: string }>>("students", {
         queryFn: async () =>
             await axiosPrivate
                 .get(STUDENTS_URL, {
@@ -185,9 +188,25 @@ export default function StudentsPage() {
         },
     });
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { currentUploadedImage } = useSelector((state) => state.upload);
     const [search, setSearch] = useState<string>("");
     const [_, setFilter] = useState<string>("");
+
+    if (error?.response?.data.error === "JWT_EXPIRED") {
+        dispatch(
+            setAuth({
+                id: -1,
+                roles: [],
+                isAuthenticated: false,
+                access_token: "",
+                refresh_token: "",
+                name: undefined,
+                phone_number: undefined,
+            })
+        );
+        return navigate("/login", { replace: true });
+    }
 
     useEffect(() => {
         return () => {

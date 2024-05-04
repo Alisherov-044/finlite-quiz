@@ -53,6 +53,8 @@ import type { TExam } from "@/components/cards/exam-card";
 import { useEffect, useMemo } from "react";
 import { TSetValue } from "@/utils/fill-values";
 import { setExamId, setQuestions } from "@/redux/slices/examSlice";
+import { AxiosError } from "axios";
+import { setAuth } from "@/redux/slices/authSlice";
 
 export type TExamsRequest = {
     title: string;
@@ -177,7 +179,8 @@ export default function ExamsPage() {
         data: exam,
         isLoading: isExamLoading,
         refetch: refetchExam,
-    } = useQuery<TExamResponse>("exam", {
+        error,
+    } = useQuery<TExamResponse, AxiosError<{ error: string }>>("exam", {
         queryFn: useMemo(
             () => async () =>
                 typeof editExam === "number"
@@ -230,6 +233,21 @@ export default function ExamsPage() {
         resolver: zodResolver(ExamFormScheme),
     });
     const dispatch = useDispatch();
+
+    if (error?.response?.data.error === "JWT_EXPIRED") {
+        dispatch(
+            setAuth({
+                id: -1,
+                roles: [],
+                isAuthenticated: false,
+                access_token: "",
+                refresh_token: "",
+                name: undefined,
+                phone_number: undefined,
+            })
+        );
+        return navigate("/login", { replace: true });
+    }
 
     function onSubmit(values: z.infer<typeof ExamFormScheme>) {
         formData.append("title", values.title!);
