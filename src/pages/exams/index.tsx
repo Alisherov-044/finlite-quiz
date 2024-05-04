@@ -97,7 +97,7 @@ export const ExamFormScheme = z.object({
     ending_time: z.any().optional(),
     category_id: z.number().optional(),
     participant_ids: z.array(z.number()).optional(),
-    file: z.array(z.any()).optional(),
+    file: z.any().optional(),
 });
 
 export default function ExamsPage() {
@@ -110,6 +110,8 @@ export default function ExamsPage() {
     if (!currentRole) {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
+
+    const formData = new FormData();
 
     const { isOpen, open, close } = useOpen();
     const { active, setActive } = useActive("incomming");
@@ -230,9 +232,10 @@ export default function ExamsPage() {
     const dispatch = useDispatch();
 
     function onSubmit(values: z.infer<typeof ExamFormScheme>) {
-        const data: TExamsRequest = {
-            title: values.title!,
-            start: new Date(
+        formData.append("title", values.title!);
+        formData.append(
+            "start",
+            new Date(
                 `${values.starting_date.$y}-${formatNumber(
                     values.starting_date.$M + 1
                 )}-${formatNumber(values.starting_date.$D)}T${formatNumber(
@@ -240,8 +243,11 @@ export default function ExamsPage() {
                 )}:${formatNumber(values.starting_time.$m)}:${formatNumber(
                     values.starting_time.$s
                 )}Z`
-            ),
-            end: new Date(
+            ).toISOString()
+        );
+        formData.append(
+            "end",
+            new Date(
                 `${values.starting_date.$y}-${formatNumber(
                     values.starting_date.$M + 1
                 )}-${formatNumber(values.starting_date.$D)}T${formatNumber(
@@ -249,11 +255,11 @@ export default function ExamsPage() {
                 )}:${formatNumber(values.ending_time.$m)}:${formatNumber(
                     values.ending_time.$s
                 )}Z`
-            ),
-            category_id: values.category_id!,
-            participant_ids: values.participant_ids!,
-            file: values.file!,
-        };
+            ).toISOString()
+        );
+        formData.append("category_id", values.category_id!.toString());
+        formData.append("participant_ids", values.participant_ids!.toString());
+        formData.append("file", values.file);
 
         if (editExam) {
             const updatedValues: TExamsRequest = {} as TExamsRequest;
@@ -287,7 +293,8 @@ export default function ExamsPage() {
                 },
             });
         } else {
-            mutate(data, {
+            // @ts-ignore
+            mutate(formData, {
                 onSuccess: () => {
                     notification.success({
                         message: t("Imtihon yaratildi"),
@@ -329,8 +336,8 @@ export default function ExamsPage() {
             fillValues(
                 setValue as TSetValue,
                 {
-                    ...exam.data[0],
-                    participant_ids: exam.data[0].participants.map(
+                    ...exam?.data?.[0],
+                    participant_ids: exam?.data?.[0]?.participants.map(
                         (item) => item.id
                     ),
                 },
@@ -428,7 +435,9 @@ export default function ExamsPage() {
                             ))
                         ) : (
                             <Flex className="flex-auto items-center justify-center">
-                                <Empty description={false} />
+                                <Empty
+                                    description={t("Ma'lumotlar mavjud emas")}
+                                />
                             </Flex>
                         )}
                     </Flex>
@@ -649,7 +658,9 @@ export default function ExamsPage() {
                             </Row>
                             <FileUpload
                                 resetUrl={() => resetField("file")}
-                                setUrl={(file) => setValue("file", [file])}
+                                setUrl={(file) => {
+                                    setValue("file", file);
+                                }}
                             />
                         </Form>
                     </FormDrawer>

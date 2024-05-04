@@ -29,7 +29,7 @@ export const examSlice = createSlice({
         setQuestions: (state, { payload }: PayloadAction<TExamQuestion[]>) => {
             state.questions = payload;
         },
-        setExamId: (state, { payload }: PayloadAction<number>) => {
+        setExamId: (state, { payload }: PayloadAction<number | undefined>) => {
             state.id = payload;
         },
         finishQuestions: (state) => {
@@ -47,4 +47,11 @@ export const examSlice = createSlice({
     },
 });
 
-export const { setQuestions, finishQuestions, clearQuestions,  setDurations, clearDurations , setExamId } = examSlice.actions;
+export const {
+    setQuestions,
+    finishQuestions,
+    clearQuestions,
+    setDurations,
+    clearDurations,
+    setExamId,
+} = examSlice.actions;

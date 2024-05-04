@@ -19,7 +19,7 @@ import {
 import { debounce } from "lodash";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import {
     Button,
     Empty,
@@ -56,13 +56,14 @@ import {
 import ReactInputMask from "react-input-mask";
 
 export const StudentFormScheme = z.object({
-    first_name: z.string(),
-    last_name: z.string(),
+    first_name: z.string().optional(),
+    last_name: z.string().optional(),
     phone_number: z
         .string({ required_error: "telefon raqamingizni kiriting" })
-        .min(19, "telefon raqamingizni to'liq kiriting"),
+        .optional(),
     password: z.string().optional(),
-    group_id: z.number(),
+    confirm_password: z.string().optional(),
+    group_id: z.number().optional(),
 });
 
 export type TStudentsResponse = {
@@ -225,8 +226,8 @@ export default function StudentsPage() {
             update(
                 {
                     ...updatedValues,
-                    group_id: Number(values.group_id),
-                    phone_number: parsePhoneNumber(values.phone_number),
+                    group_id: Number(updatedValues.group_id),
+                    phone_number: parsePhoneNumber(updatedValues.phone_number),
                     role: "student",
                 },
                 {
@@ -248,6 +249,12 @@ export default function StudentsPage() {
                 }
             );
         } else {
+            if (!values.phone_number || values.phone_number?.length < 19) {
+                return notification.error({
+                    message: t("Telefon raqamni to'liq kiring"),
+                    closeIcon: false,
+                });
+            }
             mutate(
                 {
                     ...values,
@@ -338,6 +345,35 @@ export default function StudentsPage() {
         }
     }, [editStudent]);
 
+    const filteredStudents = useCallback(() => {
+        return students?.data.length
+            ? students.data.filter((student) =>
+                  search.length
+                      ? `${student.first_name} ${student.last_name}`
+                            .toLocaleLowerCase()
+                            .trim()
+                            .replaceAll(" ", "")
+                            .includes(
+                                search
+                                    .toLocaleLowerCase()
+                                    .trim()
+                                    .replaceAll(" ", "")
+                            ) ||
+                        student.phone_number
+                            .toLocaleLowerCase()
+                            .trim()
+                            .replaceAll(" ", "")
+                            .includes(
+                                search
+                                    .toLocaleLowerCase()
+                                    .trim()
+                                    .replaceAll(" ", "")
+                            )
+                      : true
+              )
+            : [];
+    }, [search, students]);
+
     return (
         <main className="pb-10">
             <div className="flex flex-col container">
@@ -374,28 +410,20 @@ export default function StudentsPage() {
                         [...Array(3).keys()].map((key) => (
                             <UserCardSkeleton key={key} role="student" />
                         ))
-                    ) : students?.data && students.data.length ? (
-                        students.data
-                            .filter((student) =>
-                                search.length
-                                    ? `${student.first_name} ${student.last_name}`
-                                          .toLocaleLowerCase()
-                                          .includes(search.toLocaleLowerCase())
-                                    : true
-                            )
-                            .map((student) => (
-                                <UserCard
-                                    key={student.id}
-                                    user={student}
-                                    onEdit={() => setEditStudent(student.id)}
-                                    onDelete={() =>
-                                        setDeleteStudent(student.id)
-                                    }
-                                />
-                            ))
+                    ) : students?.data &&
+                      students.data.length &&
+                      filteredStudents().length ? (
+                        filteredStudents().map((student) => (
+                            <UserCard
+                                key={student.id}
+                                user={student}
+                                onEdit={() => setEditStudent(student.id)}
+                                onDelete={() => setDeleteStudent(student.id)}
+                            />
+                        ))
                     ) : (
                         <Flex className="flex-auto items-center justify-center">
-                            <Empty description={false} />
+                            <Empty description={t("Ma'lumotlar mavjud emas")} />
                         </Flex>
                     )}
                 </Flex>
@@ -492,6 +520,26 @@ export default function StudentsPage() {
                             </Col>
                         </Row>
                         <Row>
+                            <Col span={24}>
+                                <FormItem label={t("Parolni tasdiqlash")}>
+                                    <Controller
+                                        name="confirm_password"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input.Password
+                                                iconRender={(visible) =>
+                                                    visible ? (
+                                                        <Icons.eye.open />
+                                                    ) : (
+                                                        <Icons.eye.close />
+                                                    )
+                                                }
+                                                {...field}
+                                            />
+                                        )}
+                                    />
+                                </FormItem>
+                            </Col>
                             <Col span={24}>
                                 <FormItem label={t("Guruh")}>
                                     <Controller

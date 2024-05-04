@@ -1,4 +1,5 @@
 import { useTranslate } from "@/hooks";
+import { formatNumber } from "@/utils";
 import { Flex, Typography } from "antd";
 
 export type CountDownProps = {
@@ -24,17 +25,17 @@ export function CountDown({ days, hours, minutes, seconds }: CountDownProps) {
             )}
             <Flex className="flex-col items-center">
                 <Typography className="text-xs">{t("soat")}</Typography>
-                <Typography>{hours}</Typography>
+                <Typography>{formatNumber(hours)}</Typography>
             </Flex>
             :
             <Flex className="flex-col items-center">
                 <Typography className="text-xs">{t("daqiqa")}</Typography>
-                <Typography>{minutes}</Typography>
+                <Typography>{formatNumber(minutes)}</Typography>
             </Flex>
             :
             <Flex className="flex-col items-center">
                 <Typography className="text-xs">{t("soniya")}</Typography>
-                <Typography>{seconds}</Typography>
+                <Typography>{formatNumber(seconds)}</Typography>
             </Flex>
         </Flex>
     );

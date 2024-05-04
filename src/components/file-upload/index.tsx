@@ -20,7 +20,6 @@ export function FileUpload({ setUrl, resetUrl }: FileUploadProps) {
         // @ts-ignore
         dispatch(setCurrentUploadedImageOrigin(file));
         setUrl(file);
-        console.log(file);
     };
 
     return (

@@ -6,6 +6,7 @@ import { getCurrentRole } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
     Button,
+    Empty,
     Flex,
     Form,
     Input,
@@ -252,6 +253,13 @@ export default function TestsPage() {
                         />
                     </Flex>
                     <Table
+                        locale={{
+                            emptyText: (
+                                <Empty
+                                    description={t("Ma'lumotlar mavjud emas")}
+                                />
+                            ),
+                        }}
                         columns={columns}
                         loading={isLoading}
                         dataSource={
@@ -260,7 +268,14 @@ export default function TestsPage() {
                                 search
                                     ? item.description
                                           .toLocaleLowerCase()
-                                          .includes(search.toLocaleLowerCase())
+                                          .trim()
+                                          .replaceAll(" ", "")
+                                          .includes(
+                                              search
+                                                  .toLocaleLowerCase()
+                                                  .trim()
+                                                  .replaceAll(" ", "")
+                                          )
                                     : true
                             )
                         }

@@ -187,7 +187,14 @@ export default function GroupsPage() {
                                 search.length
                                     ? group.name
                                           .toLocaleLowerCase()
-                                          .includes(search.toLocaleLowerCase())
+                                          .trim()
+                                          .replaceAll(" ", "")
+                                          .includes(
+                                              search
+                                                  .toLocaleLowerCase()
+                                                  .trim()
+                                                  .replaceAll(" ", "")
+                                          )
                                     : true
                             )
                             .map((group) => (
@@ -203,7 +210,7 @@ export default function GroupsPage() {
                             ))
                     ) : (
                         <Flex className="flex-auto items-center justify-center">
-                            <Empty description={false} />
+                            <Empty description={t("Ma'lumotlar mavjud emas")} />
                         </Flex>
                     )}
                 </Flex>

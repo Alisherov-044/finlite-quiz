@@ -16,7 +16,7 @@ import { PRACTICE_ANSWER_URL } from "@/utils/urls";
 import { Button, Flex, Typography } from "antd";
 import { useEffect } from "react";
 import { useMutation } from "react-query";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export type TRequest = {
     practice_id: number;
@@ -46,9 +46,7 @@ type TResult = {
 export default function ExamResultPage() {
     const { t } = useTranslate();
     const dispatch = useDispatch();
-    const location = useLocation();
     const navigate = useNavigate();
-    const { questions } = useSelector((state) => state.exam);
     const { access_token } = useSelector((state) => state.auth);
     const { id, data, items } = useSelector((state) => state.quiz);
     const { mutate } = useMutation<any, Error, TRequest>({
@@ -139,7 +137,6 @@ export default function ExamResultPage() {
 
     return (
         <main>
-            
             <div className="container">
                 <Flex className="justify-center mt-8 mb-20">
                     <Logo />
@@ -151,7 +148,6 @@ export default function ExamResultPage() {
                         </Typography>
                         <Typography className="font-semibold !text-lg !text-blue-700">
                             {t("Bo'lim: ")}
-                            {category_ids}
                         </Typography>
                     </Flex>
                     <Flex className="flex-col mt-5 lg:mt-0 lg:items-end gap-y-2.5">

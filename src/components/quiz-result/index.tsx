@@ -4,6 +4,8 @@ import { Flex, Row, Typography } from "antd";
 import { ContentCol, HeaderCol, Title } from "./styles";
 import { answerPrefixLetter } from "@/components/quiz";
 import type { TType } from "@/redux/slices/quizSlice";
+import { variants } from "@/pages/tests/data";
+import { Loading } from "../loading";
 
 type TQuiz = TType & {
     selected?: number | null;
@@ -15,6 +17,8 @@ export type QuizResultProps = {
 
 export function QuizResult({ quizzes }: QuizResultProps) {
     const { t } = useTranslate();
+
+    if (!variants.length || !quizzes.length) return <Loading />;
 
     return (
         <Flex className="w-full flex-col border border-blue-300 rounded-md shadow-main">
@@ -71,7 +75,7 @@ export function QuizResult({ quizzes }: QuizResultProps) {
                         {variants &&
                             variants.some(
                                 (answer) =>
-                                    answer.id === selected && answer.is_right
+                                    answer.id === selected && !answer.is_right
                             ) &&
                             variants &&
                             variants.map(

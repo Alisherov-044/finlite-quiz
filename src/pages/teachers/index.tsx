@@ -13,14 +13,13 @@ import {
 import { debounce } from "lodash";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import {
     Button,
     Empty,
     Flex,
     Form,
     Input,
-    Row,
     Select,
     Typography,
     notification,
@@ -31,7 +30,7 @@ import {
     TEACHERS_EDIT_URL,
     TEACHERS_URL,
 } from "@/utils/urls";
-import { FormItem, Col } from "@/components/styles";
+import { FormItem, Row, Col } from "@/components/styles";
 import { fillValues, getCurrentRole, parsePhoneNumber } from "@/utils";
 import { Navigate, useLocation } from "react-router-dom";
 import type { TSetValue } from "@/utils/fill-values";
@@ -39,11 +38,12 @@ import type { TUser } from "@/components/cards/user-card";
 import ReactInputMask from "react-input-mask";
 
 export const TeacherFormScheme = z.object({
-    first_name: z.string(),
-    last_name: z.string(),
+    first_name: z.string().optional(),
+    last_name: z.string().optional(),
     phone_number: z
         .string({ required_error: "telefon raqamingizni kiriting" })
-        .min(19, "telefon raqamingizni to'liq kiriting"),
+        .optional(),
+    confirm_password: z.string().optional(),
     password: z.string().optional(),
 });
 
@@ -186,7 +186,7 @@ export default function TeachersPage() {
             update(
                 {
                     ...updatedValues,
-                    phone_number: parsePhoneNumber(values.phone_number),
+                    phone_number: parsePhoneNumber(updatedValues.phone_number),
                     role: "teacher",
                 },
                 {
@@ -208,6 +208,12 @@ export default function TeachersPage() {
                 }
             );
         } else {
+            if (!values.phone_number || values.phone_number?.length < 19) {
+                return notification.error({
+                    message: t("Telefon raqamni to'liq kiring"),
+                    closeIcon: false,
+                });
+            }
             mutate(
                 {
                     ...values,
@@ -277,6 +283,35 @@ export default function TeachersPage() {
         }
     }, [editTeacher]);
 
+    const filteredTeachers = useCallback(() => {
+        return teachers?.data.length
+            ? teachers.data.filter((teacher) =>
+                  search.length
+                      ? `${teacher.first_name} ${teacher.last_name}`
+                            .toLocaleLowerCase()
+                            .trim()
+                            .replaceAll(" ", "")
+                            .includes(
+                                search
+                                    .toLocaleLowerCase()
+                                    .trim()
+                                    .replaceAll(" ", "")
+                            ) ||
+                        teacher.phone_number
+                            .toLocaleLowerCase()
+                            .trim()
+                            .replaceAll(" ", "")
+                            .includes(
+                                search
+                                    .toLocaleLowerCase()
+                                    .trim()
+                                    .replaceAll(" ", "")
+                            )
+                      : true
+              )
+            : [];
+    }, [search, teachers]);
+
     return (
         <main className="pb-10">
             <div className="flex flex-col container">
@@ -314,27 +349,17 @@ export default function TeachersPage() {
                             <UserCardSkeleton key={key} role="teacher" />
                         ))
                     ) : teachers?.data && teachers.data.length ? (
-                        teachers.data
-                            .filter((teacher) =>
-                                search.length
-                                    ? `${teacher.first_name} ${teacher.last_name}`
-                                          .toLocaleLowerCase()
-                                          .includes(search.toLocaleLowerCase())
-                                    : true
-                            )
-                            .map((teacher) => (
-                                <UserCard
-                                    key={teacher.id}
-                                    user={teacher}
-                                    onEdit={() => setEditTeacher(teacher.id)}
-                                    onDelete={() =>
-                                        setDeleteTeacher(teacher.id)
-                                    }
-                                />
-                            ))
+                        filteredTeachers().map((teacher) => (
+                            <UserCard
+                                key={teacher.id}
+                                user={teacher}
+                                onEdit={() => setEditTeacher(teacher.id)}
+                                onDelete={() => setDeleteTeacher(teacher.id)}
+                            />
+                        ))
                     ) : (
                         <Flex className="flex-auto items-center justify-center">
-                            <Empty description={false} />
+                            <Empty description={t("Ma'lumotlar mavjud emas")} />
                         </Flex>
                     )}
                 </Flex>
@@ -409,6 +434,28 @@ export default function TeachersPage() {
                                 <FormItem label={t("Parol")}>
                                     <Controller
                                         name="password"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input.Password
+                                                iconRender={(visible) =>
+                                                    visible ? (
+                                                        <Icons.eye.open />
+                                                    ) : (
+                                                        <Icons.eye.close />
+                                                    )
+                                                }
+                                                {...field}
+                                            />
+                                        )}
+                                    />
+                                </FormItem>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={24}>
+                                <FormItem label={t("Parolni tasdiqlash")}>
+                                    <Controller
+                                        name="confirm_password"
                                         control={control}
                                         render={({ field }) => (
                                             <Input.Password

@@ -196,7 +196,7 @@ export default function PracticePage() {
                         ))
                     ) : (
                         <Flex className="w-full flex-auto items-center justify-center">
-                            <Empty description={false} />
+                            <Empty description={t("Ma'lumotlar mavjud emas")} />
                         </Flex>
                     )}
                 </Row>

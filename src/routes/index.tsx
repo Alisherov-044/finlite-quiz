@@ -96,7 +96,7 @@ export const routes: TRoutes = {
             id: 8,
             path: "/tests",
             element: <TestsPage />,
-            roles: [...userRoles.admin],
+            roles: [...userRoles.admin, ...userRoles.teacher],
         },
         {
             id: 9,
@@ -108,7 +108,7 @@ export const routes: TRoutes = {
             id: 10,
             path: "/students",
             element: <StudentsPage />,
-            roles: userRoles.admin,
+            roles: [...userRoles.admin, ...userRoles.teacher],
         },
         {
             id: 11,
@@ -155,7 +155,7 @@ export const routes: TRoutes = {
         {
             id: 18,
             path: "/exams/quiz/:id/result",
-            element: <ExamResultPage/>,
+            element: <ExamResultPage />,
             roles: [...userRoles.student],
         },
     ],

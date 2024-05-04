@@ -76,7 +76,6 @@ export function ExamCard({
     const duration = new Date(ending_date).getTime() - new Date().getTime();
     const timeForExam =
         new Date(ending_date).getTime() - new Date(starting_date).getTime();
-    const { hours, minutes } = formatTime(duration / 1000);
     const { hours: timeForExamHours, minutes: timeForExamMinutes } = formatTime(
         timeForExam / 1000
     );
@@ -121,8 +120,9 @@ export function ExamCard({
                         </Flex>
                     ) : (
                         <Typography>
-                            {t("Vaqt")}: {hours} {t("Soat")} {minutes}{" "}
-                            {t("Daqiqa")}
+                            {t("Vaqt")}: {timeForExamHours} {t("Soat")}{" "}
+                            {timeForExamMinutes > 0 &&
+                                formatNumber(timeForExamMinutes) + t("Daqiqa")}
                         </Typography>
                     )
                 ) : (

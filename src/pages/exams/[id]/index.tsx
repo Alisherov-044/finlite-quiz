@@ -13,7 +13,11 @@ import {
     useTranslate,
 } from "@/hooks";
 import { axiosPrivate } from "@/lib";
-import { finishQuestions, setDurations } from "@/redux/slices/examSlice";
+import {
+    finishQuestions,
+    setDurations,
+    setExamId,
+} from "@/redux/slices/examSlice";
 import { setPractice } from "@/redux/slices/practiceSlice";
 import {
     clearQuiz,
@@ -207,11 +211,11 @@ export default function ExamQuizPage() {
                             question_count: undefined,
                         })
                     );
+                    dispatch(setExamId(undefined));
                     dispatch(clearQuiz());
                     dispatch(unfinishQuiz());
                     dispatch(setCurrentTest(1));
                     dispatch(setLeaving(false));
-                    dispatch(endQuiz(true));
                     dispatch(finishQuestions());
                     dispatch(finishQuiz());
                     dispatch(clearQuiz());

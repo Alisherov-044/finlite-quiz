@@ -18,6 +18,7 @@ export default {
                     500: "rgba(var(--blue-500))",
                     700: "rgba(var(--blue-700))",
                     900: "rgba(var(--blue-900))",
+                    primary: "rgba(var(--blue-primary))",
                 },
                 accent: {
                     300: "rgba(var(--accent-300))",

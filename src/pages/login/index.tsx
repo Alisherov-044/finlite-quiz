@@ -1,6 +1,6 @@
 import { z } from "zod";
 import InputMask from "react-input-mask";
-import { Icons, Logo } from "@/components";
+import { Icons, Loading, Logo } from "@/components";
 import { useDispatch, useSelector, useTranslate } from "@/hooks";
 import { Button, Flex, Form, Input, Typography, notification } from "antd";
 import { useForm, Controller } from "react-hook-form";
@@ -47,14 +47,14 @@ export default function LoginPage() {
         control,
         handleSubmit,
         reset,
-        formState: { isLoading, isDirty, errors },
+        formState: { isLoading, errors },
     } = useForm<z.infer<typeof LoginFormScheme>>({
         resolver: zodResolver(LoginFormScheme),
         defaultValues: {
             phone_number: "+(998)",
         },
     });
-    const { mutate } = useMutation<
+    const { mutate, isLoading: isLogin } = useMutation<
         TResponse,
         Error,
         z.infer<typeof LoginFormScheme>
@@ -66,36 +66,43 @@ export default function LoginPage() {
     const dispatch = useDispatch();
 
     const onSubmit = (values: z.infer<typeof LoginFormScheme>) => {
-        mutate(
-            { ...values, phone_number: parsePhoneNumber(values.phone_number) },
-            {
-                onSuccess: (data) => {
-                    dispatch(
-                        setAuth({
-                            id: data.data.id,
-                            isAuthenticated: true,
-                            roles: [data.data.role],
-                            name: `${data.data.first_name} ${data.data.last_name}`,
-                            phone_number: data.data.phone_number,
-                            access_token: data.data.access_token,
-                            refresh_token: data.data.refresh_token,
-                        })
-                    );
-                    navigate("/");
+        if (parsePhoneNumber(values.phone_number)) {
+            mutate(
+                {
+                    ...values,
+                    phone_number: parsePhoneNumber(values.phone_number)!,
                 },
-                onError: (error) => {
-                    notification.error({
-                        message: t(error.message),
-                        closeIcon: null,
-                    });
-                },
-            }
-        );
-        reset();
+                {
+                    onSuccess: (data) => {
+                        dispatch(
+                            setAuth({
+                                id: data.data.id,
+                                isAuthenticated: true,
+                                roles: [data.data.role],
+                                name: `${data.data.first_name} ${data.data.last_name}`,
+                                phone_number: data.data.phone_number,
+                                access_token: data.data.access_token,
+                                refresh_token: data.data.refresh_token,
+                            })
+                        );
+                        navigate("/");
+                    },
+                    onError: (error) => {
+                        notification.error({
+                            message: t(error.message),
+                            closeIcon: null,
+                        });
+                    },
+                }
+            );
+            reset();
+        }
     };
 
+    if (isLogin) return <Loading />;
+
     return (
-        <Flex className="overflow-hidden w-full h-full items-center justify-center bg-bg-gray">
+        <Flex className="overflow-hidden w-full h-full items-center justify-center bg-blue-primary">
             <Flex className="flex-col px-4 py-6 sm:px-9 sm:py-12 bg-white rounded-[32px] z-10 shadow-login">
                 <Logo className="mb-4 self-center" />
                 <Form onFinish={handleSubmit(onSubmit)}>
@@ -154,8 +161,7 @@ export default function LoginPage() {
                     <Button
                         htmlType="submit"
                         loading={isLoading}
-                        disabled={!isDirty || isLoading}
-                        className="mt-8 !py-[10px] !w-full !rounded-xl !capitalize"
+                        className="mt-8 !py-[10px] !w-full !rounded-xl !capitalize !bg-blue-primary"
                     >
                         {t("Kirish")}
                     </Button>

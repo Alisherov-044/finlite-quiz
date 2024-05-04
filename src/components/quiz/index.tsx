@@ -3,6 +3,7 @@ import { useActive, useDispatch, useSelector, useTranslate } from "@/hooks";
 import { Flex, Typography } from "antd";
 import { setQuiz } from "@/redux/slices/quizSlice";
 import { useEffect } from "react";
+import { shuffleArray } from "@/utils";
 
 export type TAnswer = {
     id: number;
@@ -41,6 +42,13 @@ export function Quiz({ quiz, selectedAnswerId }: QuizProps) {
     const { finished } = useSelector((state) => state.quiz);
     const dispatch = useDispatch();
     const { active, setActive } = useActive<number>(selectedAnswerId);
+    const htmlTagContentRegex = /<[^>]*>([^<]*)<\/[^>]*>/g;
+
+    const description = question.description
+        .split(htmlTagContentRegex)
+        .filter((item) => !item.startsWith("<") && !item.endsWith(">"))
+        .filter((item) => item.length > 0)
+        .join(" ");
 
     useEffect(() => {
         dispatch(
@@ -61,7 +69,7 @@ export function Quiz({ quiz, selectedAnswerId }: QuizProps) {
                     {t("Savol")}
                 </Typography.Title>
                 <Typography className="font-semibold !text-gray-text">
-                    {t(question.description)}
+                    {t(description)}
                 </Typography>
             </Flex>
             <Flex className="w-full lg:w-1/2 flex-col gap-y-6 p-3 lg:p-9">
@@ -72,23 +80,26 @@ export function Quiz({ quiz, selectedAnswerId }: QuizProps) {
                     {t("Javob")}
                 </Typography.Title>
                 <Flex className="flex-col gap-y-4">
-                    {question.variants.map(({ id, content }, index) => (
-                        <Flex
-                            key={id}
-                            onClick={() => !finished && setActive(id)}
-                            className={clsx(
-                                "gap-x-3 p-3 border border-blue-500 rounded-md cursor-pointer select-none !text-blue-900",
-                                (active === id || selectedAnswerId === id) &&
-                                    "bg-blue-500 !text-white",
-                                finished && "cursor-not-allowed"
-                            )}
-                        >
-                            <Typography className="text-nowrap">
-                                {t(answerPrefixLetter[index])}&#41;
-                            </Typography>
-                            <Typography>{t(content)}</Typography>
-                        </Flex>
-                    ))}
+                    {shuffleArray(question.variants).map(
+                        ({ id, content }, index) => (
+                            <Flex
+                                key={id}
+                                onClick={() => !finished && setActive(id)}
+                                className={clsx(
+                                    "gap-x-3 p-3 border border-blue-500 rounded-md cursor-pointer select-none !text-blue-900",
+                                    (active === id ||
+                                        selectedAnswerId === id) &&
+                                        "bg-blue-500 !text-white",
+                                    finished && "cursor-not-allowed"
+                                )}
+                            >
+                                <Typography className="text-nowrap">
+                                    {t(answerPrefixLetter[index])}&#41;
+                                </Typography>
+                                <Typography>{t(content)}</Typography>
+                            </Flex>
+                        )
+                    )}
                 </Flex>
             </Flex>
         </Flex>
