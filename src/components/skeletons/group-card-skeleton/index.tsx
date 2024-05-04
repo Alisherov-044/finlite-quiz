@@ -2,7 +2,7 @@ import { Flex, Skeleton } from "antd";
 
 export function GroupCardSkeleton() {
     return (
-        <Flex className="items-center justify-between p-4 border rounded-md">
+        <Flex className="items-center overflow-hidden justify-between p-4 border rounded-md">
             <Flex className="items-center gap-x-4">
                 <Flex className="items-center gap-x-2">
                     <Skeleton.Button active className="!w-16 !h-4" />

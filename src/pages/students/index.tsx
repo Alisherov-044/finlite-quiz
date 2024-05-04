@@ -252,7 +252,7 @@ export default function StudentsPage() {
                 {
                     onSuccess: () => {
                         notification.success({
-                            message: t("Student Tahrirlandi"),
+                            message: t("O'quvchi Tahrirlandi"),
                             icon: <Icons.checkCircle />,
                             closeIcon: false,
                         });
@@ -284,7 +284,7 @@ export default function StudentsPage() {
                 {
                     onSuccess: () => {
                         notification.success({
-                            message: t("Student Yaratildi"),
+                            message: t("O'quvchi Yaratildi"),
                             icon: <Icons.checkCircle />,
                             closeIcon: false,
                         });

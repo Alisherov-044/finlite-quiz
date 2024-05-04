@@ -2,7 +2,7 @@ import { Flex, Skeleton } from "antd";
 
 export function UserResultsCardSkeleton() {
     return (
-        <Flex className="items-center justify-between px-3 py-4 rounded-2xl shadow-main">
+        <Flex className="items-center overflow-hidden justify-between px-3 py-4 rounded-2xl shadow-main">
             <Flex className="items-center gap-x-5">
                 <Skeleton.Avatar active size={56} />
                 <Flex className="flex-col gap-y-2">

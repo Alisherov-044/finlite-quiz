@@ -218,7 +218,7 @@ export default function TeachersPage() {
                 {
                     onSuccess: () => {
                         notification.success({
-                            message: t("O'qituvchi yaratildi"),
+                            message: t("O'qituvchi tahrirlandi"),
                             icon: <Icons.checkCircle />,
                             closeIcon: false,
                         });

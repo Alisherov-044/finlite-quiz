@@ -7,7 +7,7 @@ export function ExamCardSkeleton() {
     const currentRole = getCurrentRole(roles);
 
     return (
-        <Flex className="relative items-end justify-between p-6 border shadow-main rounded-2xl">
+        <Flex className="relative overflow-hidden items-end justify-between p-6 border shadow-main rounded-2xl">
             <Flex className="flex-col gap-y-2">
                 <Skeleton.Button active className="!w-56 !h-4" />
                 <Skeleton.Button active className="!w-20 !h-4" />
