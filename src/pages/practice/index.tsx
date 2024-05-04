@@ -12,7 +12,7 @@ import { useState } from "react";
 import { useMutation, useQuery } from "react-query";
 import { Empty, Flex, Row, Select, Typography, notification } from "antd";
 import { PracticeState, setPractice } from "@/redux/slices/practiceSlice";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import {
     clearQuiz,
     endQuiz,
@@ -124,7 +124,7 @@ export default function PracticePage() {
                 phone_number: undefined,
             })
         );
-        return navigate("/login", { replace: true });
+        return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
     return (

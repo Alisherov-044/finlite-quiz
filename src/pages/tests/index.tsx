@@ -20,7 +20,7 @@ import { debounce } from "lodash";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useMutation, useQuery } from "react-query";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import RichTextEditor from "react-rte";
 import { variants } from "./data";
 import { axiosPrivate, axiosPublic } from "@/lib";
@@ -115,7 +115,6 @@ export default function TestsPage() {
     const [rteValue, setRteValue] = useState<any>(
         RichTextEditor.createEmptyValue()
     );
-    const navigate = useNavigate();
     const dispatch = useDispatch();
 
     if (!currentRole) {
@@ -169,7 +168,7 @@ export default function TestsPage() {
                 phone_number: undefined,
             })
         );
-        return navigate("/login", { replace: true });
+        return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
     const [tableParams] = useState({

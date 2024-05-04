@@ -246,7 +246,7 @@ export default function ExamsPage() {
                 phone_number: undefined,
             })
         );
-        return navigate("/login", { replace: true });
+        return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
     function onSubmit(values: z.infer<typeof ExamFormScheme>) {

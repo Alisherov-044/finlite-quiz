@@ -38,7 +38,7 @@ import {
 } from "@/utils/urls";
 import { FormItem, Row, Col } from "@/components/styles";
 import { fillValues, getCurrentRole, parsePhoneNumber } from "@/utils";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import type { TSetValue } from "@/utils/fill-values";
 import type { TUser } from "@/components/cards/user-card";
 import ReactInputMask from "react-input-mask";
@@ -151,7 +151,6 @@ export default function TeachersPage() {
     });
     const [search, setSearch] = useState<string>("");
     const [_, setFilter] = useState<string>("");
-    const navigate = useNavigate();
     const dispatch = useDispatch();
 
     if (error?.response?.data.error === "JWT_EXPIRED") {
@@ -166,7 +165,7 @@ export default function TeachersPage() {
                 phone_number: undefined,
             })
         );
-        return navigate("/login", { replace: true });
+        return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
     useEffect(() => {

@@ -26,7 +26,7 @@ import {
     notification,
 } from "antd";
 import { FormItem } from "@/components/styles";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { getCurrentRole } from "@/utils";
 import { axiosPrivate } from "@/lib";
 import { GROUPS_URL, STUDENTS_URL } from "@/utils/urls";
@@ -48,7 +48,6 @@ export default function GroupsPage() {
     const { roles, access_token } = useSelector((state) => state.auth);
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
-    const navigate = useNavigate();
     const dispatch = useDispatch();
 
     if (!currentRole) {
@@ -119,7 +118,7 @@ export default function GroupsPage() {
                 phone_number: undefined,
             })
         );
-        return navigate("/login", { replace: true });
+        return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
     useEffect(() => {

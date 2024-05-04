@@ -19,7 +19,7 @@ import { debounce } from "lodash";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useMutation, useQuery } from "react-query";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { axiosPrivate, axiosPublic } from "@/lib";
 import { DEPARTMENTS_URL } from "@/utils/urls";
 import { AxiosError } from "axios";
@@ -61,7 +61,6 @@ export default function DepartmentsPage() {
     const { roles } = useSelector((state) => state.auth);
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
-    const navigate = useNavigate();
     const dispatch = useDispatch();
 
     if (!currentRole) {
@@ -114,7 +113,7 @@ export default function DepartmentsPage() {
                 phone_number: undefined,
             })
         );
-        return navigate("/login", { replace: true });
+        return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
     const [tableParams] = useState({

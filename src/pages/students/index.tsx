@@ -33,7 +33,7 @@ import {
 } from "antd";
 import { FormItem, Col } from "@/components/styles";
 import { fillValues, getCurrentRole, parsePhoneNumber } from "@/utils";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { axiosMedia, axiosPrivate } from "@/lib";
 import {
     GROUPS_URL,
@@ -188,7 +188,6 @@ export default function StudentsPage() {
         },
     });
     const dispatch = useDispatch();
-    const navigate = useNavigate();
     const { currentUploadedImage } = useSelector((state) => state.upload);
     const [search, setSearch] = useState<string>("");
     const [_, setFilter] = useState<string>("");
@@ -205,7 +204,7 @@ export default function StudentsPage() {
                 phone_number: undefined,
             })
         );
-        return navigate("/login", { replace: true });
+        return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
     useEffect(() => {
