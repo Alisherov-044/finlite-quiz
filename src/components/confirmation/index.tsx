@@ -28,7 +28,7 @@ export function Confirmation({
 }: ConfirmationProps) {
     return (
         <Modal closable centered open={isOpen} onCancel={onCancel}>
-            <Flex className="relative w-fit h-fit min-w-[400px] bg-white shadow-main flex-col items-center justify-between py-8 px-14 rounded-[36px]">
+            <Flex className="relative w-full overflow-hidden sm:w-fit h-fit min-w-[400px] bg-white shadow-main flex-col items-center justify-between py-8 px-14 rounded-[36px]">
                 <Typography.Title
                     level={4}
                     className="font-bold uppercase text-xl !text-blue-500"
