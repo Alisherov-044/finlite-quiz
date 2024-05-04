@@ -194,7 +194,7 @@
 
 .ant-modal-wrap:not(.image-editor) .ant-modal-body,
 .ant-modal-wrap:not(.image-editor) .ant-modal-content {
-    @apply !w-fit !p-0 !bg-transparent !shadow-none;
+    @apply !w-fit overflow-hidden !p-0 !bg-transparent !shadow-none;
 }
 
 .ant-modal-wrap:not(.image-editor) .ant-modal-close,
