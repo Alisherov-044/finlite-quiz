@@ -234,7 +234,7 @@ export default function ExamCategoriesPage() {
                         loading={isLoading}
                         dataSource={
                             examCategories?.data &&
-                            examCategories.data.filter((item) =>
+                            examCategories?.data?.filter((item) =>
                                 search
                                     ? item.name
                                           .toLocaleLowerCase()
