@@ -164,7 +164,7 @@ export default function ExamsPage() {
                             Authorization: `Bearer ${access_token}`,
                         },
                     })
-                    .then((res) => res.data),
+                    .then((res) => res.data.data),
         });
     const { mutate, isLoading: isSubmitting } = useMutation<
         TExamsResponse,
