@@ -93,12 +93,12 @@ export default function ExamCategoriesPage() {
                             Authorization: `Bearer ${access_token}`,
                         },
                     })
-                    .then((res) => res.data),
+                    .then((res) => res.data.data),
         }
     );
     const { currentPage, goTo } = usePagination(
         "exam-categories-pagination",
-        examCategories ? examCategories?.meta.pageCount : 1
+        examCategories?.meta ? examCategories?.meta?.pageCount : 1
     );
     const { mutate, isLoading: isSubmitting } = useMutation<
         TExamCategoriesResponse,
@@ -142,7 +142,9 @@ export default function ExamCategoriesPage() {
         pagination: {
             current: 1,
             pageSize: 10,
-            total: examCategories ? examCategories?.meta.pageCount * 10 : 10,
+            total: examCategories?.meta
+                ? examCategories?.meta?.pageCount * 10
+                : 10,
             onChange: (e: number) => goTo(e),
         },
     });
