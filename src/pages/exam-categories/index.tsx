@@ -233,21 +233,22 @@ export default function ExamCategoriesPage() {
                         columns={columns}
                         loading={isLoading}
                         dataSource={
-                            examCategories?.data &&
-                            examCategories?.data?.filter((item) =>
-                                search
-                                    ? item.name
-                                          .toLocaleLowerCase()
-                                          .trim()
-                                          .replaceAll(" ", "")
-                                          .includes(
-                                              search
-                                                  .toLocaleLowerCase()
-                                                  .trim()
-                                                  .replaceAll(" ", "")
-                                          )
-                                    : true
-                            )
+                            examCategories?.data && examCategories?.data?.length
+                                ? examCategories?.data?.filter((item) =>
+                                      search
+                                          ? item.name
+                                                .toLocaleLowerCase()
+                                                .trim()
+                                                .replaceAll(" ", "")
+                                                .includes(
+                                                    search
+                                                        .toLocaleLowerCase()
+                                                        .trim()
+                                                        .replaceAll(" ", "")
+                                                )
+                                          : true
+                                  )
+                                : []
                         }
                         pagination={tableParams.pagination}
                     />
