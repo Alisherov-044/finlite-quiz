@@ -58,6 +58,7 @@ export default function GroupsPage() {
     const location = useLocation();
     const dispatch = useDispatch();
     const [page, setPage] = useState<number>(1);
+    const [search, setSearch] = useState<string>("");
 
     if (!currentRole) {
         return <Navigate to="/login" state={{ from: location }} replace />;
@@ -72,7 +73,7 @@ export default function GroupsPage() {
     } = useQuery<TGroupsResponse, AxiosError<{ error: string }>>("groups", {
         queryFn: async () =>
             await axiosPrivate
-                .get(GROUPS_URL(page), {
+                .get(GROUPS_URL(page, search), {
                     headers: {
                         Authorization: `Bearer ${access_token}`,
                     },
@@ -87,7 +88,7 @@ export default function GroupsPage() {
         useQuery<TStudentsResponse>({
             queryFn: async () =>
                 await axiosPrivate
-                    .get(STUDENTS_URL(1, 50), {
+                    .get(STUDENTS_URL(1, "", 50), {
                         headers: {
                             Authorization: `Bearer ${access_token}`,
                         },
@@ -116,7 +117,6 @@ export default function GroupsPage() {
     } = useForm<z.infer<typeof GroupFormScheme>>({
         resolver: zodResolver(GroupFormScheme),
     });
-    const [search, setSearch] = useState<string>("");
 
     if (error?.response?.data.error === "JWT_EXPIRED") {
         dispatch(
@@ -139,7 +139,7 @@ export default function GroupsPage() {
 
     useEffect(() => {
         refetch();
-    }, [page]);
+    }, [page, search]);
 
     useEffect(() => {
         return () => {
@@ -230,10 +230,13 @@ export default function GroupsPage() {
                                 <GroupCard
                                     group={group}
                                     students={
-                                        students?.data.filter(
-                                            (student) =>
-                                                student.group_id === group.id
-                                        ) ?? []
+                                        students?.data && students?.data.length
+                                            ? students?.data.filter(
+                                                  (student) =>
+                                                      student.group_id ===
+                                                      group.id
+                                              )
+                                            : []
                                     }
                                 />
                             ))

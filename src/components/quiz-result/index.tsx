@@ -60,16 +60,16 @@ export function QuizResult({ quizzes }: QuizResultProps) {
                             <Typography
                                 className={clsx(
                                     "font-medium",
-                                    answer.is_right
+                                    answer && answer.is_right
                                         ? "!text-success-main"
                                         : "!text-error-main"
                                 )}
                             >
-                                {t(answer.content)}
+                                {t(answer && answer.content)}
                             </Typography>
                         </ContentCol>
                         <ContentCol span={8}>
-                            {!answer.is_right && (
+                            {(!answer || !answer.is_right) && (
                                 <Typography className="!text-gray-text">
                                     {`${t(correct_variant.content)}`}
                                 </Typography>

@@ -4,11 +4,15 @@ import { Flex, Typography } from "antd";
 import { easeQuadInOut } from "d3-ease";
 import { AnimatedProgressProvider } from "@/providers";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import { useQuery } from "react-query";
+import { axiosPublic } from "@/lib";
+import { TDepartment } from "@/pages/departments";
+import { DEPARTMENT_URL } from "@/utils/urls";
+import { Loading } from "@/components/loading";
 
 export type TPractice = {
     categories: {
-        id: number;
-        name: string;
+        category_id: number;
     }[];
     correct_answers_count: number;
     created_at: string;
@@ -21,11 +25,25 @@ export type PracticeCardProps = {
     practice: TPractice;
 };
 
+export type TDepartmentResponse = {
+    data: TDepartment;
+};
+
 export function PracticeCard({ practice }: PracticeCardProps) {
     const { categories, correct_answers_count, created_at, questions_count } =
         practice;
 
+    const { data: departments, isLoading: isDepartmentsLoading } =
+        useQuery<TDepartmentResponse>("department", {
+            queryFn: async () =>
+                await axiosPublic
+                    .get(DEPARTMENT_URL(categories[0].category_id))
+                    .then((res) => res.data),
+        });
+
     const { t } = useTranslate();
+
+    if (isDepartmentsLoading) return <Loading />;
 
     return (
         <Flex className="h-fit justify-between rounded-2xl p-4 border transition-all duration-300 shadow-main hover:shadow-main-lg">
@@ -34,7 +52,7 @@ export function PracticeCard({ practice }: PracticeCardProps) {
                     {t("Sana")}: {formatDate(new Date(created_at))}
                 </Typography>
                 <Typography>
-                    {t("Bo'lim")}: {categories[0]?.name}
+                    {t("Bo'lim")}: {departments?.data?.name}
                 </Typography>
                 <Typography>
                     {t("Test soni")}: {questions_count}

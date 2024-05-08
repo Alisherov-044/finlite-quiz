@@ -1,8 +1,14 @@
 import { useMemo } from "react";
 import { generateAvatarColor } from "@/utils";
-import { useTranslate } from "@/hooks";
+import { useSelector, useTranslate } from "@/hooks";
 import { Avatar, Button, Flex, Typography } from "antd";
 import type { TUser } from "@/components/cards/user-card";
+import { useQuery } from "react-query";
+import { axiosPrivate } from "@/lib";
+import { STUDENTS_EDIT_URL } from "@/utils/urls";
+import { AxiosError } from "axios";
+import { Loading } from "@/components/loading";
+import { useNavigate } from "react-router-dom";
 
 export type TResult = {
     correct_answers: number;
@@ -11,25 +17,46 @@ export type TResult = {
 };
 
 export type UserResultsCardProps = {
-    user: TUser;
+    id: number;
+    userId: number;
     result: TResult;
 };
 
-export function UserResultsCard({ user, result }: UserResultsCardProps) {
+export function UserResultsCard({ id, userId, result }: UserResultsCardProps) {
     const { t } = useTranslate();
-    const { first_name, last_name, group_id } = user;
+    const { access_token } = useSelector((state) => state.auth);
+    const navigate = useNavigate();
+    const { data: user, isLoading } = useQuery<TUser, AxiosError<Error>>(
+        "student",
+        {
+            queryFn: async () =>
+                await axiosPrivate
+                    .get(STUDENTS_EDIT_URL(userId), {
+                        headers: {
+                            Authorization: `Bearer ${access_token}`,
+                        },
+                    })
+                    .then((res) => res.data.data),
+        }
+    );
     const { correct_answers, incorrect_answers } = result;
     const full_name = useMemo(
-        () => `${first_name} ${last_name}`,
-        [first_name, last_name]
+        () => `${user?.first_name} ${user?.last_name}`,
+        [user?.first_name, user?.last_name]
     );
+
+    if (isLoading || !user) return <Loading />;
 
     return (
         <Flex className="items-center justify-between p-3 rounded-2xl shadow-main">
             <Flex className="items-center gap-x-5">
-                <Avatar className={generateAvatarColor(first_name)}>
-                    {first_name[0]}
-                    {last_name[0]}
+                <Avatar
+                    className={
+                        user ? generateAvatarColor(user?.first_name) : ""
+                    }
+                >
+                    {user?.first_name[0]}
+                    {user?.last_name[0]}
                 </Avatar>
                 <Flex className="flex-col gap-y-2">
                     <Flex className="items-center gap-x-4">
@@ -38,7 +65,8 @@ export function UserResultsCard({ user, result }: UserResultsCardProps) {
                         </Typography>
                     </Flex>
                     <Typography className="font-bold">
-                        {t(`${group_id}-guruch`)}
+                        {/* @ts-ignore */}
+                        {t(`${user?.group.id}-guruh`)}
                     </Typography>
                 </Flex>
             </Flex>
@@ -55,6 +83,9 @@ export function UserResultsCard({ user, result }: UserResultsCardProps) {
             <Button
                 type="text"
                 className="!h-auto !px-4 !py-1.5 !bg-gray-200 text-black !capitalize !font-normal hover:!bg-gray-300 hover:text-black"
+                onClick={() => {
+                    navigate(`/exams/results/${id}/${userId}`);
+                }}
             >
                 {t("Batafsil")}
             </Button>

@@ -19,7 +19,7 @@ import {
 import { debounce } from "lodash";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import {
     Button,
     Empty,
@@ -71,6 +71,7 @@ export default function TeachersPage() {
     const { roles, access_token } = useSelector((state) => state.auth);
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
+    const [search, setSearch] = useState<string>("");
 
     if (!currentRole) {
         return <Navigate to="/login" state={{ from: location }} replace />;
@@ -91,7 +92,7 @@ export default function TeachersPage() {
     } = useQuery<TTeachersResponse, AxiosError<{ error: string }>>("teachers", {
         queryFn: async () =>
             await axiosPrivate
-                .get(TEACHERS_URL, {
+                .get(TEACHERS_URL(search), {
                     headers: {
                         Authorization: `Bearer ${access_token}`,
                     },
@@ -105,7 +106,7 @@ export default function TeachersPage() {
     >({
         mutationFn: async (data) =>
             await axiosPrivate
-                .post(TEACHERS_URL, data, {
+                .post(TEACHERS_URL(), data, {
                     headers: {
                         Authorization: `Bearer ${access_token}`,
                     },
@@ -152,7 +153,6 @@ export default function TeachersPage() {
             phone_number: "+(998)",
         },
     });
-    const [search, setSearch] = useState<string>("");
     const [page, setPage] = useState<number>(1);
     const dispatch = useDispatch();
     const { currentPage, goTo } = usePagination(
@@ -166,7 +166,7 @@ export default function TeachersPage() {
 
     useEffect(() => {
         refetch();
-    }, [page]);
+    }, [page, search]);
 
     if (error?.response?.data.error === "JWT_EXPIRED") {
         dispatch(
@@ -323,35 +323,6 @@ export default function TeachersPage() {
         }
     }, [editTeacher]);
 
-    const filteredTeachers = useCallback(() => {
-        return teachers?.data.length
-            ? teachers.data.filter((teacher) =>
-                  search.length
-                      ? `${teacher.first_name} ${teacher.last_name}`
-                            .toLocaleLowerCase()
-                            .trim()
-                            .replaceAll(" ", "")
-                            .includes(
-                                search
-                                    .toLocaleLowerCase()
-                                    .trim()
-                                    .replaceAll(" ", "")
-                            ) ||
-                        teacher.phone_number
-                            .toLocaleLowerCase()
-                            .trim()
-                            .replaceAll(" ", "")
-                            .includes(
-                                search
-                                    .toLocaleLowerCase()
-                                    .trim()
-                                    .replaceAll(" ", "")
-                            )
-                      : true
-              )
-            : [];
-    }, [search, teachers]);
-
     return (
         <main className="pb-10">
             <div className="flex flex-col container">
@@ -381,7 +352,7 @@ export default function TeachersPage() {
                             <UserCardSkeleton key={key} role="teacher" />
                         ))
                     ) : teachers?.data && teachers.data.length ? (
-                        filteredTeachers().map((teacher) => (
+                        teachers.data.map((teacher) => (
                             <UserCard
                                 key={teacher.id}
                                 user={teacher}

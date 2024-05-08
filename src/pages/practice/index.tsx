@@ -34,8 +34,7 @@ import { useEffect, useState } from "react";
 export type TPracticeHistoryResponse = {
     data: {
         categories: {
-            id: number;
-            name: string;
+            category_id: number;
         }[];
         correct_answers_count: number;
         created_at: string;

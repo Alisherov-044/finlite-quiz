@@ -19,7 +19,7 @@ import {
 import { debounce } from "lodash";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import {
     Button,
     Empty,
@@ -86,6 +86,7 @@ export default function StudentsPage() {
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
     const [page, setPage] = useState<number>(1);
+    const [search, setSearch] = useState<string>("");
 
     if (!currentRole) {
         return <Navigate to="/login" state={{ from: location }} replace />;
@@ -106,7 +107,7 @@ export default function StudentsPage() {
     } = useQuery<TStudentsResponse, AxiosError<{ error: string }>>("students", {
         queryFn: async () =>
             await axiosPrivate
-                .get(STUDENTS_URL(page), {
+                .get(STUDENTS_URL(page, search), {
                     headers: {
                         Authorization: `Bearer ${access_token}`,
                     },
@@ -194,7 +195,6 @@ export default function StudentsPage() {
     });
     const dispatch = useDispatch();
     const { currentUploadedImage } = useSelector((state) => state.upload);
-    const [search, setSearch] = useState<string>("");
     const { currentPage, goTo } = usePagination(
         "students-pagination",
         students ? students?.meta.pageCount : 1
@@ -206,7 +206,7 @@ export default function StudentsPage() {
 
     useEffect(() => {
         refetch();
-    }, [page]);
+    }, [page, search]);
 
     if (error?.response?.data.error === "JWT_EXPIRED") {
         dispatch(
@@ -379,35 +379,6 @@ export default function StudentsPage() {
         }
     }, [editStudent]);
 
-    const filteredStudents = useCallback(() => {
-        return students?.data.length
-            ? students.data.filter((student) =>
-                  search.length
-                      ? `${student.first_name} ${student.last_name}`
-                            .toLocaleLowerCase()
-                            .trim()
-                            .replaceAll(" ", "")
-                            .includes(
-                                search
-                                    .toLocaleLowerCase()
-                                    .trim()
-                                    .replaceAll(" ", "")
-                            ) ||
-                        student.phone_number
-                            .toLocaleLowerCase()
-                            .trim()
-                            .replaceAll(" ", "")
-                            .includes(
-                                search
-                                    .toLocaleLowerCase()
-                                    .trim()
-                                    .replaceAll(" ", "")
-                            )
-                      : true
-              )
-            : [];
-    }, [search, students]);
-
     return (
         <main className="pb-10">
             <div className="flex flex-col container">
@@ -436,10 +407,8 @@ export default function StudentsPage() {
                         [...Array(3).keys()].map((key) => (
                             <UserCardSkeleton key={key} role="student" />
                         ))
-                    ) : students?.data &&
-                      students.data.length &&
-                      filteredStudents().length ? (
-                        filteredStudents().map((student) => (
+                    ) : students?.data && students.data.length ? (
+                        students.data.map((student) => (
                             <UserCard
                                 key={student.id}
                                 user={student}

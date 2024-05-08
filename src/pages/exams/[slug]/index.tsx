@@ -1,27 +1,52 @@
 import { debounce } from "lodash";
 import { Icons, UserResultsCard, UserResultsCardSkeleton } from "@/components";
-import { useDispatch, useTranslate } from "@/hooks";
+import { useDispatch, useSelector, useTranslate } from "@/hooks";
 import { Empty, Flex, Input, Typography } from "antd";
 import { useQuery } from "react-query";
-import { axiosPublic } from "@/lib";
-import { STUDENTS_URL } from "@/utils/urls";
+import { axiosPrivate } from "@/lib";
+import { EXAM_RESULT_URL } from "@/utils/urls";
 import { type ChangeEvent, useEffect, useMemo, useState } from "react";
-import type { TStudentsResponse } from "@/pages/students";
 import { AxiosError } from "axios";
 import { setAuth } from "@/redux/slices/authSlice";
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
+
+export type TExamResult = {
+    student_id: number;
+    first_name: string;
+    last_name: string;
+    trues_count: number;
+    wrongs_count: number;
+    answers: {
+        id: number;
+        description: string;
+        correct_variant: {
+            id: number;
+            content: string;
+            is_right: boolean;
+        };
+        answer: null;
+    }[];
+};
 
 export default function ExamsDetailsPage() {
+    const { id } = useParams();
     const { t } = useTranslate();
+    const { access_token } = useSelector((state) => state.auth);
     const [search, setSearch] = useState<string>("");
     const dispatch = useDispatch();
     const {
-        data: students,
-        isLoading: isLoading,
+        data: result,
+        isLoading,
         error,
-    } = useQuery<TStudentsResponse, AxiosError<Error>>("students", {
+    } = useQuery<TExamResult[], AxiosError<Error>>({
         queryFn: async () =>
-            await axiosPublic.get(STUDENTS_URL()).then((res) => res.data.data),
+            await axiosPrivate
+                .get(EXAM_RESULT_URL(Number(id)), {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
+                .then((res) => res.data.data),
     });
 
     // @ts-ignore
@@ -77,23 +102,31 @@ export default function ExamsDetailsPage() {
                         [...Array(3).keys()].map((key) => (
                             <UserResultsCardSkeleton key={key} />
                         ))
-                    ) : students?.data && students.data.length ? (
-                        students.data
-                            .filter((student) =>
-                                search.length
-                                    ? `${student.first_name} ${student.last_name}`
-                                          .toLocaleLowerCase()
-                                          .includes(search.toLocaleLowerCase())
+                    ) : result && result.length ? (
+                        result
+                            .filter((item) =>
+                                search
+                                    ? `${item.first_name} ${item.last_name}`
+                                          .toLowerCase()
+                                          .trim()
+                                          .replaceAll(" ", "")
+                                          .includes(
+                                              search
+                                                  .toLowerCase()
+                                                  .trim()
+                                                  .replaceAll(" ", "")
+                                          )
                                     : true
                             )
-                            .map((student) => (
+                            .map((item) => (
                                 <UserResultsCard
-                                    key={student.id}
-                                    user={student}
+                                    key={item.student_id}
+                                    userId={item.student_id}
+                                    id={Number(id)}
                                     result={{
-                                        correct_answers: 16,
-                                        incorrect_answers: 14,
-                                        duration: 140,
+                                        correct_answers: item.trues_count,
+                                        incorrect_answers: item.wrongs_count,
+                                        duration: -1,
                                     }}
                                 />
                             ))

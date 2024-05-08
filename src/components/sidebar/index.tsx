@@ -41,8 +41,9 @@ export function Sidebar() {
                                     "min-w-52 flex items-center gap-x-3 p-1.5 rounded-md",
                                     (location.pathname === link ||
                                         (link === "/exams" &&
-                                            location.pathname ===
-                                                "/exams/results")) &&
+                                            location.pathname.startsWith(
+                                                "/exams/results/"
+                                            ))) &&
                                         "bg-blue-100"
                                 )}
                             >

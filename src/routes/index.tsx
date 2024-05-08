@@ -4,6 +4,7 @@ import {
     ExamCategoriesPage,
     ExamQuizPage,
     ExamResultPage,
+    ExamUserResultPage,
     ExamsDetailsPage,
     ExamsPage,
     GroupsPage,
@@ -130,7 +131,7 @@ export const routes: TRoutes = {
         },
         {
             id: 14,
-            path: "/exams/results",
+            path: "/exams/results/:id",
             element: <ExamsDetailsPage />,
             roles: [...userRoles.admin, ...userRoles.teacher],
         },
@@ -157,6 +158,12 @@ export const routes: TRoutes = {
             path: "/exams/quiz/:id/result",
             element: <ExamResultPage />,
             roles: [...userRoles.student],
+        },
+        {
+            id: 19,
+            path: "/exams/results/:id/:userId",
+            element: <ExamUserResultPage />,
+            roles: [...userRoles.teacher, ...userRoles.admin],
         },
     ],
 };

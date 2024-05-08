@@ -72,6 +72,7 @@ export default function DepartmentsPage() {
     const location = useLocation();
     const dispatch = useDispatch();
     const [page, setPage] = useState<number>(1);
+    const [search, setSearch] = useState<string>("");
 
     if (!currentRole) {
         return <Navigate to="/login" state={{ from: location }} replace />;
@@ -88,7 +89,7 @@ export default function DepartmentsPage() {
         {
             queryFn: async () =>
                 await axiosPublic
-                    .get(DEPARTMENTS_URL(page))
+                    .get(DEPARTMENTS_URL(page, search))
                     .then((res) => res.data.data),
         }
     );
@@ -138,7 +139,6 @@ export default function DepartmentsPage() {
             onChange: (e: number) => goTo(e),
         },
     });
-    const [search, setSearch] = useState<string>("");
 
     useEffect(() => {
         setPage(currentPage);
@@ -150,7 +150,7 @@ export default function DepartmentsPage() {
 
     useEffect(() => {
         refetch();
-    }, [page]);
+    }, [page, search]);
 
     useEffect(() => {
         return () => {
@@ -222,23 +222,7 @@ export default function DepartmentsPage() {
                         }}
                         columns={columns}
                         loading={isLoading}
-                        dataSource={
-                            departments?.data &&
-                            departments.data.filter((item) =>
-                                search
-                                    ? item.name
-                                          .toLocaleLowerCase()
-                                          .trim()
-                                          .replaceAll(" ", "")
-                                          .includes(
-                                              search
-                                                  .toLocaleLowerCase()
-                                                  .trim()
-                                                  .replaceAll(" ", "")
-                                          )
-                                    : true
-                            )
-                        }
+                        dataSource={departments?.data && departments.data}
                         pagination={tableParams.pagination}
                     />
                 </Flex>

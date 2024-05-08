@@ -44,7 +44,12 @@ export function ExamCard({
     onBeforeEdit,
     onBeforeEditCancel,
 }: ExamCardProps) {
-    const { start: starting_date, end: ending_date, questions_count } = exam;
+    const {
+        id,
+        start: starting_date,
+        end: ending_date,
+        questions_count,
+    } = exam;
 
     const location = useLocation();
     const { roles } = useSelector((state) => state.auth);
@@ -133,7 +138,7 @@ export function ExamCard({
                         className="!py-3"
                         onClick={() =>
                             ["teacher", "admin"].includes(currentRole)
-                                ? navigate("/exams/results")
+                                ? navigate(`/exams/results/${id}`)
                                 : open()
                         }
                     >
