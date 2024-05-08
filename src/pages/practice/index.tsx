@@ -1,16 +1,21 @@
 import { clsx } from "clsx";
 import {
     Icons,
+    Loading,
     PageHeaderAction,
     PracticeCard,
     PracticeCardSkeleton,
     SelectPracticeMode,
 } from "@/components";
-import { options } from "@/components/data";
-import { useDispatch, useOpen, useSelector, useTranslate } from "@/hooks";
-import { useState } from "react";
+import {
+    useDispatch,
+    useOpen,
+    usePagination,
+    useSelector,
+    useTranslate,
+} from "@/hooks";
 import { useMutation, useQuery } from "react-query";
-import { Empty, Flex, Row, Select, Typography, notification } from "antd";
+import { Empty, Flex, Pagination, Row, Typography, notification } from "antd";
 import { PracticeState, setPractice } from "@/redux/slices/practiceSlice";
 import { Navigate, useNavigate } from "react-router-dom";
 import {
@@ -24,6 +29,7 @@ import { axiosPrivate } from "@/lib";
 import { PRACTICE_HISTORY_URL, PRACTICE_URL } from "@/utils/urls";
 import { AxiosError } from "axios";
 import { setAuth } from "@/redux/slices/authSlice";
+import { useEffect, useState } from "react";
 
 export type TPracticeHistoryResponse = {
     data: {
@@ -37,6 +43,9 @@ export type TPracticeHistoryResponse = {
         questions_count: number;
         user_id: number;
     }[];
+    meta: {
+        pageCount: number;
+    };
 };
 
 export type TPracticeResponse = {
@@ -78,22 +87,24 @@ export default function PracticePage() {
     const { id, access_token } = useSelector((state) => state.auth);
     const navigate = useNavigate();
     const { isOpen, open, close } = useOpen();
-    const [_, setFilter] = useState<string>("");
+    const [page, setPage] = useState<number>(1);
     const {
         data: practices,
         isLoading,
         error,
+        refetch,
     } = useQuery<TPracticeHistoryResponse, AxiosError<{ error: string }>>(
         "practices",
         {
             queryFn: async () =>
                 await axiosPrivate
-                    .get(PRACTICE_HISTORY_URL(id), {
+                    .get(PRACTICE_HISTORY_URL(id, page), {
                         headers: {
                             Authorization: `Bearer ${access_token}`,
                         },
                     })
                     .then((res) => res.data.data),
+            enabled: !!id,
         }
     );
 
@@ -111,6 +122,18 @@ export default function PracticePage() {
                 })
                 .then((res) => res.data),
     });
+    const { currentPage, goTo } = usePagination(
+        "practice-pagination",
+        practices ? practices?.meta.pageCount : 1
+    );
+
+    useEffect(() => {
+        setPage(currentPage);
+    }, [currentPage]);
+
+    useEffect(() => {
+        refetch();
+    }, [page]);
 
     if (error?.response?.data.error === "JWT_EXPIRED") {
         dispatch(
@@ -126,6 +149,8 @@ export default function PracticePage() {
         );
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
+
+    if (isLoading) return <Loading />;
 
     return (
         <main className="pb-10">
@@ -152,14 +177,6 @@ export default function PracticePage() {
                     <Typography className="!text-sm font-bold !text-blue-900">
                         {t("Amaliyot tarixi")}
                     </Typography>
-                    <Select
-                        placeholder={t("Saralash")}
-                        suffixIcon={<Icons.arrow.select />}
-                        prefixCls="sort-select"
-                        placement="bottomRight"
-                        options={options}
-                        onChange={(value) => setFilter(value)}
-                    />
                 </Flex>
                 <SelectPracticeMode
                     isOpen={isOpen}
@@ -221,6 +238,13 @@ export default function PracticePage() {
                         </Flex>
                     )}
                 </Row>
+                <Pagination
+                    className="flex items-center justify-center"
+                    current={currentPage}
+                    onChange={(e) => goTo(e)}
+                    pageSize={10}
+                    total={practices && 10 * practices.meta.pageCount}
+                />
             </div>
         </main>
     );

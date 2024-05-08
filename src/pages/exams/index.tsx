@@ -4,6 +4,7 @@ import {
     useActive,
     useDispatch,
     useOpen,
+    usePagination,
     useSelector,
     useTranslate,
 } from "@/hooks";
@@ -31,6 +32,7 @@ import {
     Flex,
     Form,
     Input,
+    Pagination,
     Select,
     TimePicker,
     notification,
@@ -50,7 +52,7 @@ import {
     setCurrentUploadedImageOrigin,
 } from "@/redux/slices/uploadSlice";
 import type { TExam } from "@/components/cards/exam-card";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { TSetValue } from "@/utils/fill-values";
 import { setExamId, setQuestions } from "@/redux/slices/examSlice";
 import { AxiosError } from "axios";
@@ -86,6 +88,9 @@ export type TExamDetail = {
 
 export type TExamsResponse = {
     data: TExam[];
+    meta: {
+        pageCount: number;
+    };
 };
 
 export type TExamResponse = {
@@ -108,6 +113,7 @@ export default function ExamsPage() {
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
     const navigate = useNavigate();
+    const [page, setPage] = useState<number>(1);
 
     if (!currentRole) {
         return <Navigate to="/login" state={{ from: location }} replace />;
@@ -131,7 +137,7 @@ export default function ExamsPage() {
     } = useQuery<TExamsResponse>("exams", {
         queryFn: async () =>
             await axiosPrivate
-                .get(EXAMS_URL, {
+                .get(EXAMS_URL(page), {
                     headers: {
                         Authorization: `Bearer ${access_token}`,
                     },
@@ -142,7 +148,7 @@ export default function ExamsPage() {
         useQuery<TStudentsResponse>("students", {
             queryFn: async () =>
                 await axiosPrivate
-                    .get(STUDENTS_URL, {
+                    .get(STUDENTS_URL(), {
                         headers: {
                             Authorization: `Bearer ${access_token}`,
                         },
@@ -153,7 +159,7 @@ export default function ExamsPage() {
         useQuery<TDepartmentsResponse>("exam-categories", {
             queryFn: async () =>
                 await axiosPrivate
-                    .get(EXAM_CATEGORIES_URL, {
+                    .get(EXAM_CATEGORIES_URL(), {
                         headers: {
                             Authorization: `Bearer ${access_token}`,
                         },
@@ -167,7 +173,7 @@ export default function ExamsPage() {
     >({
         mutationFn: async (data) =>
             await axiosPrivate
-                .post(EXAMS_URL, data, {
+                .post(EXAMS_URL(page), data, {
                     headers: {
                         "Content-Type": "multipart/form-data",
                         Authorization: `Bearer ${access_token}`,
@@ -175,6 +181,10 @@ export default function ExamsPage() {
                 })
                 .then((res) => res.data.data),
     });
+    const { currentPage, goTo } = usePagination(
+        "exams-pagination",
+        exams ? exams?.meta.pageCount : 1
+    );
     const {
         data: exam,
         isLoading: isExamLoading,
@@ -248,6 +258,14 @@ export default function ExamsPage() {
         );
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
+
+    useEffect(() => {
+        setPage(currentPage);
+    }, [currentPage]);
+
+    useEffect(() => {
+        refetch();
+    }, [page]);
 
     function onSubmit(values: z.infer<typeof ExamFormScheme>) {
         formData.append("title", values.title!);
@@ -459,6 +477,15 @@ export default function ExamsPage() {
                             </Flex>
                         )}
                     </Flex>
+                    {filteredExams?.length ? (
+                        <Pagination
+                            className="flex items-center justify-center"
+                            current={currentPage}
+                            onChange={(e) => goTo(e)}
+                            pageSize={10}
+                            total={exams && 10 * exams.meta.pageCount}
+                        />
+                    ) : null}
 
                     <FormDrawer
                         open={isOpen || isEdit}

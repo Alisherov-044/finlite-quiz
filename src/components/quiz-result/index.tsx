@@ -2,21 +2,17 @@ import { clsx } from "clsx";
 import { useTranslate } from "@/hooks";
 import { Flex, Row, Typography } from "antd";
 import { ContentCol, HeaderCol, Title } from "./styles";
-import { answerPrefixLetter } from "@/components/quiz";
-import type { TType } from "@/redux/slices/quizSlice";
+import type { TResult } from "@/redux/slices/quizSlice";
 import { variants } from "@/pages/tests/data";
 import { Loading } from "../loading";
 
-type TQuiz = TType & {
-    selected?: number | null;
-};
-
 export type QuizResultProps = {
-    quizzes: TQuiz[];
+    quizzes: TResult[];
 };
 
 export function QuizResult({ quizzes }: QuizResultProps) {
     const { t } = useTranslate();
+    const htmlTagContentRegex = /<[^>]*>([^<]*)<\/[^>]*>/g;
 
     if (!variants.length || !quizzes.length) return <Loading />;
 
@@ -33,64 +29,55 @@ export function QuizResult({ quizzes }: QuizResultProps) {
                     <Title level={2}>{t("To'g'ri javob")}</Title>
                 </HeaderCol>
             </Row>
-            {quizzes.map(({ id, description, variants, selected }, index) => (
-                <Row
-                    key={id}
-                    className="w-full flex flex-nowrap border-b border-blue-300 last-of-type:!border-none"
-                >
-                    <ContentCol
-                        span={8}
-                        className="flex gap-x-1 !text-gray-text"
+            {quizzes.map(
+                ({ id, description, answer, correct_variant }, index) => (
+                    <Row
+                        key={id}
+                        className="w-full flex flex-nowrap border-b border-blue-300 last-of-type:!border-none"
                     >
-                        <Typography className="text-nowrap">
-                            {index + 1}.
-                        </Typography>
-                        <Typography>{t(description)}</Typography>
-                    </ContentCol>
-                    <ContentCol span={8}>
-                        <Typography
-                            className={clsx(
-                                "font-medium",
-                                variants &&
-                                    variants.some(
-                                        (answer) =>
-                                            answer.id === selected &&
-                                            answer.is_right
-                                    )
-                                    ? "!text-success-main"
-                                    : "!text-error-main"
-                            )}
+                        <ContentCol
+                            span={8}
+                            className="flex gap-x-1 !text-gray-text"
                         >
-                            {variants &&
-                                variants.map(
-                                    (answer, index) =>
-                                        answer.id === selected &&
-                                        `${t(answerPrefixLetter[index])}) ${t(
-                                            answer.content
-                                        )}`
+                            <Typography className="text-nowrap">
+                                {index + 1}.
+                            </Typography>
+                            <Typography>
+                                {t(
+                                    description
+                                        .split(htmlTagContentRegex)
+                                        .filter(
+                                            (item) =>
+                                                !item.startsWith("<") &&
+                                                !item.endsWith(">")
+                                        )
+                                        .filter((item) => item.length > 0)
+                                        .join(" ")
                                 )}
-                        </Typography>
-                    </ContentCol>
-                    <ContentCol span={8}>
-                        {variants &&
-                            variants.some(
-                                (answer) =>
-                                    answer.id === selected && !answer.is_right
-                            ) &&
-                            variants &&
-                            variants.map(
-                                (answer, index) =>
-                                    answer.is_right && (
-                                        <Typography className="!text-gray-text">
-                                            {`${t(
-                                                answerPrefixLetter[index]
-                                            )}) ${t(answer.content)}`}
-                                        </Typography>
-                                    )
+                            </Typography>
+                        </ContentCol>
+                        <ContentCol span={8}>
+                            <Typography
+                                className={clsx(
+                                    "font-medium",
+                                    answer.is_right
+                                        ? "!text-success-main"
+                                        : "!text-error-main"
+                                )}
+                            >
+                                {t(answer.content)}
+                            </Typography>
+                        </ContentCol>
+                        <ContentCol span={8}>
+                            {!answer.is_right && (
+                                <Typography className="!text-gray-text">
+                                    {`${t(correct_variant.content)}`}
+                                </Typography>
                             )}
-                    </ContentCol>
-                </Row>
-            ))}
+                        </ContentCol>
+                    </Row>
+                )
+            )}
         </Flex>
     );
 }

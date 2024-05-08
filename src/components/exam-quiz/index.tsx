@@ -3,7 +3,6 @@ import { useActive, useDispatch, useSelector, useTranslate } from "@/hooks";
 import { Flex, Typography } from "antd";
 import { setQuiz } from "@/redux/slices/quizSlice";
 import { useEffect } from "react";
-import { shuffleArray } from "@/utils";
 
 export type TAnswer = {
     id: number;
@@ -49,7 +48,6 @@ export function ExamQuiz({ quiz, selectedAnswerId }: QuizProps) {
             })
         );
     }, [active]);
-    console.log(question);
 
     return (
         <Flex className="flex-col lg:flex-row justify-between border border-blue-100 shadow-main rounded-md bg-white">
@@ -72,26 +70,23 @@ export function ExamQuiz({ quiz, selectedAnswerId }: QuizProps) {
                     {t("Javob")}
                 </Typography.Title>
                 <Flex className="flex-col gap-y-4">
-                    {shuffleArray(question.variants).map(
-                        ({ id, content }, index) => (
-                            <Flex
-                                key={id}
-                                onClick={() => !finished && setActive(id)}
-                                className={clsx(
-                                    "gap-x-3 p-3 border border-blue-500 rounded-md cursor-pointer select-none !text-blue-900",
-                                    (active === id ||
-                                        selectedAnswerId === id) &&
-                                        "bg-blue-500 !text-white",
-                                    finished && "cursor-not-allowed"
-                                )}
-                            >
-                                <Typography className="text-nowrap">
-                                    {t(answerPrefixLetter[index])}&#41;
-                                </Typography>
-                                <Typography>{t(content)}</Typography>
-                            </Flex>
-                        )
-                    )}
+                    {question.variants.map(({ id, content }, index) => (
+                        <Flex
+                            key={id}
+                            onClick={() => !finished && setActive(id)}
+                            className={clsx(
+                                "gap-x-3 p-3 border border-blue-500 rounded-md cursor-pointer select-none !text-blue-900",
+                                (active === id || selectedAnswerId === id) &&
+                                    "bg-blue-500 !text-white",
+                                finished && "cursor-not-allowed"
+                            )}
+                        >
+                            <Typography className="text-nowrap">
+                                {t(answerPrefixLetter[index])}&#41;
+                            </Typography>
+                            <Typography>{t(content)}</Typography>
+                        </Flex>
+                    ))}
                 </Flex>
             </Flex>
         </Flex>

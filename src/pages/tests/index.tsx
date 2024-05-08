@@ -1,7 +1,13 @@
 import { z } from "zod";
 import { FormDrawer, Icons, PageHeaderAction } from "@/components";
 import { FormItem, Col } from "@/components/styles";
-import { useDispatch, useOpen, useSelector, useTranslate } from "@/hooks";
+import {
+    useDispatch,
+    useOpen,
+    usePagination,
+    useSelector,
+    useTranslate,
+} from "@/hooks";
 import { getCurrentRole } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -80,6 +86,9 @@ export type TTest = {
 
 export type TTestsResponse = {
     data: TTest[];
+    meta: {
+        pageCount: number;
+    };
 };
 
 const columns: ColumnsType<TTest> = [
@@ -115,6 +124,7 @@ export default function TestsPage() {
     const [rteValue, setRteValue] = useState<any>(
         RichTextEditor.createEmptyValue()
     );
+    const [page, setPage] = useState<number>(1);
     const dispatch = useDispatch();
 
     if (!currentRole) {
@@ -129,13 +139,17 @@ export default function TestsPage() {
         error,
     } = useQuery<TTestsResponse, AxiosError<{ error: string }>>("tests", {
         queryFn: async () =>
-            await axiosPublic.get(TESTS_URL).then((res) => res.data.data),
+            await axiosPublic.get(TESTS_URL(page)).then((res) => res.data.data),
     });
+    const { currentPage, goTo } = usePagination(
+        "tests-pagination",
+        tests ? tests?.meta.pageCount : 1
+    );
     const { data: departments, isLoading: isDepartmentsLoading } =
         useQuery<TDepartmentsResponse>("departments", {
             queryFn: async () =>
                 await axiosPublic
-                    .get(DEPARTMENTS_URL)
+                    .get(DEPARTMENTS_URL())
                     .then((res) => res.data.data),
         });
     const { mutate, isLoading: isSubmitting } = useMutation<
@@ -144,7 +158,7 @@ export default function TestsPage() {
         Omit<TTest, "id">
     >({
         mutationFn: async (data) =>
-            await axiosPrivate.post(TESTS_URL, data).then((res) => res.data),
+            await axiosPrivate.post(TESTS_URL(), data).then((res) => res.data),
     });
     const {
         handleSubmit,
@@ -171,10 +185,12 @@ export default function TestsPage() {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
-    const [tableParams] = useState({
+    const [tableParams, setTableParams] = useState({
         pagination: {
-            current: 1,
+            current: currentPage,
             pageSize: 10,
+            total: tests ? tests?.meta.pageCount * 10 : 10,
+            onChange: (e: number) => goTo(e),
         },
     });
     const [search, setSearch] = useState<string>("");
@@ -194,6 +210,18 @@ export default function TestsPage() {
             ),
         []
     );
+
+    useEffect(() => {
+        setPage(currentPage);
+        setTableParams({
+            ...tableParams,
+            pagination: { ...tableParams.pagination, current: currentPage },
+        });
+    }, [currentPage]);
+
+    useEffect(() => {
+        refetch();
+    }, [page]);
 
     function onCancel() {
         close();

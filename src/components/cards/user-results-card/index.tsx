@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { formatTime, generateAvatarColor } from "@/utils";
+import { generateAvatarColor } from "@/utils";
 import { useTranslate } from "@/hooks";
 import { Avatar, Button, Flex, Typography } from "antd";
 import type { TUser } from "@/components/cards/user-card";
@@ -18,8 +18,7 @@ export type UserResultsCardProps = {
 export function UserResultsCard({ user, result }: UserResultsCardProps) {
     const { t } = useTranslate();
     const { first_name, last_name, group_id } = user;
-    const { correct_answers, incorrect_answers, duration } = result;
-    const { minutes, seconds } = formatTime(duration);
+    const { correct_answers, incorrect_answers } = result;
     const full_name = useMemo(
         () => `${first_name} ${last_name}`,
         [first_name, last_name]
@@ -51,12 +50,6 @@ export function UserResultsCard({ user, result }: UserResultsCardProps) {
                 <Flex className="flex-col items-center gap-y-2 !text-error-main">
                     <Typography>{t(`Noto'g'ri javoblar`)}</Typography>
                     <Typography>{incorrect_answers}</Typography>
-                </Flex>
-                <Flex className="flex-col items-center gap-y-2">
-                    <Typography>{t("Vaqt")}</Typography>
-                    <Typography>
-                        {minutes}:{Math.round(seconds)}
-                    </Typography>
                 </Flex>
             </Flex>
             <Button

@@ -1,7 +1,12 @@
 import { z } from "zod";
 import { useMutation, useQuery } from "react-query";
-import { useDispatch, useOpen, useSelector, useTranslate } from "@/hooks";
-import { options } from "@/components/data";
+import {
+    useDispatch,
+    useOpen,
+    usePagination,
+    useSelector,
+    useTranslate,
+} from "@/hooks";
 import {
     FormDrawer,
     GroupCard,
@@ -20,8 +25,8 @@ import {
     Flex,
     Form,
     Input,
+    Pagination,
     Row,
-    Select,
     Typography,
     notification,
 } from "antd";
@@ -41,6 +46,9 @@ export const GroupFormScheme = z.object({
 
 export type TGroupsResponse = {
     data: TGroup[];
+    meta: {
+        pageCount: number;
+    };
 };
 
 export default function GroupsPage() {
@@ -49,6 +57,7 @@ export default function GroupsPage() {
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
     const dispatch = useDispatch();
+    const [page, setPage] = useState<number>(1);
 
     if (!currentRole) {
         return <Navigate to="/login" state={{ from: location }} replace />;
@@ -63,18 +72,22 @@ export default function GroupsPage() {
     } = useQuery<TGroupsResponse, AxiosError<{ error: string }>>("groups", {
         queryFn: async () =>
             await axiosPrivate
-                .get(GROUPS_URL, {
+                .get(GROUPS_URL(page), {
                     headers: {
                         Authorization: `Bearer ${access_token}`,
                     },
                 })
                 .then((res) => res.data.data),
     });
+    const { currentPage, goTo } = usePagination(
+        "groups-pagination",
+        groups ? groups?.meta.pageCount : 1
+    );
     const { data: students, isLoading: isStudentsLoading } =
         useQuery<TStudentsResponse>({
             queryFn: async () =>
                 await axiosPrivate
-                    .get(STUDENTS_URL, {
+                    .get(STUDENTS_URL(1, 50), {
                         headers: {
                             Authorization: `Bearer ${access_token}`,
                         },
@@ -88,7 +101,7 @@ export default function GroupsPage() {
     >({
         mutationFn: async (data) =>
             await axiosPrivate
-                .post(GROUPS_URL, data, {
+                .post(GROUPS_URL(page), data, {
                     headers: {
                         Authorization: `Bearer ${access_token}`,
                     },
@@ -104,7 +117,6 @@ export default function GroupsPage() {
         resolver: zodResolver(GroupFormScheme),
     });
     const [search, setSearch] = useState<string>("");
-    const [filter, setFilter] = useState<string>("");
 
     if (error?.response?.data.error === "JWT_EXPIRED") {
         dispatch(
@@ -122,6 +134,14 @@ export default function GroupsPage() {
     }
 
     useEffect(() => {
+        setPage(currentPage);
+    }, [currentPage]);
+
+    useEffect(() => {
+        refetch();
+    }, [page]);
+
+    useEffect(() => {
         return () => {
             debouncedSearch.cancel();
         };
@@ -136,8 +156,6 @@ export default function GroupsPage() {
             ),
         []
     );
-
-    console.log(filter);
 
     function onSubmit(values: z.infer<typeof GroupFormScheme>) {
         mutate(values, {
@@ -167,7 +185,7 @@ export default function GroupsPage() {
     return (
         <main className="pb-10">
             <div className="flex flex-col container">
-                {currentRole === "admin" ? (
+                {["admin", "teacher"].includes(currentRole) ? (
                     <PageHeaderAction
                         title={t("Guruh yaratish")}
                         btnText={t("Guruh yaratish")}
@@ -179,14 +197,6 @@ export default function GroupsPage() {
                         <Typography className="!text-sm font-bold !text-blue-900">
                             {t("Guruhlar ro'yhati")}
                         </Typography>
-                        <Select
-                            placeholder={t("Saralash")}
-                            suffixIcon={<Icons.arrow.select />}
-                            prefixCls="sort-select"
-                            placement="bottomRight"
-                            options={options}
-                            onChange={(value) => setFilter(value)}
-                        />
                     </Flex>
                     <Input
                         prefix={<Icons.search />}
@@ -233,6 +243,13 @@ export default function GroupsPage() {
                         </Flex>
                     )}
                 </Flex>
+                <Pagination
+                    className="flex items-center justify-center"
+                    current={currentPage}
+                    onChange={(e) => goTo(e)}
+                    pageSize={10}
+                    total={groups && 10 * groups.meta.pageCount}
+                />
 
                 <FormDrawer
                     open={isOpen}

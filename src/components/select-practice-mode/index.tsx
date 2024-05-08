@@ -4,7 +4,7 @@ import { useTranslate } from "@/hooks";
 import { tests } from "./data";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Flex, Form, Modal, Select, Typography } from "antd";
+import { Button, Empty, Flex, Form, Modal, Select, Typography } from "antd";
 import { PracticeState } from "@/redux/slices/practiceSlice";
 import { MultiSelect } from "./styles";
 import { TDepartmentsResponse } from "@/pages/departments";
@@ -43,7 +43,7 @@ export function SelectPracticeMode({
         useQuery<TDepartmentsResponse>("departments", {
             queryFn: async () =>
                 await axiosPublic
-                    .get(DEPARTMENTS_URL)
+                    .get(DEPARTMENTS_URL())
                     .then((res) => res.data.data),
         });
 
@@ -73,6 +73,13 @@ export function SelectPracticeMode({
                                     placeholder={t("Bo'lim tanlash")}
                                     loading={isDepartmentsLoading}
                                     options={departments?.data}
+                                    notFoundContent={
+                                        <Empty
+                                            description={t(
+                                                "Ma'lumotlar mavjud emas"
+                                            )}
+                                        />
+                                    }
                                     fieldNames={{ label: "name", value: "id" }}
                                     suffixIcon={<Icons.arrow.select />}
                                     placement="bottomRight"

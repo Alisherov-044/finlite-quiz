@@ -34,7 +34,7 @@ export function PracticeCard({ practice }: PracticeCardProps) {
                     {t("Sana")}: {formatDate(new Date(created_at))}
                 </Typography>
                 <Typography>
-                    {t("Bo'lim")}: {categories[0].name}
+                    {t("Bo'lim")}: {categories[0]?.name}
                 </Typography>
                 <Typography>
                     {t("Test soni")}: {questions_count}

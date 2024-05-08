@@ -1,7 +1,13 @@
 import { z } from "zod";
 import { FormDrawer, Icons, PageHeaderAction } from "@/components";
 import { FormItem, Col } from "@/components/styles";
-import { useDispatch, useOpen, useSelector, useTranslate } from "@/hooks";
+import {
+    useDispatch,
+    useOpen,
+    usePagination,
+    useSelector,
+    useTranslate,
+} from "@/hooks";
 import { getCurrentRole } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -34,6 +40,9 @@ export type TExamCategory = {
 
 export type TExamCategoriesResponse = {
     data: TExamCategory[];
+    meta: {
+        pageCount: number;
+    };
 };
 
 const columns: ColumnsType<TExamCategory> = [
@@ -62,6 +71,7 @@ export default function ExamCategoriesPage() {
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
     const dispatch = useDispatch();
+    const [page, setPage] = useState<number>(1);
 
     if (!currentRole) {
         return <Navigate to="/login" state={{ from: location }} replace />;
@@ -78,13 +88,17 @@ export default function ExamCategoriesPage() {
         {
             queryFn: async () =>
                 await axiosPublic
-                    .get(EXAM_CATEGORIES_URL, {
+                    .get(EXAM_CATEGORIES_URL(page), {
                         headers: {
                             Authorization: `Bearer ${access_token}`,
                         },
                     })
                     .then((res) => res.data),
         }
+    );
+    const { currentPage, goTo } = usePagination(
+        "exam-categories-pagination",
+        examCategories ? examCategories?.meta.pageCount : 1
     );
     const { mutate, isLoading: isSubmitting } = useMutation<
         TExamCategoriesResponse,
@@ -93,7 +107,7 @@ export default function ExamCategoriesPage() {
     >({
         mutationFn: async (data) =>
             await axiosPrivate
-                .post(EXAM_CATEGORIES_URL, data, {
+                .post(EXAM_CATEGORIES_URL(page), data, {
                     headers: {
                         Authorization: `Bearer ${access_token}`,
                     },
@@ -124,13 +138,27 @@ export default function ExamCategoriesPage() {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
-    const [tableParams] = useState({
+    const [tableParams, setTableParams] = useState({
         pagination: {
             current: 1,
             pageSize: 10,
+            total: examCategories ? examCategories?.meta.pageCount * 10 : 10,
+            onChange: (e: number) => goTo(e),
         },
     });
     const [search, setSearch] = useState<string>("");
+
+    useEffect(() => {
+        setPage(currentPage);
+        setTableParams({
+            ...tableParams,
+            pagination: { ...tableParams.pagination, current: currentPage },
+        });
+    }, [currentPage]);
+
+    useEffect(() => {
+        refetch();
+    }, [page]);
 
     useEffect(() => {
         return () => {

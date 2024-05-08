@@ -7,14 +7,16 @@ import {
     clearQuizData,
     endQuiz,
     finishQuiz,
+    setCorrectAnswers,
     setCurrentTest,
-    setQuizData,
+    setQuestionsCount,
+    setResult,
     unfinishQuiz,
 } from "@/redux/slices/quizSlice";
 import { setRedirectUrl } from "@/redux/slices/routeSlice";
-import { PRACTICE_ANSWER_URL } from "@/utils/urls";
+import { PRACTICE_ANSWER_URL, PRACTICE_RESULT_URL } from "@/utils/urls";
 import { Button, Flex, Typography } from "antd";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useMutation } from "react-query";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
@@ -26,23 +28,6 @@ export type TRequest = {
     }[];
 };
 
-type TResult = {
-    data: {
-        practice_question: {
-            question: {
-                id: number;
-                description: string;
-                variants: {
-                    id: number;
-                    content: string;
-                    is_right: boolean;
-                    question_id: number;
-                }[];
-            };
-        };
-    }[];
-};
-
 export default function PracticeResultPage() {
     const { t } = useTranslate();
     const dispatch = useDispatch();
@@ -50,7 +35,15 @@ export default function PracticeResultPage() {
     const navigate = useNavigate();
     const { category_ids } = useSelector((state) => state.practice);
     const { access_token } = useSelector((state) => state.auth);
-    const { id, data, items } = useSelector((state) => state.quiz);
+    const { id, data, result, correct_answers, questions_count, items } =
+        useSelector((state) => state.quiz);
+    const [practiceRes, setPracticeRes] = useState(result);
+    const [correctAnswers, setCorrect_Answers] = useState<number | undefined>(
+        correct_answers
+    );
+    const [questionsCount, setQuestions_Count] = useState<number | undefined>(
+        questions_count
+    );
     const { mutate } = useMutation<any, Error, TRequest>({
         mutationFn: async (data) =>
             await axiosPrivate
@@ -71,15 +64,47 @@ export default function PracticeResultPage() {
                         answers: items,
                     },
                     {
-                        onSuccess: (data: TResult) => {
+                        onSuccess: async () => {
+                            const res = await axiosPrivate.get(
+                                PRACTICE_RESULT_URL(id),
+                                {
+                                    headers: {
+                                        Authorization: `Bearer ${access_token}`,
+                                    },
+                                }
+                            );
                             dispatch(
-                                setQuizData(
-                                    data?.data?.map(
+                                setResult(
+                                    res.data.data.practice_questions.map(
+                                        // @ts-ignore
                                         (item) =>
-                                            item.practice_question.question
+                                            data.find(
+                                                (each) => each.id === item.id
+                                            )
+                                                ? {
+                                                      ...item,
+                                                      variants: data.find(
+                                                          (each) =>
+                                                              each.id ===
+                                                              item.id
+                                                      )?.variants,
+                                                  }
+                                                : item
                                     )
                                 )
                             );
+                            dispatch(
+                                setCorrectAnswers(
+                                    res.data.data.correct_answers_count
+                                )
+                            );
+                            dispatch(
+                                setQuestionsCount(res.data.data.questions_count)
+                            );
+                            setCorrect_Answers(res.data.data.correct_answers);
+                            setQuestions_Count(res.data.data.questions_count);
+                            setPracticeRes(res.data.data.practice_questions);
+                            window.location.reload();
                         },
                         onError: (error) => {
                             console.log(error.message);
@@ -100,22 +125,6 @@ export default function PracticeResultPage() {
         }
         dispatch(finishQuiz());
     }, []);
-
-    const formattedData = data.map((item) => ({
-        ...item,
-        selected: items.find((each) => each.practice_question_id === item.id)
-            ?.variant_id,
-    }));
-
-    const correctAnswers = data.length
-        ? formattedData.filter((item) =>
-              item.variants
-                  ? item.selected ===
-                    item?.variants.find((each) => each.is_right)?.id
-                  : false
-          ).length
-        : 0;
-    const incorrectAnswers = data.length ? data.length - correctAnswers : 0;
 
     if (!id) {
         return <Navigate to="/practice" state={{ from: location }} replace />;
@@ -160,13 +169,15 @@ export default function PracticeResultPage() {
                         </Typography>
                         <Typography className="!text-error-main">
                             {t("Noto'g'ri javoblar soni: ")}
-                            {incorrectAnswers}
+                            {questionsCount &&
+                                correctAnswers &&
+                                questionsCount - correctAnswers}
                         </Typography>
                     </Flex>
                 </Flex>
             </div>
             <div className="overflow-scroll pl-4 lg:container lg:mx-auto lg:px-5">
-                <QuizResult quizzes={formattedData} />
+                <QuizResult quizzes={practiceRes} />
             </div>
             <div className="container">
                 <Flex className="opacity-0 pointer-events-none w-full mt-4">

@@ -1,7 +1,13 @@
 import { z } from "zod";
 import { FormDrawer, Icons, PageHeaderAction } from "@/components";
 import { FormItem, Col } from "@/components/styles";
-import { useDispatch, useOpen, useSelector, useTranslate } from "@/hooks";
+import {
+    useDispatch,
+    useOpen,
+    usePagination,
+    useSelector,
+    useTranslate,
+} from "@/hooks";
 import { getCurrentRole } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -34,6 +40,9 @@ export type TDepartment = {
 
 export type TDepartmentsResponse = {
     data: TDepartment[];
+    meta: {
+        pageCount: number;
+    };
 };
 
 const columns: ColumnsType<TDepartment> = [
@@ -62,6 +71,7 @@ export default function DepartmentsPage() {
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
     const dispatch = useDispatch();
+    const [page, setPage] = useState<number>(1);
 
     if (!currentRole) {
         return <Navigate to="/login" state={{ from: location }} replace />;
@@ -78,9 +88,13 @@ export default function DepartmentsPage() {
         {
             queryFn: async () =>
                 await axiosPublic
-                    .get(DEPARTMENTS_URL)
+                    .get(DEPARTMENTS_URL(page))
                     .then((res) => res.data.data),
         }
+    );
+    const { currentPage, goTo } = usePagination(
+        "departments-pagination",
+        departments ? departments?.meta.pageCount : 1
     );
     const { mutate, isLoading: isSubmitting } = useMutation<
         TDepartmentsResponse,
@@ -89,7 +103,7 @@ export default function DepartmentsPage() {
     >({
         mutationFn: async (data) =>
             await axiosPrivate
-                .post(DEPARTMENTS_URL, data)
+                .post(DEPARTMENTS_URL(page), data)
                 .then((res) => res.data),
     });
     const {
@@ -116,13 +130,27 @@ export default function DepartmentsPage() {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
-    const [tableParams] = useState({
+    const [tableParams, setTableParams] = useState({
         pagination: {
             current: 1,
             pageSize: 10,
+            total: departments ? departments?.meta.pageCount * 10 : 10,
+            onChange: (e: number) => goTo(e),
         },
     });
     const [search, setSearch] = useState<string>("");
+
+    useEffect(() => {
+        setPage(currentPage);
+        setTableParams({
+            ...tableParams,
+            pagination: { ...tableParams.pagination, current: currentPage },
+        });
+    }, [currentPage]);
+
+    useEffect(() => {
+        refetch();
+    }, [page]);
 
     useEffect(() => {
         return () => {

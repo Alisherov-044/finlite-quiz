@@ -163,6 +163,7 @@ export default function ExamResultPage() {
                 </Flex>
             </div>
             <div className="overflow-scroll pl-4 lg:container lg:mx-auto lg:px-5">
+                {/* @ts-ignore */}
                 <QuizResult quizzes={formattedData} />
             </div>
             <div className="container">

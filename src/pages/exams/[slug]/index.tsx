@@ -1,25 +1,44 @@
 import { debounce } from "lodash";
 import { Icons, UserResultsCard, UserResultsCardSkeleton } from "@/components";
-import { useTranslate } from "@/hooks";
-import { options } from "@/components/data";
-import { Empty, Flex, Input, Select, Typography } from "antd";
+import { useDispatch, useTranslate } from "@/hooks";
+import { Empty, Flex, Input, Typography } from "antd";
 import { useQuery } from "react-query";
 import { axiosPublic } from "@/lib";
 import { STUDENTS_URL } from "@/utils/urls";
 import { type ChangeEvent, useEffect, useMemo, useState } from "react";
 import type { TStudentsResponse } from "@/pages/students";
+import { AxiosError } from "axios";
+import { setAuth } from "@/redux/slices/authSlice";
+import { Navigate } from "react-router-dom";
 
 export default function ExamsDetailsPage() {
     const { t } = useTranslate();
     const [search, setSearch] = useState<string>("");
-    const [_, setFilter] = useState<string>("");
-    const { data: students, isLoading: isLoading } =
-        useQuery<TStudentsResponse>("students", {
-            queryFn: async () =>
-                await axiosPublic
-                    .get(STUDENTS_URL)
-                    .then((res) => res.data.data),
-        });
+    const dispatch = useDispatch();
+    const {
+        data: students,
+        isLoading: isLoading,
+        error,
+    } = useQuery<TStudentsResponse, AxiosError<Error>>("students", {
+        queryFn: async () =>
+            await axiosPublic.get(STUDENTS_URL()).then((res) => res.data.data),
+    });
+
+    // @ts-ignore
+    if (error?.response?.data.error === "JWT_EXPIRED") {
+        dispatch(
+            setAuth({
+                id: -1,
+                roles: [],
+                isAuthenticated: false,
+                access_token: "",
+                refresh_token: "",
+                name: undefined,
+                phone_number: undefined,
+            })
+        );
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
 
     useEffect(() => {
         return () => {
@@ -45,14 +64,6 @@ export default function ExamsDetailsPage() {
                         <Typography className="!text-sm font-bold !text-blue-900">
                             {t("O'qituvchilar ro'yxati")}
                         </Typography>
-                        <Select
-                            placeholder={t("Saralash")}
-                            suffixIcon={<Icons.arrow.select />}
-                            prefixCls="sort-select"
-                            placement="bottomRight"
-                            options={options}
-                            onChange={(value) => setFilter(value)}
-                        />
                     </Flex>
                     <Input
                         prefix={<Icons.search />}

@@ -72,9 +72,8 @@ export default function PracticeDetailsPage() {
         dispatch(finishQuiz());
         if (quizzes) {
             // @ts-ignore
-            dispatch( setQuizData(quizzes.data.practice_questions as TType[]));
-            console.log(quizzes , "quzizza");
-            
+            dispatch(setQuizData(quizzes.data.practice_questions as TType[]));
+            console.log(quizzes, "quzizza");
         }
         navigate(`/practice/quiz/${slug}/result`);
     }
@@ -116,7 +115,7 @@ export default function PracticeDetailsPage() {
                                         item.practice_question_id ===
                                         quizzes.data.practice_questions[
                                             currentTest - 1
-                                        ].question.id
+                                        ].id
                                 )?.variant_id as number
                             }
                         />

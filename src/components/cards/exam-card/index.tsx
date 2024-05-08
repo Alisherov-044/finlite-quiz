@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { TimeUnit } from "@/types";
 import { Button, Flex, Typography } from "antd";
 import { Confirmation, CountDown, Icons } from "@/components";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
@@ -10,13 +9,7 @@ import {
     useSelector,
     useTranslate,
 } from "@/hooks";
-import {
-    convertTime,
-    formatDate,
-    formatNumber,
-    formatTime,
-    getCurrentRole,
-} from "@/utils";
+import { formatDate, formatNumber, formatTime, getCurrentRole } from "@/utils";
 import { setDurations } from "@/redux/slices/examSlice";
 import {
     clearQuiz,
@@ -66,13 +59,8 @@ export function ExamCard({
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const timePeriod = new Date(starting_date).getTime() - new Date().getTime();
-    const { time, start } = useCountDown(
-        convertTime(
-            timePeriod > 0 ? timePeriod : 0,
-            TimeUnit.Millisecond,
-            TimeUnit.Second
-        )
-    );
+    const { time, start } = useCountDown(timePeriod / 1000);
+
     const duration = new Date(ending_date).getTime() - new Date().getTime();
     const timeForExam =
         new Date(ending_date).getTime() - new Date(starting_date).getTime();
@@ -140,7 +128,7 @@ export function ExamCard({
                         {t("O'chirish")}
                     </button>
                 )}
-                {time === 0 ? (
+                {time <= 0 ? (
                     <Button
                         className="!py-3"
                         onClick={() =>

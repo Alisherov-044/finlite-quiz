@@ -114,7 +114,7 @@ export const routes: TRoutes = {
             id: 11,
             path: "/groups",
             element: <GroupsPage />,
-            roles: userRoles.admin,
+            roles: [...userRoles.admin, ...userRoles.teacher],
         },
         {
             id: 12,

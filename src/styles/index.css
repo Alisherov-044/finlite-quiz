@@ -299,7 +299,7 @@
 }
 
 .ant-pagination {
-    @apply !justify-center;
+    @apply !justify-center !py-5;
 }
 
 .ant-pagination-item {

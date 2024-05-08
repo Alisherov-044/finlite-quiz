@@ -4,10 +4,10 @@ import {
     useActive,
     useDispatch,
     useOpen,
+    usePagination,
     useSelector,
     useTranslate,
 } from "@/hooks";
-import { options } from "@/components/data";
 import {
     Confirmation,
     FormDrawer,
@@ -26,6 +26,7 @@ import {
     Flex,
     Form,
     Input,
+    Pagination,
     Row,
     Select,
     Typography,
@@ -70,6 +71,9 @@ export const StudentFormScheme = z.object({
 
 export type TStudentsResponse = {
     data: TUser[];
+    meta: {
+        pageCount: number;
+    };
 };
 
 export type TStudentsRequest = z.infer<typeof StudentFormScheme> & {
@@ -81,6 +85,7 @@ export default function StudentsPage() {
     const { roles, access_token } = useSelector((state) => state.auth);
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
+    const [page, setPage] = useState<number>(1);
 
     if (!currentRole) {
         return <Navigate to="/login" state={{ from: location }} replace />;
@@ -101,7 +106,7 @@ export default function StudentsPage() {
     } = useQuery<TStudentsResponse, AxiosError<{ error: string }>>("students", {
         queryFn: async () =>
             await axiosPrivate
-                .get(STUDENTS_URL, {
+                .get(STUDENTS_URL(page), {
                     headers: {
                         Authorization: `Bearer ${access_token}`,
                     },
@@ -112,7 +117,7 @@ export default function StudentsPage() {
         useQuery<TGroupsResponse>("groups", {
             queryFn: async () =>
                 await axiosPrivate
-                    .get(GROUPS_URL, {
+                    .get(GROUPS_URL(), {
                         headers: {
                             Authorization: `Bearer ${access_token}`,
                         },
@@ -126,7 +131,7 @@ export default function StudentsPage() {
     >({
         mutationFn: async (data) =>
             await axiosPrivate
-                .post(STUDENTS_URL, data, {
+                .post(STUDENTS_URL(), data, {
                     headers: {
                         Authorization: `Bearer ${access_token}`,
                     },
@@ -190,7 +195,18 @@ export default function StudentsPage() {
     const dispatch = useDispatch();
     const { currentUploadedImage } = useSelector((state) => state.upload);
     const [search, setSearch] = useState<string>("");
-    const [_, setFilter] = useState<string>("");
+    const { currentPage, goTo } = usePagination(
+        "students-pagination",
+        students ? students?.meta.pageCount : 1
+    );
+
+    useEffect(() => {
+        setPage(currentPage);
+    }, [currentPage]);
+
+    useEffect(() => {
+        refetch();
+    }, [page]);
 
     if (error?.response?.data.error === "JWT_EXPIRED") {
         dispatch(
@@ -395,7 +411,7 @@ export default function StudentsPage() {
     return (
         <main className="pb-10">
             <div className="flex flex-col container">
-                {currentRole === "admin" ? (
+                {["admin", "teacher"].includes(currentRole) ? (
                     <PageHeaderAction
                         title={t("O'quvchi qo'shish")}
                         btnText={t("Qo'shish")}
@@ -407,14 +423,6 @@ export default function StudentsPage() {
                         <Typography className="!text-sm font-bold !text-blue-900">
                             {t("O'quvchilar ro'yxati")}
                         </Typography>
-                        <Select
-                            placeholder={t("Saralash")}
-                            suffixIcon={<Icons.arrow.select />}
-                            prefixCls="sort-select"
-                            placement="bottomRight"
-                            options={options}
-                            onChange={(value) => setFilter(value)}
-                        />
                     </Flex>
                     <Input
                         prefix={<Icons.search />}
@@ -445,6 +453,13 @@ export default function StudentsPage() {
                         </Flex>
                     )}
                 </Flex>
+                <Pagination
+                    className="flex items-center justify-center"
+                    current={currentPage}
+                    onChange={(e) => goTo(e)}
+                    pageSize={10}
+                    total={students && 10 * students.meta.pageCount}
+                />
 
                 <FormDrawer
                     open={isOpen || !!editStudent}

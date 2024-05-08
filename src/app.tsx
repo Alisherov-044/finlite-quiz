@@ -3,23 +3,9 @@ import { routes } from "@/routes";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { Layout, Loading, RequireAuth } from "@/components";
 import { useDispatch, useSelector } from "@/hooks";
-import {
-    clearQuiz,
-    clearQuizData,
-    endQuiz,
-    finishQuiz,
-    setCurrentTest,
-    setLeaving,
-    unfinishQuiz,
-} from "@/redux/slices/quizSlice";
-import { setPreviousLocation } from "@/redux/slices/routeSlice";
-import { close as closeSidebar } from "@/redux/slices/sidebarSlice";
-import { setPractice } from "./redux/slices/practiceSlice";
-import {
-    finishQuestions,
-    setDurations,
-    setExamId,
-} from "./redux/slices/examSlice";
+import { setLeaving } from "./redux/slices/quizSlice";
+import { setPreviousLocation } from "./redux/slices/routeSlice";
+import { close as closeSidebar } from "./redux/slices/sidebarSlice";
 
 export function App() {
     const location = useLocation();
@@ -74,24 +60,13 @@ export function App() {
         }
 
         dispatch(closeSidebar());
-
-        dispatch(
-            setPractice({
-                category_ids: undefined,
-                question_count: undefined,
-            })
-        );
-        dispatch(setExamId(undefined));
-        dispatch(clearQuiz());
-        dispatch(unfinishQuiz());
-        dispatch(setCurrentTest(1));
-        dispatch(setLeaving(false));
-        dispatch(finishQuestions());
-        dispatch(finishQuiz());
-        dispatch(clearQuizData());
-        dispatch(clearQuiz());
-        dispatch(endQuiz(true));
-        dispatch(setDurations(0));
+        localStorage.setItem("students-pagination", "1");
+        localStorage.setItem("teachers-pagination", "1");
+        localStorage.setItem("practice-pagination", "1");
+        localStorage.setItem("exams-pagination", "1");
+        localStorage.setItem("exam-categories-pagination", "1");
+        localStorage.setItem("departments-pagination", "1");
+        localStorage.setItem("groups-pagination", "1");
     }, [location]);
 
     return (

@@ -38,6 +38,18 @@ export const sidebarLinks: TSidebarLinks = {
             title: "Imtihon natijalari",
             Icon: Icons.list,
         },
+        {
+            id: 2,
+            link: "/students",
+            title: "O'quvchilar",
+            Icon: Icons.user.check,
+        },
+        {
+            id: 3,
+            link: "/groups",
+            title: "Guruhlar",
+            Icon: Icons.user.group,
+        },
     ],
     admin: [
         {

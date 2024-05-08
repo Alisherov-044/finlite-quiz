@@ -15,6 +15,27 @@ export type TType = {
         question_id: number;
     }[];
 };
+
+export type TResult = {
+    answer: {
+        id: number;
+        content: string;
+        is_right: boolean;
+    };
+    correct_variant: {
+        id: number;
+        content: string;
+        is_right: boolean;
+    };
+    id: number;
+    description: string;
+    variants: {
+        id: number;
+        content: string;
+        is_right: boolean;
+        question_id: number;
+    }[];
+};
 // export type TTypeFinish = {
 //     id: number;
 //     user_id:number;
@@ -30,8 +51,11 @@ export type TType = {
 export type QuizState = {
     id?: number;
     data: TType[];
+    result: TResult[];
     items: TSelectedQuiz[];
     finished?: boolean;
+    correct_answers?: number;
+    questions_count?: number;
     currentTest: number;
     isLeaving: boolean;
     isQuizEnded: boolean;
@@ -40,6 +64,7 @@ export type QuizState = {
 const initialState: QuizState = {
     data: [],
     items: [],
+    result: [],
     finished: false,
     currentTest: 1,
     isLeaving: false,
@@ -87,8 +112,17 @@ export const quizSlice = createSlice({
         setQuizData: (state, { payload }: PayloadAction<TType[]>) => {
             state.data = payload;
         },
+        setResult: (state, { payload }: PayloadAction<TResult[]>) => {
+            state.result = payload;
+        },
         setLeaving: (state, { payload }: PayloadAction<boolean>) => {
             state.isLeaving = payload;
+        },
+        setCorrectAnswers: (state, { payload }: PayloadAction<number>) => {
+            state.correct_answers = payload;
+        },
+        setQuestionsCount: (state, { payload }: PayloadAction<number>) => {
+            state.questions_count = payload;
         },
         clearQuizData: (state) => {
             state.data = [];
@@ -112,5 +146,8 @@ export const {
     clearQuizData,
     setLeaving,
     endQuiz,
+    setResult,
+    setCorrectAnswers,
+    setQuestionsCount,
     setQuizId,
 } = quizSlice.actions;

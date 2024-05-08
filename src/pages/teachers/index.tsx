@@ -4,10 +4,10 @@ import {
     useActive,
     useDispatch,
     useOpen,
+    usePagination,
     useSelector,
     useTranslate,
 } from "@/hooks";
-import { options } from "@/components/data";
 import {
     Confirmation,
     FormDrawer,
@@ -26,7 +26,7 @@ import {
     Flex,
     Form,
     Input,
-    Select,
+    Pagination,
     Typography,
     notification,
 } from "antd";
@@ -57,6 +57,9 @@ export const TeacherFormScheme = z.object({
 
 export type TTeachersResponse = {
     data: TUser[];
+    meta: {
+        pageCount: number;
+    };
 };
 
 export type TTeachersRequest = z.infer<typeof TeacherFormScheme> & {
@@ -150,8 +153,20 @@ export default function TeachersPage() {
         },
     });
     const [search, setSearch] = useState<string>("");
-    const [_, setFilter] = useState<string>("");
+    const [page, setPage] = useState<number>(1);
     const dispatch = useDispatch();
+    const { currentPage, goTo } = usePagination(
+        "teachers-pagination",
+        teachers ? teachers?.meta.pageCount : 1
+    );
+
+    useEffect(() => {
+        setPage(currentPage);
+    }, [currentPage]);
+
+    useEffect(() => {
+        refetch();
+    }, [page]);
 
     if (error?.response?.data.error === "JWT_EXPIRED") {
         dispatch(
@@ -352,14 +367,6 @@ export default function TeachersPage() {
                         <Typography className="!text-sm font-bold !text-blue-900">
                             {t("O'qituvchilar ro'yxati")}
                         </Typography>
-                        <Select
-                            placeholder={t("Saralash")}
-                            suffixIcon={<Icons.arrow.select />}
-                            prefixCls="sort-select"
-                            placement="bottomRight"
-                            options={options}
-                            onChange={(value) => setFilter(value)}
-                        />
                     </Flex>
                     <Input
                         prefix={<Icons.search />}
@@ -388,6 +395,13 @@ export default function TeachersPage() {
                         </Flex>
                     )}
                 </Flex>
+                <Pagination
+                    className="flex items-center justify-center"
+                    current={currentPage}
+                    onChange={(e) => goTo(e)}
+                    pageSize={10}
+                    total={teachers && 10 * teachers.meta.pageCount}
+                />
 
                 <FormDrawer
                     open={isOpen || !!editTeacher}
