@@ -72,6 +72,7 @@ export default function ExamCategoriesPage() {
     const location = useLocation();
     const dispatch = useDispatch();
     const [page, setPage] = useState<number>(1);
+    const [search, setSearch] = useState<string>("");
 
     if (!currentRole) {
         return <Navigate to="/login" state={{ from: location }} replace />;
@@ -88,11 +89,17 @@ export default function ExamCategoriesPage() {
         {
             queryFn: async () =>
                 await axiosPublic
-                    .get(EXAM_CATEGORIES_URL(page), {
-                        headers: {
-                            Authorization: `Bearer ${access_token}`,
-                        },
-                    })
+                    .get(
+                        EXAM_CATEGORIES_URL(
+                            page,
+                            search.trim().replaceAll(" ", "")
+                        ),
+                        {
+                            headers: {
+                                Authorization: `Bearer ${access_token}`,
+                            },
+                        }
+                    )
                     .then((res) => res.data.data),
         }
     );
@@ -148,7 +155,18 @@ export default function ExamCategoriesPage() {
             onChange: (e: number) => goTo(e),
         },
     });
-    const [search, setSearch] = useState<string>("");
+
+    useEffect(() => {
+        setPage(currentPage);
+        setTableParams({
+            ...tableParams,
+            pagination: { ...tableParams.pagination, current: currentPage },
+        });
+    }, [currentPage]);
+
+    useEffect(() => {
+        refetch();
+    }, [page, search]);
 
     useEffect(() => {
         setPage(currentPage);
@@ -234,20 +252,7 @@ export default function ExamCategoriesPage() {
                         loading={isLoading}
                         dataSource={
                             examCategories?.data && examCategories?.data?.length
-                                ? examCategories?.data?.filter((item) =>
-                                      search
-                                          ? item.name
-                                                .toLocaleLowerCase()
-                                                .trim()
-                                                .replaceAll(" ", "")
-                                                .includes(
-                                                    search
-                                                        .toLocaleLowerCase()
-                                                        .trim()
-                                                        .replaceAll(" ", "")
-                                                )
-                                          : true
-                                  )
+                                ? examCategories?.data
                                 : []
                         }
                         pagination={tableParams.pagination}

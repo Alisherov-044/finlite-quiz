@@ -126,6 +126,7 @@ export default function TestsPage() {
     );
     const [page, setPage] = useState<number>(1);
     const dispatch = useDispatch();
+    const [search, setSearch] = useState<string>("");
 
     if (!currentRole) {
         return <Navigate to="/login" state={{ from: location }} replace />;
@@ -139,7 +140,9 @@ export default function TestsPage() {
         error,
     } = useQuery<TTestsResponse, AxiosError<{ error: string }>>("tests", {
         queryFn: async () =>
-            await axiosPublic.get(TESTS_URL(page)).then((res) => res.data.data),
+            await axiosPublic
+                .get(TESTS_URL(page, search.trim().replaceAll(" ", "")))
+                .then((res) => res.data.data),
     });
     const { currentPage, goTo } = usePagination(
         "tests-pagination",
@@ -169,6 +172,14 @@ export default function TestsPage() {
     } = useForm<z.infer<typeof TestsFormScheme>>({
         resolver: zodResolver(TestsFormScheme),
     });
+    const [tableParams, setTableParams] = useState({
+        pagination: {
+            current: currentPage,
+            pageSize: 10,
+            total: tests ? tests?.meta.pageCount * 10 : 10,
+            onChange: (e: number) => goTo(e),
+        },
+    });
 
     if (error?.response?.data.error === "JWT_EXPIRED") {
         dispatch(
@@ -185,15 +196,17 @@ export default function TestsPage() {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
-    const [tableParams, setTableParams] = useState({
-        pagination: {
-            current: currentPage,
-            pageSize: 10,
-            total: tests ? tests?.meta.pageCount * 10 : 10,
-            onChange: (e: number) => goTo(e),
-        },
-    });
-    const [search, setSearch] = useState<string>("");
+    useEffect(() => {
+        setPage(currentPage);
+        setTableParams({
+            ...tableParams,
+            pagination: { ...tableParams.pagination, current: currentPage },
+        });
+    }, [currentPage]);
+
+    useEffect(() => {
+        refetch();
+    }, [page, search]);
 
     useEffect(() => {
         return () => {
@@ -309,23 +322,7 @@ export default function TestsPage() {
                         }}
                         columns={columns}
                         loading={isLoading}
-                        dataSource={
-                            tests?.data &&
-                            tests.data.filter((item) =>
-                                search
-                                    ? item.description
-                                          .toLocaleLowerCase()
-                                          .trim()
-                                          .replaceAll(" ", "")
-                                          .includes(
-                                              search
-                                                  .toLocaleLowerCase()
-                                                  .trim()
-                                                  .replaceAll(" ", "")
-                                          )
-                                    : true
-                            )
-                        }
+                        dataSource={tests?.data ? tests.data : []}
                         pagination={tableParams.pagination}
                     />
                 </Flex>

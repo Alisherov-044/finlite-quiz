@@ -92,7 +92,7 @@ export default function TeachersPage() {
     } = useQuery<TTeachersResponse, AxiosError<{ error: string }>>("teachers", {
         queryFn: async () =>
             await axiosPrivate
-                .get(TEACHERS_URL(search), {
+                .get(TEACHERS_URL(search.trim().replaceAll(" ", "")), {
                     headers: {
                         Authorization: `Bearer ${access_token}`,
                     },

@@ -89,7 +89,9 @@ export default function DepartmentsPage() {
         {
             queryFn: async () =>
                 await axiosPublic
-                    .get(DEPARTMENTS_URL(page, search))
+                    .get(
+                        DEPARTMENTS_URL(page, search.trim().replaceAll(" ", ""))
+                    )
                     .then((res) => res.data.data),
         }
     );

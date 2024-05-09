@@ -73,7 +73,7 @@ export default function GroupsPage() {
     } = useQuery<TGroupsResponse, AxiosError<{ error: string }>>("groups", {
         queryFn: async () =>
             await axiosPrivate
-                .get(GROUPS_URL(page, search), {
+                .get(GROUPS_URL(page, search.trim().replaceAll(" ", "")), {
                     headers: {
                         Authorization: `Bearer ${access_token}`,
                     },
@@ -211,35 +211,19 @@ export default function GroupsPage() {
                             <GroupCardSkeleton key={key} />
                         ))
                     ) : groups?.data && groups.data.length ? (
-                        groups.data
-                            .filter((group) =>
-                                search.length
-                                    ? group.name
-                                          .toLocaleLowerCase()
-                                          .trim()
-                                          .replaceAll(" ", "")
-                                          .includes(
-                                              search
-                                                  .toLocaleLowerCase()
-                                                  .trim()
-                                                  .replaceAll(" ", "")
+                        groups.data.map((group) => (
+                            <GroupCard
+                                group={group}
+                                students={
+                                    students?.data && students?.data.length
+                                        ? students?.data.filter(
+                                              (student) =>
+                                                  student.group_id === group.id
                                           )
-                                    : true
-                            )
-                            .map((group) => (
-                                <GroupCard
-                                    group={group}
-                                    students={
-                                        students?.data && students?.data.length
-                                            ? students?.data.filter(
-                                                  (student) =>
-                                                      student.group_id ===
-                                                      group.id
-                                              )
-                                            : []
-                                    }
-                                />
-                            ))
+                                        : []
+                                }
+                            />
+                        ))
                     ) : (
                         <Flex className="flex-auto items-center justify-center">
                             <Empty description={t("Ma'lumotlar mavjud emas")} />

@@ -107,7 +107,7 @@ export default function StudentsPage() {
     } = useQuery<TStudentsResponse, AxiosError<{ error: string }>>("students", {
         queryFn: async () =>
             await axiosPrivate
-                .get(STUDENTS_URL(page, search), {
+                .get(STUDENTS_URL(page, search.trim().replaceAll(" ", "")), {
                     headers: {
                         Authorization: `Bearer ${access_token}`,
                     },
