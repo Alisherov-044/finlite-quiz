@@ -34,7 +34,8 @@ export function Header() {
             </Flex>
             <Logout className="hidden lg:flex" />
             <Avatar className="w-10 h-10 flex-shrink-0 bg-orange-900 lg:hidden">
-                SA
+                {name?.split(" ")[0][0]}
+                {name?.split(" ")[1][0]}
             </Avatar>
         </header>
     );
