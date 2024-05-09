@@ -44,12 +44,6 @@ export const sidebarLinks: TSidebarLinks = {
             title: "O'quvchilar",
             Icon: Icons.user.check,
         },
-        {
-            id: 3,
-            link: "/groups",
-            title: "Guruhlar",
-            Icon: Icons.user.group,
-        },
     ],
     admin: [
         {

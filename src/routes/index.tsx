@@ -97,7 +97,7 @@ export const routes: TRoutes = {
             id: 8,
             path: "/tests",
             element: <TestsPage />,
-            roles: [...userRoles.admin, ...userRoles.teacher],
+            roles: [...userRoles.admin],
         },
         {
             id: 9,
@@ -115,7 +115,7 @@ export const routes: TRoutes = {
             id: 11,
             path: "/groups",
             element: <GroupsPage />,
-            roles: [...userRoles.admin, ...userRoles.teacher],
+            roles: [...userRoles.admin],
         },
         {
             id: 12,

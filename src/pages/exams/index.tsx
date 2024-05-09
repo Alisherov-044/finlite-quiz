@@ -359,11 +359,34 @@ export default function ExamsPage() {
         dispatch(setCurrentUploadedImageOrigin(null));
     }
 
-    const filteredExams = exams?.data.filter((exam) =>
-        active === "incomming"
-            ? new Date(exam.start).getTime() - new Date().getTime() > 0
-            : new Date(exam.end).getTime() - new Date().getTime() <= 0
-    );
+    const filteredExams = useMemo(() => {
+        if (active === "incomming") {
+            return exams?.data.filter(
+                (exam) =>
+                    new Date(exam.start).getTime() - new Date().getTime() > 0
+            );
+        } else if (active === "completed") {
+            return exams?.data.filter(
+                (exam) =>
+                    new Date(exam.end).getTime() -
+                        (new Date().getTime() +
+                            new Date(exam.end).getTime() -
+                            new Date(exam.start).getTime()) <=
+                    0
+            );
+        } else if (active === "active") {
+            return exams?.data.filter(
+                (exam) =>
+                    new Date(exam.end).getTime() +
+                        new Date(exam.end).getTime() -
+                        new Date(exam.start).getTime() -
+                        new Date().getTime() >
+                    0
+            );
+        }
+
+        return exams?.data;
+    }, [active]);
 
     useEffect(() => {
         refetchExam();
@@ -428,11 +451,19 @@ export default function ExamsPage() {
                     {t("Kutilayotgan imtihonlar")}
                 </button>
                 <button
-                    onClick={() => setActive("completed")}
-                    className={clsx(active === "completed" && "active")}
+                    onClick={() => setActive("active")}
+                    className={clsx(active === "active" && "active")}
                 >
                     {t("Faol imtihonlar")}
                 </button>
+                {["admin", "teacher"].includes(currentRole) && (
+                    <button
+                        onClick={() => setActive("completed")}
+                        className={clsx(active === "completed" && "active")}
+                    >
+                        {t("Tugallangan imtihonlar")}
+                    </button>
+                )}
             </FilterTab>
             <main className="pb-10">
                 <div className="flex flex-col container">
