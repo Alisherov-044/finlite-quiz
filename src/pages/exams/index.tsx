@@ -359,27 +359,59 @@ export default function ExamsPage() {
         dispatch(setCurrentUploadedImageOrigin(null));
     }
 
+    let options = {
+        timeZone: "Asia/Tashkent",
+        hour12: false,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+    };
+    // @ts-ignore
+    let formatter = new Intl.DateTimeFormat("en-US", options);
+
     const filteredExams = useMemo(() => {
         if (active === "incomming") {
             return exams?.data.filter(
                 (exam) =>
-                    new Date(exam.start).getTime() - new Date().getTime() > 0
+                    new Date(formatter.format(new Date(exam.start))).getTime() -
+                        new Date().getTime() >
+                    0
             );
         } else if (active === "completed") {
             return exams?.data.filter(
                 (exam) =>
-                    new Date(exam.end).getTime() -
+                    new Date(formatter.format(new Date(exam.end))).getTime() -
                         (new Date().getTime() +
-                            new Date(exam.end).getTime() -
-                            new Date(exam.start).getTime()) <=
-                    0
+                            new Date(
+                                formatter.format(new Date(exam.end))
+                            ).getTime() -
+                            new Date(
+                                formatter.format(new Date(exam.start))
+                            ).getTime()) <=
+                        0 &&
+                    new Date(formatter.format(new Date(exam.end))).getTime() +
+                        new Date(
+                            formatter.format(new Date(exam.end))
+                        ).getTime() -
+                        new Date(
+                            formatter.format(new Date(exam.start))
+                        ).getTime() -
+                        new Date().getTime() <=
+                        0
             );
         } else if (active === "active") {
             return exams?.data.filter(
                 (exam) =>
-                    new Date(exam.end).getTime() +
-                        new Date(exam.end).getTime() -
-                        new Date(exam.start).getTime() -
+                    new Date(formatter.format(new Date(exam.end))).getTime() +
+                        new Date(
+                            formatter.format(new Date(exam.end))
+                        ).getTime() -
+                        new Date(
+                            formatter.format(new Date(exam.start))
+                        ).getTime() -
                         new Date().getTime() >
                     0
             );

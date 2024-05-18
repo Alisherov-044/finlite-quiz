@@ -117,7 +117,7 @@ export const TestsFormScheme = z.object({
 
 export default function TestsPage() {
     const { t } = useTranslate();
-    const { roles } = useSelector((state) => state.auth);
+    const { roles, access_token } = useSelector((state) => state.auth);
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
     const [currectAnswer, setCurrectAnswer] = useState<string | null>(null);
@@ -141,7 +141,11 @@ export default function TestsPage() {
     } = useQuery<TTestsResponse, AxiosError<{ error: string }>>("tests", {
         queryFn: async () =>
             await axiosPublic
-                .get(TESTS_URL(page, search.trim().replaceAll(" ", "")))
+                .get(TESTS_URL(page, search.trim().replaceAll(" ", "")), {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
                 .then((res) => res.data.data),
     });
     const { currentPage, goTo } = usePagination(

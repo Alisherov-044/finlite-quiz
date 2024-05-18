@@ -68,7 +68,7 @@ export const DepartmentsFormScheme = z.object({
 
 export default function DepartmentsPage() {
     const { t } = useTranslate();
-    const { roles } = useSelector((state) => state.auth);
+    const { roles, access_token } = useSelector((state) => state.auth);
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
     const dispatch = useDispatch();
@@ -91,7 +91,15 @@ export default function DepartmentsPage() {
             queryFn: async () =>
                 await axiosPublic
                     .get(
-                        DEPARTMENTS_URL(page, search.trim().replaceAll(" ", ""))
+                        DEPARTMENTS_URL(
+                            page,
+                            search.trim().replaceAll(" ", "")
+                        ),
+                        {
+                            headers: {
+                                Authorization: `Bearer ${access_token}`,
+                            },
+                        }
                     )
                     .then((res) => res.data.data),
         }
