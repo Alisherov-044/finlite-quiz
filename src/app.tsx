@@ -30,6 +30,8 @@ export function App() {
                 previousLocation.startsWith("/exams/quiz/") &&
                 !previousLocation.endsWith("/result");
 
+            if (location.pathname === "/login") return;
+
             if (
                 !isQuizEnded &&
                 isQuizPage &&

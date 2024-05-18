@@ -1,7 +1,7 @@
 import { z } from "zod";
 import InputMask from "react-input-mask";
 import { Icons, Loading, Logo } from "@/components";
-import { useDispatch, useSelector, useTranslate } from "@/hooks";
+import { useDispatch, useTranslate } from "@/hooks";
 import { Button, Flex, Form, Input, Typography, notification } from "antd";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,7 +11,8 @@ import { axiosPublic } from "@/lib";
 import { LOGIN_URL } from "@/utils/urls";
 import { setAuth } from "@/redux/slices/authSlice";
 import { parsePhoneNumber } from "@/utils";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export const LoginFormScheme = z.object({
     phone_number: z
@@ -34,13 +35,7 @@ export type TResponse = {
 };
 
 export default function LoginPage() {
-    const { isAuthenticated } = useSelector((state) => state.auth);
     const navigate = useNavigate();
-    const location = useLocation();
-
-    if (isAuthenticated) {
-        return <Navigate to="/" state={{ from: location }} replace />;
-    }
 
     const { t } = useTranslate();
     const {
@@ -98,6 +93,12 @@ export default function LoginPage() {
             reset();
         }
     };
+
+    useEffect(() => {
+        localStorage.clear();
+        localStorage.removeItem("persist:root");
+        localStorage.clear();
+    }, []);
 
     if (isLogin) return <Loading />;
 

@@ -20,9 +20,17 @@ export type UserResultsCardProps = {
     id: number;
     userId: number;
     result: TResult;
+    first_name: string;
+    last_name: string;
 };
 
-export function UserResultsCard({ id, userId, result }: UserResultsCardProps) {
+export function UserResultsCard({
+    id,
+    userId,
+    first_name,
+    last_name,
+    result,
+}: UserResultsCardProps) {
     const { t } = useTranslate();
     const { access_token } = useSelector((state) => state.auth);
     const navigate = useNavigate();
@@ -41,8 +49,8 @@ export function UserResultsCard({ id, userId, result }: UserResultsCardProps) {
     );
     const { correct_answers, incorrect_answers } = result;
     const full_name = useMemo(
-        () => `${user?.first_name} ${user?.last_name}`,
-        [user?.first_name, user?.last_name]
+        () => `${first_name} ${last_name}`,
+        [first_name, last_name]
     );
 
     if (isLoading || !user) return <Loading />;
@@ -50,13 +58,9 @@ export function UserResultsCard({ id, userId, result }: UserResultsCardProps) {
     return (
         <Flex className="items-center justify-between p-3 rounded-2xl shadow-main">
             <Flex className="items-center gap-x-5">
-                <Avatar
-                    className={
-                        user ? generateAvatarColor(user?.first_name) : ""
-                    }
-                >
-                    {user?.first_name[0]}
-                    {user?.last_name[0]}
+                <Avatar className={user ? generateAvatarColor(first_name) : ""}>
+                    {first_name[0].toUpperCase()}
+                    {last_name[0].toUpperCase()}
                 </Avatar>
                 <Flex className="flex-col gap-y-2">
                     <Flex className="items-center gap-x-4">

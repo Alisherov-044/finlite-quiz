@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Icons } from "@/components";
-import { useTranslate } from "@/hooks";
+import { useSelector, useTranslate } from "@/hooks";
 import { tests } from "./data";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,6 +30,8 @@ export function SelectPracticeMode({
     onCancel,
     loading,
 }: SelectPracticeModeProps) {
+    const { access_token } = useSelector((state) => state.auth);
+
     const { t } = useTranslate();
     const {
         control,
@@ -43,7 +45,11 @@ export function SelectPracticeMode({
         useQuery<TDepartmentsResponse>("departments", {
             queryFn: async () =>
                 await axiosPublic
-                    .get(DEPARTMENTS_URL())
+                    .get(DEPARTMENTS_URL(1, "", 50), {
+                        headers: {
+                            Authorization: `Bearer ${access_token}`,
+                        },
+                    })
                     .then((res) => res.data.data),
         });
 

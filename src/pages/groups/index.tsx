@@ -48,6 +48,7 @@ export type TGroupsResponse = {
     data: TGroup[];
     meta: {
         pageCount: number;
+        itemCount: number;
     };
 };
 
@@ -82,7 +83,7 @@ export default function GroupsPage() {
     });
     const { currentPage, goTo } = usePagination(
         "groups-pagination",
-        groups ? groups?.meta.pageCount : 1
+        groups?.meta.itemCount!
     );
     const { data: students, isLoading: isStudentsLoading } =
         useQuery<TStudentsResponse>({
@@ -134,10 +135,12 @@ export default function GroupsPage() {
     }
 
     useEffect(() => {
+        console.log(currentPage);
         setPage(currentPage);
     }, [currentPage]);
 
     useEffect(() => {
+        console.log(page);
         refetch();
     }, [page, search]);
 
@@ -235,7 +238,7 @@ export default function GroupsPage() {
                     current={currentPage}
                     onChange={(e) => goTo(e)}
                     pageSize={10}
-                    total={groups && 10 * groups.meta.pageCount}
+                    total={groups?.meta.itemCount!}
                 />
 
                 <FormDrawer

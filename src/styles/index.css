@@ -328,6 +328,14 @@
     @apply !rounded-none !py-2;
 }
 
+.ant-select.ant-select-multiple {
+    @apply !h-16;
+}
+
+.ant-select-multiple .ant-select-selection-overflow {
+    @apply !h-full overflow-y-scroll;
+}
+
 .ant-select-multiple .ant-select-selector {
     @apply !py-0;
 }

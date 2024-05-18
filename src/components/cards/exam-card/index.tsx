@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Button, Flex, Typography } from "antd";
 import { Confirmation, CountDown, Icons } from "@/components";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
@@ -59,16 +59,38 @@ export function ExamCard({
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
+    let options = {
+        timeZone: "Asia/Tashkent",
+        hour12: false,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+    };
+    // @ts-ignore
+    let formatter = new Intl.DateTimeFormat("en-US", options);
+
     const { t } = useTranslate();
     const { isOpen, open, close } = useOpen();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const timePeriod = new Date(starting_date).getTime() - new Date().getTime();
+    const timePeriod =
+        new Date(formatter.format(new Date(starting_date))).getTime() -
+        new Date().getTime();
     const { time, start } = useCountDown(timePeriod / 1000);
 
-    const duration = new Date(ending_date).getTime() - new Date().getTime();
-    const timeForExam =
-        new Date(ending_date).getTime() - new Date(starting_date).getTime();
+    const duration =
+        new Date(formatter.format(new Date(ending_date))).getTime() -
+        new Date().getTime();
+
+    const timeForExam = useMemo(() => {
+        return (
+            new Date(formatter.format(new Date(ending_date))).getTime() -
+            new Date(formatter.format(new Date(starting_date))).getTime()
+        );
+    }, [starting_date, ending_date]);
     const { hours: timeForExamHours, minutes: timeForExamMinutes } = formatTime(
         timeForExam / 1000
     );
@@ -78,11 +100,10 @@ export function ExamCard({
         minutes: leftMinutes,
         seconds: leftSeconds,
     } = formatTime(time);
-    const {
-        hours: startingHours,
-        minutes: startingMinutes,
-        seconds: startingSeconds,
-    } = formatTime(new Date(starting_date).getTime() / 1000);
+
+    const startingDate = useMemo(() => {
+        return new Date(formatter.format(new Date(starting_date)));
+    }, [starting_date]);
 
     useEffect(() => {
         start();
@@ -92,13 +113,12 @@ export function ExamCard({
         <Flex className="relative items-end justify-between p-6 border shadow-main rounded-2xl">
             <Flex className="flex-col gap-y-2">
                 <Typography>
-                    {t("Boshlanish vaqti")}:{" "}
-                    {formatDate(new Date(starting_date))}
+                    {t("Boshlanish vaqti")}: {formatDate(startingDate)}
                 </Typography>
                 <Typography>
-                    {t("Soat")}: {formatNumber(startingHours)}:
-                    {formatNumber(startingMinutes)}:
-                    {formatNumber(startingSeconds)}
+                    {t("Soat")}: {formatNumber(startingDate.getHours())}:
+                    {formatNumber(startingDate.getMinutes())}:
+                    {formatNumber(startingDate.getSeconds())}
                 </Typography>
                 <Typography>
                     {t("Savollar soni")}: {questions_count}

@@ -1,17 +1,44 @@
 import { Loading, QuizResult } from "@/components";
 import { TUser } from "@/components/cards/user-card";
-import { useSelector, useTranslate } from "@/hooks";
+import { useDispatch, useSelector, useTranslate } from "@/hooks";
 import { axiosPrivate } from "@/lib";
 import { EXAM_RESULT_URL, STUDENTS_EDIT_URL } from "@/utils/urls";
 import { useQuery } from "react-query";
-import { useParams } from "react-router-dom";
-import { TExamResult } from "../[slug]";
+import { Navigate, useLocation, useParams } from "react-router-dom";
 import { Flex, Typography } from "antd";
+import { AxiosError } from "axios";
+import { setAuth } from "@/redux/slices/authSlice";
+
+export type TExamResult = {
+    student_id: number;
+    first_name: string;
+    last_name: string;
+    trues_count: number;
+    wrongs_count: number;
+    answers: {
+        id: number;
+        description: string;
+        correct_variant: {
+            id: number;
+            content: string;
+            is_right: boolean;
+        };
+        answer: {
+            variant: {
+                id: number;
+                content: string;
+                is_right: boolean;
+            };
+        } | null;
+    }[];
+};
 
 export default function ExamUserResultPage() {
     const { id, userId } = useParams();
     const { access_token } = useSelector((state) => state.auth);
     const { t } = useTranslate();
+    const location = useLocation();
+    const dispatch = useDispatch();
 
     const { data: user, isLoading: isUserLoading } = useQuery<TUser>(
         "student",
@@ -27,19 +54,36 @@ export default function ExamUserResultPage() {
         }
     );
 
-    const { data: result, isLoading: isResultLoading } = useQuery<TExamResult>(
-        "result",
-        {
-            queryFn: async () =>
-                await axiosPrivate
-                    .get(EXAM_RESULT_URL(Number(id), Number(userId)), {
-                        headers: {
-                            Authorization: `Bearer ${access_token}`,
-                        },
-                    })
-                    .then((res) => res.data.data),
-        }
-    );
+    const {
+        data: result,
+        isLoading: isResultLoading,
+        error,
+    } = useQuery<TExamResult, AxiosError<Error>>("result", {
+        queryFn: async () =>
+            await axiosPrivate
+                .get(EXAM_RESULT_URL(Number(id), Number(userId)), {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                })
+                .then((res) => res.data.data),
+    });
+
+    // @ts-ignore
+    if (error?.response?.data.error === "JWT_EXPIRED") {
+        dispatch(
+            setAuth({
+                id: -1,
+                roles: [],
+                isAuthenticated: false,
+                access_token: "",
+                refresh_token: "",
+                name: undefined,
+                phone_number: undefined,
+            })
+        );
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
 
     if (isUserLoading || isResultLoading) return <Loading />;
 
@@ -67,8 +111,13 @@ export default function ExamUserResultPage() {
                         </Typography>
                     </Flex>
                 </Flex>
-                {/* @ts-ignore */}
-                <QuizResult quizzes={result?.answers} />
+                <QuizResult
+                    // @ts-ignore
+                    quizzes={result?.answers.map((item) => ({
+                        ...item,
+                        answer: item.answer?.variant,
+                    }))}
+                />
             </div>
         </main>
     );

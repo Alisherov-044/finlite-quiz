@@ -32,12 +32,12 @@ export function UserCard({ user, onEdit, onDelete }: UserCardProps) {
         <Flex className="items-center justify-between p-3 rounded-2xl shadow-main">
             <Flex className="items-center gap-x-5">
                 <Avatar className={generateAvatarColor(first_name)}>
-                    {first_name[0]}
-                    {last_name[0]}
+                    {first_name[0].toUpperCase()}
+                    {last_name[0].toUpperCase()}
                 </Avatar>
                 <Flex className="flex-col gap-y-2">
                     <Flex className="items-center gap-x-4">
-                        <Typography className="font-semibold text-lg">
+                        <Typography className="font-semibold text-lg capitalize">
                             {full_name}
                         </Typography>
                         {role === "student" && (

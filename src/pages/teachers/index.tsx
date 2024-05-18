@@ -59,6 +59,7 @@ export type TTeachersResponse = {
     data: TUser[];
     meta: {
         pageCount: number;
+        itemCount: number;
     };
 };
 
@@ -71,6 +72,7 @@ export default function TeachersPage() {
     const { roles, access_token } = useSelector((state) => state.auth);
     const currentRole = getCurrentRole(roles);
     const location = useLocation();
+    const [page, setPage] = useState<number>(1);
     const [search, setSearch] = useState<string>("");
 
     if (!currentRole) {
@@ -92,7 +94,7 @@ export default function TeachersPage() {
     } = useQuery<TTeachersResponse, AxiosError<{ error: string }>>("teachers", {
         queryFn: async () =>
             await axiosPrivate
-                .get(TEACHERS_URL(search.trim().replaceAll(" ", "")), {
+                .get(TEACHERS_URL(page, search.trim().replaceAll(" ", "")), {
                     headers: {
                         Authorization: `Bearer ${access_token}`,
                     },
@@ -153,11 +155,10 @@ export default function TeachersPage() {
             phone_number: "+(998)",
         },
     });
-    const [page, setPage] = useState<number>(1);
     const dispatch = useDispatch();
     const { currentPage, goTo } = usePagination(
         "teachers-pagination",
-        teachers ? teachers?.meta.pageCount : 1
+        teachers?.meta.itemCount!
     );
 
     useEffect(() => {
@@ -371,7 +372,7 @@ export default function TeachersPage() {
                     current={currentPage}
                     onChange={(e) => goTo(e)}
                     pageSize={10}
-                    total={teachers && 10 * teachers.meta.pageCount}
+                    total={teachers?.meta.itemCount!}
                 />
 
                 <FormDrawer

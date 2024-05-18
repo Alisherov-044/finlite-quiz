@@ -42,6 +42,7 @@ export type TDepartmentsResponse = {
     data: TDepartment[];
     meta: {
         pageCount: number;
+        itemCount: number;
     };
 };
 
@@ -97,7 +98,7 @@ export default function DepartmentsPage() {
     );
     const { currentPage, goTo } = usePagination(
         "departments-pagination",
-        departments ? departments?.meta.pageCount : 1
+        departments?.meta.itemCount!
     );
     const { mutate, isLoading: isSubmitting } = useMutation<
         TDepartmentsResponse,
@@ -137,7 +138,7 @@ export default function DepartmentsPage() {
         pagination: {
             current: 1,
             pageSize: 10,
-            total: departments ? departments?.meta.pageCount * 10 : 10,
+            total: departments?.meta.itemCount!,
             onChange: (e: number) => goTo(e),
         },
     });
@@ -149,6 +150,16 @@ export default function DepartmentsPage() {
             pagination: { ...tableParams.pagination, current: currentPage },
         });
     }, [currentPage]);
+
+    useEffect(() => {
+        setTableParams({
+            ...tableParams,
+            pagination: {
+                ...tableParams.pagination,
+                total: departments?.meta.itemCount!,
+            },
+        });
+    }, [departments?.meta.itemCount]);
 
     useEffect(() => {
         refetch();

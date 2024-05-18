@@ -11,8 +11,11 @@ export const STUDENTS_URL = (
 export const STUDENTS_EDIT_URL = (id: number) => `/user/${id}`;
 export const STUDENTS_DELETE_URL = (id: number) => `/user/${id}`;
 
-export const TEACHERS_URL = (query?: string) =>
-    query ? `/user?role=teacher&&search=${query}` : "/user?role=teacher";
+export const TEACHERS_URL = (
+    page: number = 1,
+    query: string = "",
+    size: number = 10
+) => `/user?role=teacher&take=${size}&page=${page}&search=${query}`;
 export const TEACHERS_EDIT_URL = (id: number) => `/user/${id}`;
 export const TEACHERS_DELETE_URL = (id: number) => `/user/${id}`;
 

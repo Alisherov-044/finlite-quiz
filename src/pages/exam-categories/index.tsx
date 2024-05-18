@@ -42,6 +42,7 @@ export type TExamCategoriesResponse = {
     data: TExamCategory[];
     meta: {
         pageCount: number;
+        itemCount: number;
     };
 };
 
@@ -105,7 +106,7 @@ export default function ExamCategoriesPage() {
     );
     const { currentPage, goTo } = usePagination(
         "exam-categories-pagination",
-        examCategories?.meta ? examCategories?.meta?.pageCount : 1
+        examCategories?.meta.itemCount!
     );
     const { mutate, isLoading: isSubmitting } = useMutation<
         TExamCategoriesResponse,
@@ -149,12 +150,20 @@ export default function ExamCategoriesPage() {
         pagination: {
             current: 1,
             pageSize: 10,
-            total: examCategories?.meta
-                ? examCategories?.meta?.pageCount * 10
-                : 10,
+            total: examCategories?.meta.itemCount!,
             onChange: (e: number) => goTo(e),
         },
     });
+
+    useEffect(() => {
+        setTableParams({
+            ...tableParams,
+            pagination: {
+                ...tableParams.pagination,
+                total: examCategories?.meta.itemCount!,
+            },
+        });
+    }, [examCategories?.meta.itemCount]);
 
     useEffect(() => {
         setPage(currentPage);

@@ -87,7 +87,7 @@ export type TTest = {
 export type TTestsResponse = {
     data: TTest[];
     meta: {
-        pageCount: number;
+        itemCount: number;
     };
 };
 
@@ -146,13 +146,13 @@ export default function TestsPage() {
     });
     const { currentPage, goTo } = usePagination(
         "tests-pagination",
-        tests ? tests?.meta.pageCount : 1
+        tests?.meta.itemCount!
     );
     const { data: departments, isLoading: isDepartmentsLoading } =
         useQuery<TDepartmentsResponse>("departments", {
             queryFn: async () =>
                 await axiosPublic
-                    .get(DEPARTMENTS_URL())
+                    .get(DEPARTMENTS_URL(1, "", 50))
                     .then((res) => res.data.data),
         });
     const { mutate, isLoading: isSubmitting } = useMutation<
@@ -176,10 +176,20 @@ export default function TestsPage() {
         pagination: {
             current: currentPage,
             pageSize: 10,
-            total: tests ? tests?.meta.pageCount * 10 : 10,
+            total: tests?.meta.itemCount!,
             onChange: (e: number) => goTo(e),
         },
     });
+
+    useEffect(() => {
+        setTableParams({
+            ...tableParams,
+            pagination: {
+                ...tableParams.pagination,
+                total: tests?.meta.itemCount!,
+            },
+        });
+    }, [tests?.meta.itemCount]);
 
     if (error?.response?.data.error === "JWT_EXPIRED") {
         dispatch(

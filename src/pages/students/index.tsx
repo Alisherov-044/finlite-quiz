@@ -73,6 +73,7 @@ export type TStudentsResponse = {
     data: TUser[];
     meta: {
         pageCount: number;
+        itemCount: number;
     };
 };
 
@@ -197,7 +198,7 @@ export default function StudentsPage() {
     const { currentUploadedImage } = useSelector((state) => state.upload);
     const { currentPage, goTo } = usePagination(
         "students-pagination",
-        students ? students?.meta.pageCount : 1
+        students?.meta.itemCount!
     );
 
     useEffect(() => {
@@ -427,7 +428,7 @@ export default function StudentsPage() {
                     current={currentPage}
                     onChange={(e) => goTo(e)}
                     pageSize={10}
-                    total={students && 10 * students.meta.pageCount}
+                    total={students?.meta.itemCount!}
                 />
 
                 <FormDrawer

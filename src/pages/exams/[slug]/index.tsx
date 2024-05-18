@@ -122,6 +122,8 @@ export default function ExamsDetailsPage() {
                                 <UserResultsCard
                                     key={item.student_id}
                                     userId={item.student_id}
+                                    first_name={item.first_name}
+                                    last_name={item.last_name}
                                     id={Number(id)}
                                     result={{
                                         correct_answers: item.trues_count,

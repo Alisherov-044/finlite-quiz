@@ -69,6 +69,7 @@ export default function ExamQuizPage() {
     if (!questions?.length || !duration || duration <= 0 || isQuizEnded) {
         return <Navigate to="/exams" state={{ from: location }} replace />;
     }
+    console.log({ questions, duration, isQuizEnded });
 
     const { time, start } = useCountDown((duration / 1000) as number);
     const { hours, minutes, seconds } = formatTime(time);

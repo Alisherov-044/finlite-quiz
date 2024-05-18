@@ -14,7 +14,7 @@ export function QuizResult({ quizzes }: QuizResultProps) {
     const { t } = useTranslate();
     const htmlTagContentRegex = /<[^>]*>([^<]*)<\/[^>]*>/g;
 
-    if (!variants.length || !quizzes.length) return <Loading />;
+    if (!variants.length || !quizzes?.length) return <Loading />;
 
     return (
         <Flex className="w-full flex-col border border-blue-300 rounded-md shadow-main">
@@ -29,7 +29,7 @@ export function QuizResult({ quizzes }: QuizResultProps) {
                     <Title level={2}>{t("To'g'ri javob")}</Title>
                 </HeaderCol>
             </Row>
-            {quizzes.map(
+            {quizzes?.map(
                 ({ id, description, answer, correct_variant }, index) => (
                     <Row
                         key={id}
